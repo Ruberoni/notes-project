@@ -14,7 +14,9 @@
   "keywords": [
     "notes",
     "project",
-    "hapi"
+    "hapi",
+    "graphql",
+    "mysql"
   ],
   "license": "MIT",
   "private": true,

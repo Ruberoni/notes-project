@@ -1,6 +1,15 @@
 {
-  "name": "client",
+  "name": "notes-project-client",
   "version": "0.1.0",
+  "description": "Notes Project/client. Take notes easily, anywhere.",
+  "author": "Ruben Paredes",
+  "keywords": [
+    "notes",
+    "project",
+    "react",
+    "chakra"
+  ],
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "@chakra-ui/react": "^1.6.6",
