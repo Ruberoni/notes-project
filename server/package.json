@@ -1,0 +1,43 @@
+{
+  "name": "notes-project-server",
+  "version": "1.0.0",
+  "description": "Notes Project/server. Take notes easily, anywhere.",
+  "main": "lib/index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "dev": "nodemon --watch src src/index.ts",
+    "lint": "eslint src/",
+    "start-prod": "node lib/index.js",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'src/tests/**/*.ts'"
+  },
+  "author": "Ruben Paredes",
+  "keywords": [
+    "notes",
+    "project",
+    "hapi"
+  ],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@hapi/hapi": "^20.1.5",
+    "apollo-server-hapi": "^3.1.2",
+    "dotenv": "^10.0.0",
+    "graphql": "^15.5.1",
+    "nodemon": "^2.0.12",
+    "ts-node": "^10.2.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.21",
+    "@types/hapi__hapi": "^20.0.9",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.4.13",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "chai": "^4.3.4",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "mocha": "^9.0.3",
+    "prettier": "2.3.2",
+    "typescript": "^4.3.5"
+  }
+}
