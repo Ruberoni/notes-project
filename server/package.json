@@ -22,9 +22,12 @@
   "private": true,
   "dependencies": {
     "@hapi/hapi": "^20.1.5",
+    "apollo-datasource": "^3.0.3",
+    "apollo-server-errors": "^3.0.1",
     "apollo-server-hapi": "^3.1.2",
     "dotenv": "^10.0.0",
     "graphql": "^15.5.1",
+    "mysql": "^2.18.1",
     "nodemon": "^2.0.12",
     "ts-node": "^10.2.0"
   },
@@ -32,6 +35,7 @@
     "@types/chai": "^4.2.21",
     "@types/hapi__hapi": "^20.0.9",
     "@types/mocha": "^9.0.0",
+    "@types/mysql": "^2.15.19",
     "@types/node": "^16.4.13",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",

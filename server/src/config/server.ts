@@ -1,13 +1,12 @@
 "use strict";
 
-import { ApolloServer, Config } from "apollo-server-hapi";
+import { ApolloServer } from "apollo-server-hapi";
 import Hapi from "@hapi/hapi";
-import schema from "../schema";
-import resolvers from "../resolvers";
+import { typeDefs, resolvers } from "../graphql";
 
-export const apolloServer = new ApolloServer({ typeDefs: schema, resolvers });
+export const apolloServer = new ApolloServer({ typeDefs, resolvers });
 
-export const initServer = async () =>
+export const initServer = async (): Promise<void> =>
   /*
   typeDefs: Config["typeDefs"],
   resolvers: Config["resolvers"] */
