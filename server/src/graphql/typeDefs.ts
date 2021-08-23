@@ -7,7 +7,7 @@ export default gql`
     getUserCategories(userid: ID!): [Category]
 
     """
-    Retrieve all user notes but every note WILL NOT have its Body.
+    Retrieve all user notes with its categories but every note WILL NOT have its Body.
     """
     getUserNotesPreview(userId: ID!): [Note]
 

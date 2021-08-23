@@ -5,10 +5,10 @@
   "main": "lib/index.js",
   "scripts": {
     "tsc": "tsc",
-    "dev": "nodemon --watch src src/index.ts",
+    "dev": "NODE_ENV=development nodemon --watch src src/index.ts",
     "lint": "eslint src/",
     "start-prod": "node lib/index.js",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'src/tests/**/*.ts'"
+    "test": "NODE_ENV=test env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register -r dotenv/config ./src/config/env.ts 'src/tests/**/*.ts'"
   },
   "author": "Ruben Paredes",
   "keywords": [
@@ -28,6 +28,7 @@
     "dotenv": "^10.0.0",
     "graphql": "^15.5.1",
     "mysql": "^2.18.1",
+    "mysql2": "^2.3.0",
     "nodemon": "^2.0.12",
     "ts-node": "^10.2.0"
   },
@@ -35,7 +36,6 @@
     "@types/chai": "^4.2.21",
     "@types/hapi__hapi": "^20.0.9",
     "@types/mocha": "^9.0.0",
-    "@types/mysql": "^2.15.19",
     "@types/node": "^16.4.13",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",

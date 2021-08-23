@@ -1,13 +1,14 @@
 import { resolve } from "path";
 import { config } from "dotenv";
 
-config({ path: resolve(__dirname, "../../.env") });
+let path = "../../.env";
 
-/*
-if (process.env.SAMPLE) {
-  console.log("dotenv working properly");
-  console.log(`process.env.SAMPLE = ${process.env.SAMPLE}`);
-} else {
-  console.log("dotenv not working properly");
+if (process.env.NODE_ENV == "production") {
+  path = "../../.env";
 }
-*/
+
+if (process.env.NODE_ENV == "development") {
+  path = "../../.env";
+}
+
+config({ path: resolve(__dirname, path) });

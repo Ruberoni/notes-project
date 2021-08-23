@@ -7,11 +7,13 @@ import resolvers from "./resolvers";
 */
 
 initServer(/*schema, resolvers*/);
-const DBConnection = connectDB({});
-
+// const DBConnection = connectDB({});
+connectDB({});
+/*
 process.on("exit", () => {
-  DBConnection.end((err) => {
+  DBConnection.end((err: any) => {
     if (err) throw err;
     console.log("Database disconnected"); // remove this on production
   });
 });
+*/
