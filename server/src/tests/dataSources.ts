@@ -1,94 +1,36 @@
 import { expect } from "chai";
 import { NotesProjectDataSource } from "../graphql/dataSources";
 import { connectDB, connection } from "../config/database";
+import { MockNPDataSource } from "../utils/";
 
 let dataSource: any | undefined;
-const connectionConfig = {
+let mockDataSource: any;
+
+/*const connectionConfig = {
   database: "notes_project_test",
   namedPlaceholders: true,
-};
+};*/
 
 describe("Methods", () => {
   before(async () => {
-    await connectDB(connectionConfig);
+    await connectDB();
     dataSource = new NotesProjectDataSource();
+    mockDataSource = new MockNPDataSource(dataSource);
   });
 
   after(async () => {
     await dataSource?.DB.end();
   });
 
-  type numberBoolean = boolean | number | undefined;
-
-  async function populateTable(
-    doUser: numberBoolean,
-    doNote?: numberBoolean,
-    doCategory?: numberBoolean,
-    doNoteCategory?: numberBoolean
-  ): Promise<void> {
-    if (doUser) {
-      // Insert user
-      const insertUserQuery = "INSERT INTO user (id, name) VALUES(?, ?)";
-      const userValues = [1, "Ruben"];
-      await dataSource?.DB.execute(insertUserQuery, userValues);
-    }
-
-    if (doNote) {
-      // Insert note
-      const insertNoteQuery =
-        "INSERT INTO note (id, user, title) VALUES (?, ?, ?)";
-      const noteValues = [1, 1, "Corazon"];
-      await dataSource?.DB.execute(insertNoteQuery, noteValues);
-    }
-    if (doCategory) {
-      // Insert category
-      const insertCategoryQuery =
-        "INSERT INTO category (id, user, label) VALUES (?, ?, ?), (?, ?, ?)";
-      const categoryValues = [1, 1, "Personal", 2, 1, "Trabajo"];
-      await dataSource?.DB.execute(insertCategoryQuery, categoryValues);
-    }
-    if (doNoteCategory) {
-      // Establish realationship
-      const insertNoteCategoryQuery =
-        "INSERT INTO note_category (note, category) VALUES (?, ?), (?, ?)";
-      const noteCategoryValues = [1, 1, 1, 2];
-      await dataSource?.DB.execute(insertNoteCategoryQuery, noteCategoryValues);
-    }
-  }
-
-  async function depopulateTable(
-    doUser: numberBoolean,
-    doNote?: numberBoolean,
-    doCategory?: numberBoolean,
-    doNoteCategory?: numberBoolean
-  ): Promise<void> {
-    if (doUser) {
-      const removeQuery = "DELETE FROM user";
-      await dataSource?.DB.execute(removeQuery);
-    }
-    if (doNote) {
-      const removeNoteQuery = "DELETE FROM note";
-      await dataSource?.DB.execute(removeNoteQuery);
-    }
-    if (doCategory) {
-      const removeCategoryQuery = "DELETE FROM category";
-      await dataSource?.DB.execute(removeCategoryQuery);
-    }
-    if (doNoteCategory) {
-      const removeNoteCategoryQuery = "DELETE FROM note_category";
-      await dataSource?.DB.execute(removeNoteCategoryQuery);
-    }
-  }
-
   describe("getUser", () => {
     beforeEach(async () => {
       // Populate table
-      await populateTable(1);
+      await mockDataSource.populateTable(1);
     });
 
     afterEach(async () => {
       // Depopulate table
-      await depopulateTable(1);
+      await mockDataSource.depopulateTable(1);
     });
 
     it("Calling getUser(1), should return an user", async () => {
@@ -125,12 +67,12 @@ describe("Methods", () => {
   describe("getUserNotes", () => {
     beforeEach(async () => {
       // Populate table
-      await populateTable(1, 1);
+      await mockDataSource.populateTable(1, 1);
     });
 
     afterEach(async () => {
       // Depopulate table
-      await depopulateTable(1, 1);
+      await mockDataSource.depopulateTable(1, 1);
     });
 
     it("Calling with a valid userId, should return an array of object with title prop.", async () => {
@@ -155,12 +97,12 @@ describe("Methods", () => {
   describe("getUserCategories", () => {
     beforeEach(async () => {
       // Populate table
-      await populateTable(1, 1, 1);
+      await mockDataSource.populateTable(1, 1, 1);
     });
 
     afterEach(async () => {
       // Depopulate table
-      await depopulateTable(1, 1, 1);
+      await mockDataSource.depopulateTable(1, 1, 1);
     });
 
     it("Calling with a valid userId, should return an array of object with label prop.", async () => {
@@ -184,12 +126,12 @@ describe("Methods", () => {
   describe("getUserNotesPreview", () => {
     beforeEach(async () => {
       // Populate table
-      await populateTable(1, 1, 1, 1);
+      await mockDataSource.populateTable(1, 1, 1, 1);
     });
 
     afterEach(async () => {
       // Depopulate table
-      await depopulateTable(1, 1, 1, 1);
+      await mockDataSource.depopulateTable(1, 1, 1, 1);
     });
 
     it("Calling with a valid userId, should return an array of note where each have a categories array", async () => {
@@ -217,12 +159,12 @@ describe("Methods", () => {
   describe("getNoteBody", () => {
     beforeEach(async () => {
       // Populate table
-      await populateTable(1, 1);
+      await mockDataSource.populateTable(1, 1);
     });
 
     afterEach(async () => {
       // Depopulate table
-      await depopulateTable(1, 1);
+      await mockDataSource.depopulateTable(1, 1);
     });
 
     it("Calling with a valid noteId, should return a string", async () => {

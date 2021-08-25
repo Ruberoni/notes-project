@@ -3,8 +3,15 @@
 import { ApolloServer } from "apollo-server-hapi";
 import Hapi from "@hapi/hapi";
 import { typeDefs, resolvers } from "../graphql";
+import { NotesProjectDataSource } from "../graphql/dataSources";
 
-export const apolloServer = new ApolloServer({ typeDefs, resolvers });
+export const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  dataSources: () => ({
+    notesProject: new NotesProjectDataSource(),
+  }),
+});
 
 export const initServer = async (): Promise<void> =>
   /*
