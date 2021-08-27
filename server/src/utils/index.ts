@@ -32,6 +32,8 @@ EXAMPLE CASE:
 export function cleanNotesPreview(notesPreview: RowDataPacket[]): NPCleaned {
   const notesPreviewCleaned: NPCleaned = {};
   for (const noteP of notesPreview) {
+    // for each row, creates a category object, only if there's category data
+
     const categoryData: ICategory = {
       id: noteP.category_id,
       label: noteP.label,
@@ -40,13 +42,15 @@ export function cleanNotesPreview(notesPreview: RowDataPacket[]): NPCleaned {
 
     if (!notesPreviewCleaned[noteP.id]) {
       notesPreviewCleaned[noteP.id] = {
-        id: noteP.id,
+        id: noteP.note_id,
         title: noteP.title,
-        categories: [categoryData],
+        categories: categoryData.id ? [categoryData] : [],
       };
       continue;
     }
-    notesPreviewCleaned[noteP.id].categories.push(categoryData);
+    if (categoryData.id) {
+      notesPreviewCleaned[noteP.id].categories.push(categoryData);
+    }
   }
   return notesPreviewCleaned;
 }

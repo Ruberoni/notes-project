@@ -34,15 +34,19 @@ export default class MockNPDataSource {
     if (doCategory) {
       // Insert category
       const insertCategoryQuery =
-        "INSERT INTO category (id, user, label) VALUES (?, ?, ?), (?, ?, ?)";
-      const categoryValues = [1, 1, "Personal", 2, 1, "Trabajo"];
+        // "INSERT INTO category (id, user, label) VALUES (?, ?, ?), (?, ?, ?)";
+        "INSERT INTO category (id, user, label) VALUES (?, ?, ?)";
+      // const categoryValues = [1, 1, "Personal", 2, 1, "Trabajo"];
+      const categoryValues = [1, 1, "Personal"];
       await this.dataSource?.DB?.execute(insertCategoryQuery, categoryValues);
     }
     if (doNoteCategory) {
       // Establish realationship
       const insertNoteCategoryQuery =
-        "INSERT INTO note_category (note, category) VALUES (?, ?), (?, ?)";
-      const noteCategoryValues = [1, 1, 1, 2];
+        // "INSERT INTO note_category (note, category) VALUES (?, ?), (?, ?)";
+        "INSERT INTO note_category (note, category) VALUES (?, ?)";
+      // const noteCategoryValues = [1, 1, 1, 2];
+      const noteCategoryValues = [1, 1];
       await this.dataSource?.DB?.execute(
         insertNoteCategoryQuery,
         noteCategoryValues
