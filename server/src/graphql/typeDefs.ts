@@ -1,4 +1,110 @@
 import { gql } from "apollo-server-hapi";
+import { ObjectType, Field, InputType, registerEnumType } from "type-graphql";
+
+@ObjectType()
+export class User {
+  @Field((_type) => ID, { nullable: false })
+  id: string;
+
+  @Field()
+  googleId?: string;
+
+  @Field()
+  email?: string;
+
+  @Field()
+  name?: string;
+
+  @Field((_type) => [Note])
+  notes?: Note[];
+
+  @Field((_type) => [Category])
+  categories?: Category[];
+}
+
+@ObjectType()
+export class Note {
+  @Field((_type) => ID, { nullable: false })
+  id: string;
+
+  @Field((_type) => User)
+  user?: User;
+
+  @Field()
+  title?: string;
+
+  @Field()
+  body?: string;
+
+  @Field((_type) => [Category])
+  categories?: [Category];
+}
+
+@ObjectType()
+export class Category {
+  @Field((_type) => ID, { nullable: false })
+  id: string;
+
+  @Field((_type) => User)
+  user?: User;
+
+  @Field()
+  label?: string;
+
+  @Field()
+  body?: string;
+
+  @Field((_type) => [Category])
+  categories?: [Category];
+
+  @Field((_type) => EColor)
+  color?: EColor;
+}
+
+// https://typegraphql.com/docs/enums.html#interoperability
+enum EColor {
+  RED = "RED",
+  BLUE = "BLUE",
+  GREEN = "GREEN",
+  BLACK = "BLACK",
+  GRAY = "GRAY",
+  PURPLE = "PURPLE",
+  ORANGE = "ORANGE",
+  DARKBLUE = "DARKBLUE",
+  DARKRED = "DARKRED",
+}
+
+registerEnumType(EColor, {
+  name: "EColor",
+  description: "The colors of the categories.",
+});
+
+export class UserContent implements Partial<User> {
+  @Field()
+  googleId?: string;
+
+  @Field()
+  email?: string;
+
+  @Field()
+  name?: string;
+}
+
+export class NoteContent implements Partial<Note> {
+  @Field()
+  title?: string;
+
+  @Field()
+  body?: string;
+}
+
+export class CategoryContent implements Partial<Category> {
+  @Field()
+  label?: string;
+
+  @Field((_type) => EColor)
+  color?: EColor;
+}
 
 export default gql`
   type Query {
