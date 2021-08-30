@@ -5,10 +5,10 @@
   "main": "lib/index.js",
   "scripts": {
     "tsc": "tsc",
-    "dev": "NODE_ENV=development nodemon --watch src src/index.ts",
+    "dev": "$env:NODE_ENV=\"development\"; yarn run nodemon --watch src src/index.ts",
     "lint": "eslint src/",
     "start-prod": "node lib/index.js",
-    "test": "NODE_ENV=test env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register -r dotenv/config ./src/config/env.ts 'src/tests/**/*.ts'"
+    "test": "$env:NODE_ENV=\"test\"; env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register -r dotenv/config ./src/config/env.ts 'src/tests/**/*.ts'"
   },
   "author": "Ruben Paredes",
   "keywords": [
