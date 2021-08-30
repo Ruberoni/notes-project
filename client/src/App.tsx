@@ -1,11 +1,10 @@
 import React from "react";
-import CategoryTag from "./components/CategoryTag";
+import CustomizingTheme from "./CustomizingTheme";
 
 function App(): JSX.Element {
   return (
     <div>
-      {process.env.REACT_APP_SAMPLE}
-      <CategoryTag />
+      <CustomizingTheme />
     </div>
   );
 }

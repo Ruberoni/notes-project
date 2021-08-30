@@ -4,7 +4,7 @@ import App from "../App";
 
 afterEach(cleanup);
 
-it("Renders the env variable", () => {
+it("Renders the correct text", () => {
   render(<App />);
-  expect(screen.getByText("sample")).toBeInTheDocument();
+  expect(screen.getByText("Hola")).toBeInTheDocument();
 });

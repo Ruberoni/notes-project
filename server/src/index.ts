@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import "./config/env";
 import { initServer } from "./config/server";
 import { connectDB } from "./config/database";

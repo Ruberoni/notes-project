@@ -1,6 +1,8 @@
 import queries from "./queries";
 import mutations from "./mutations";
 
+export * from "./queries";
+
 export default {
   Query: queries,
   Mutation: mutations,
