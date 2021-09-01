@@ -3,15 +3,13 @@
 import { ApolloServer } from "apollo-server-hapi";
 import Hapi from "@hapi/hapi";
 import { buildSchema } from "type-graphql";
-import { typeDefs, resolvers } from "../graphql";
+import { resolvers } from "../graphql";
 import { NotesProjectDataSource } from "../graphql/dataSources";
 
-// const schema = async (): Promise<any> =>
-
-export const InitApolloServer = async (): Promise<ApolloSever> =>
+export const InitApolloServer = async (): Promise<ApolloServer> =>
   new ApolloServer({
     schema: await buildSchema({
-      resolvers: [resolvers],
+      resolvers,
       nullableByDefault: true,
     }),
     dataSources: () => ({
@@ -26,7 +24,7 @@ export const initServer = async (): Promise<void> =>
   typeDefs: Config["typeDefs"],
   resolvers: Config["resolvers"] */
   {
-    const apolloServer = InitApolloServer();
+    const apolloServer = await InitApolloServer();
 
     await apolloServer.start();
 

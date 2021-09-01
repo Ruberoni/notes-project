@@ -22,6 +22,7 @@
   "private": true,
   "dependencies": {
     "@hapi/hapi": "^20.1.5",
+    "@types/sinon": "^10.0.2",
     "apollo-datasource": "^3.0.3",
     "apollo-server-errors": "^3.0.1",
     "apollo-server-hapi": "^3.1.2",
@@ -32,6 +33,7 @@
     "mysql2": "^2.3.0",
     "nodemon": "^2.0.12",
     "reflect-metadata": "^0.1.13",
+    "sinon": "^11.1.2",
     "ts-node": "^10.2.0",
     "type-graphql": "^1.1.1"
   },

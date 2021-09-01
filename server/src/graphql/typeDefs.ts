@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-hapi";
-import { ObjectType, Field, InputType, registerEnumType } from "type-graphql";
+import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
 
 @ObjectType()
 export class User {
@@ -79,6 +79,19 @@ registerEnumType(EColor, {
   description: "The colors of the categories.",
 });
 
+@ObjectType()
+export class NotePreview {
+  @Field((_type) => ID)
+  id: string;
+
+  @Field()
+  title: string;
+
+  @Field((_type) => [Category])
+  categories: Category[];
+}
+
+@ObjectType()
 export class UserContent implements Partial<User> {
   @Field()
   googleId?: string;
@@ -90,6 +103,7 @@ export class UserContent implements Partial<User> {
   name?: string;
 }
 
+@ObjectType()
 export class NoteContent implements Partial<Note> {
   @Field()
   title?: string;
@@ -98,6 +112,7 @@ export class NoteContent implements Partial<Note> {
   body?: string;
 }
 
+@ObjectType()
 export class CategoryContent implements Partial<Category> {
   @Field()
   label?: string;
@@ -106,6 +121,7 @@ export class CategoryContent implements Partial<Category> {
   color?: EColor;
 }
 
+/*
 export default gql`
   type Query {
     getUser(id: ID!): User
@@ -190,3 +206,4 @@ export default gql`
     deleteCategoryNote(categoryId: ID!, noteId: ID!): String
   }
 `;
+*/

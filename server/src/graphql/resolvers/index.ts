@@ -3,7 +3,10 @@ import mutations from "./mutations";
 
 export * from "./queries";
 
-export default {
+// const resolvers = [queries, mutations];
+export default [queries, mutations] as const;
+
+/* export const deprecatedResolvers = {
   Query: queries,
   Mutation: mutations,
   User: {
@@ -47,3 +50,4 @@ export default {
     },
   },
 };
+ */
