@@ -1,26 +1,7 @@
-// import { NotesProjectDataSource } from '../dataSources'
-
-// type dataSourcesType = { dataSources: NotesProjectDataSource }
 import { Resolver, Query, Ctx, Arg } from "type-graphql";
 import { User, Note, Category, NotePreview } from "../typeDefs";
-import { NotesProjectDataSource } from "../dataSources";
-
-/* export interface ResolverContext {
-  dataSources: {
-    notesProject: NotesProjectDataSource;
-  };
-}
-
-export interface ResolverParams {
-  id: string;
-  userId: string;
-  noteId: string;
-}
-
-export type ResolverParent = Record<any, any>;
- */
 @Resolver()
-export default class NotesProjectResolver {
+export default class Queries {
   @Query()
   test(): string {
     return "Hola";

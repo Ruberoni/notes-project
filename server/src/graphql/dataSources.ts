@@ -2,6 +2,15 @@ import { Connection, RowDataPacket, FieldPacket } from "mysql2/promise";
 import { DataSource } from "apollo-datasource";
 import { connection } from "../config/database";
 import { cleanNotesPreview } from "../utils/";
+import {
+  User,
+  Note,
+  Category,
+  NotePreview,
+  UserContent,
+  NoteContent,
+  CategoryContent,
+} from "./typeDefs";
 
 export class NotesProjectDataSource extends DataSource {
   readonly DB: Connection | undefined;
@@ -11,33 +20,33 @@ export class NotesProjectDataSource extends DataSource {
     this.DB = connection;
   }
 
-  async getUser(id: string): Promise<IUser> {
+  async getUser(id: string): Promise<User> {
     // async getUser(id) {
     if (!this.DB) throw new Error("No database connected.");
-    const [users, _]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
+    const [users]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
       "SELECT * FROM user WHERE id = ?",
       [id]
     );
-    return users[0] as IUser;
+    return users[0] as User;
   }
 
-  async getUserNotes(userId: string): Promise<INote[]> {
+  async getUserNotes(userId: string): Promise<Note[]> {
     if (!this.DB) throw new Error("No database connected.");
     const [notes]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
       `SELECT n.* FROM note n JOIN user u WHERE n.user = ? AND u.id = n.user`,
       [userId]
     );
-    return notes as INote[];
+    return notes as Note[];
   }
 
-  async getUserCategories(userId: string): Promise<ICategory[]> {
+  async getUserCategories(userId: string): Promise<Category[]> {
     if (!this.DB) throw new Error("No database connected.");
-    const [categories, _]: [RowDataPacket[], FieldPacket[]] =
+    const [categories]: [RowDataPacket[], FieldPacket[]] =
       await this.DB.execute(
         `SELECT c.* FROM category c JOIN user u WHERE c.user = ? AND u.id = c.user`,
         [userId]
       );
-    return categories as ICategory[];
+    return categories as Category[];
   }
   /**
    * Retrieve all user notes with its categories but every note WILL NOT have its Body.
@@ -46,13 +55,13 @@ export class NotesProjectDataSource extends DataSource {
    * The query only looks for 'notes' in 'note_category' table,
    * so if a note doesn't have categories, it won't retrieve it.
    */
-  async getUserNotesPreview(userId: string): Promise<INotePreview[]> {
+  async getUserNotesPreview(userId: string): Promise<NotePreview[]> {
     if (!this.DB) throw new Error("No database connected.");
     /**
      * 'notesPreview'
      *  Each repeated 'note_id' in 'notesPreview' means that its categories_id will be different
      */
-    const [notesPreview, _]: [RowDataPacket[], FieldPacket[]] =
+    const [notesPreview]: [RowDataPacket[], FieldPacket[]] =
       await this.DB.execute(
         `SELECT n.id as note_id, n.title, c.id as category_id, c.label, c.color 
           FROM note_category nc 
@@ -68,13 +77,15 @@ export class NotesProjectDataSource extends DataSource {
 
   async getNoteBody(noteId: string): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
-    const [noteBody, _]: [RowDataPacket[], FieldPacket[]] =
-      await this.DB.execute("SELECT body FROM note WHERE id = ?", [noteId]);
+    const [noteBody]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
+      "SELECT body FROM note WHERE id = ?",
+      [noteId]
+    );
     // OR operator needed as 'noteBody[0].body' in DB its datatype is 'TEXT' and its default value is NULL.
     return noteBody[0].body || "";
   }
 
-  async register(content: IUser): Promise<string> {
+  async register(content: UserContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     /*await this.DB.execute(
       `INSERT INTO user SET google_id = ?, email = ?, name = ?, ${idQuery}`,
@@ -108,69 +119,70 @@ export class NotesProjectDataSource extends DataSource {
     await this.DB.execute(queryFormatted);
     return "OK";
   }
-  async deleteUser(id: ID): Promise<string> {
+  async deleteUser(id: string): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
 
     const query = "DELETE FROM user WHERE id = ?";
-    // const queryFormatted = this.DB.format(query, userContent);
-    // const [rows, _]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(query, [id]);
     await this.DB.execute(query, [id]);
     return "OK";
   }
-  async updateUser(id: ID, content: IUserContent): Promise<string> {
+  async updateUser(id: string, content: UserContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "UPDATE user SET ? WHERE id = ?";
     const queryFormatted = this.DB.format(query, [content, id]);
     await this.DB.execute(queryFormatted);
     return "OK";
   }
-  async createNote(userId: ID, content: INote): Promise<string> {
+  async createNote(userId: string, content: NoteContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "INSERT INTO note SET user = ?, ?";
     const queryFormatted = this.DB.format(query, [userId, content]);
     await this.DB.execute(queryFormatted);
     return "OK";
   }
-  async updateNote(id: ID, content: INoteContent): Promise<string> {
+  async updateNote(id: string, content: NoteContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "UPDATE note SET ? WHERE id = ?";
     const queryFormatted = this.DB.format(query, [content, id]);
     await this.DB.execute(queryFormatted);
     return "OK";
   }
-  async deleteNote(id: ID): Promise<string> {
+  async deleteNote(id: string): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "DELETE FROM note WHERE id = ?";
     await this.DB.execute(query, [id]);
     return "OK";
   }
-  async createCategory(userId: ID, content: ICategory): Promise<string> {
+  async createCategory(userId: string, content: Category): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "INSERT INTO category SET user = ?, ?";
     const queryFormatted = this.DB.format(query, [userId, content]);
     await this.DB.execute(queryFormatted);
     return "OK";
   }
-  async updateCategory(id: ID, content: ICategoryContent): Promise<string> {
+  async updateCategory(id: string, content: CategoryContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "UPDATE category SET ? WHERE id = ?";
     const queryFormatted = this.DB.format(query, [content, id]);
     await this.DB.execute(queryFormatted);
     return "OK";
   }
-  async deleteCategory(id: ID): Promise<string> {
+  async deleteCategory(id: string): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "DELETE FROM category WHERE id = ?";
     await this.DB.execute(query, [id]);
     return "OK";
   }
-  async addCategoryNote(categoryId: ID, noteId: ID): Promise<string> {
+  async addCategoryNote(categoryId: string, noteId: string): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "INSERT INTO note_category(category, note) VALUES (?, ?)";
     await this.DB.execute(query, [categoryId, noteId]);
     return "OK";
   }
-  async deleteCategoryNote(categoryId: ID, noteId: ID): Promise<string> {
+  async deleteCategoryNote(
+    categoryId: string,
+    noteId: string
+  ): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "DELETE FROM note_category WHERE category = ? AND note = ?";
     await this.DB.execute(query, [categoryId, noteId]);
@@ -178,6 +190,7 @@ export class NotesProjectDataSource extends DataSource {
   }
 }
 
+/*
 export interface ICategoryContent {
   label?: string;
   color?: string;
@@ -213,7 +226,7 @@ export interface INote {
   categories?: ICategory[];
 }
 
-export interface INotePreview {
+export interface NotePreview {
   id: ID;
   title: string;
   categories: ICategory[];
@@ -225,3 +238,4 @@ export interface ICategory {
   label: string;
   color?: string;
 }
+*/

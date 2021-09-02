@@ -1,4 +1,4 @@
-import { gql } from "apollo-server-hapi";
+// import { gql } from "apollo-server-hapi";
 import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
 
 @ObjectType()
@@ -62,7 +62,7 @@ export class Category {
 }
 
 // https://typegraphql.com/docs/enums.html#interoperability
-enum EColor {
+export enum EColor {
   RED = "RED",
   BLUE = "BLUE",
   GREEN = "GREEN",

@@ -1,9 +1,8 @@
 import { RowDataPacket } from "mysql2/promise";
-import { INotePreview, ICategory } from "../graphql/dataSources";
+import { NotePreview, Category } from "../graphql";
+// import { INotePreview, ICategory } from "../graphql/dataSources";
 export { default as MockNPDataSource } from "./MockNPDataSource";
-export { default as MockDataSource } from "./MockDataSource";
-
-export type NPCleaned = { [key: string]: INotePreview };
+export type NPCleaned = { [key: string]: NotePreview };
 /**
  * Clean and organize data for match 'Note' schema.
  * Group repeated notes by 'note_id' and the remaining 'category' data is organized
@@ -34,7 +33,7 @@ export function cleanNotesPreview(notesPreview: RowDataPacket[]): NPCleaned {
   for (const noteP of notesPreview) {
     // for each row, creates a category object, only if there's category data
 
-    const categoryData: ICategory = {
+    const categoryData: Category = {
       id: noteP.category_id,
       label: noteP.label,
       color: noteP.color,

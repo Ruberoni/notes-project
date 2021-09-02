@@ -3,13 +3,18 @@
 import { ApolloServer } from "apollo-server-hapi";
 import Hapi from "@hapi/hapi";
 import { buildSchema } from "type-graphql";
-import { resolvers } from "../graphql";
+import { Queries, Mutations } from "../graphql";
 import { NotesProjectDataSource } from "../graphql/dataSources";
 
+/**
+ * This InitApolloServer function is needed for two things:
+ * a. Integrate with type-graphql's buildSchema async function.
+ * b. Can instance only the Apollo Server from anywhere, useful for testing.
+ */
 export const InitApolloServer = async (): Promise<ApolloServer> =>
   new ApolloServer({
     schema: await buildSchema({
-      resolvers,
+      resolvers: [Queries, Mutations],
       nullableByDefault: true,
     }),
     dataSources: () => ({
@@ -17,8 +22,11 @@ export const InitApolloServer = async (): Promise<ApolloServer> =>
     }),
   });
 
-// export function initApolloServer
-
+/**
+ * Initialize:
+ * 1. The Apollo server
+ * 2. The HTTP Server via Hapi
+ */
 export const initServer = async (): Promise<void> =>
   /*
   typeDefs: Config["typeDefs"],

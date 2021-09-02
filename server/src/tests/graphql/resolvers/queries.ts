@@ -1,10 +1,11 @@
 import "reflect-metadata";
-import Resolvers from "../../../graphql/resolvers";
+import { Queries } from "../../../graphql/resolvers";
 import { expect } from "chai";
 import { NotesProjectDataSource } from "../../../graphql";
 import Sinon, { SinonStub } from "sinon";
 
-const QueryResolvers = new Resolvers[0]();
+// const QueryResolvers = new Resolvers[0]();
+const QueryResolvers = new Queries();
 const DSInstance = new NotesProjectDataSource();
 const MockApolloResolver = (
   resolver: (arg1: any, arg2: any) => any,
