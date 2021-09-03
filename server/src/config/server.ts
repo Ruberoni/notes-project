@@ -1,6 +1,7 @@
 "use strict";
 
 import { ApolloServer } from "apollo-server-hapi";
+import { DataSource } from "apollo-datasource";
 import Hapi from "@hapi/hapi";
 import { buildSchema } from "type-graphql";
 import { Queries, Mutations } from "../graphql";
@@ -11,14 +12,16 @@ import { NotesProjectDataSource } from "../graphql/dataSources";
  * a. Integrate with type-graphql's buildSchema async function.
  * b. Can instance only the Apollo Server from anywhere, useful for testing.
  */
-export const InitApolloServer = async (): Promise<ApolloServer> =>
+export const InitApolloServer = async (
+  dataSource: DataSource = new NotesProjectDataSource()
+): Promise<ApolloServer> =>
   new ApolloServer({
     schema: await buildSchema({
       resolvers: [Queries, Mutations],
       nullableByDefault: true,
     }),
     dataSources: () => ({
-      notesProject: new NotesProjectDataSource(),
+      notesProject: dataSource /*new NotesProjectDataSource()*/,
     }),
   });
 

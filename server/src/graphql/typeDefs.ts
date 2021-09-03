@@ -1,6 +1,16 @@
 // import { gql } from "apollo-server-hapi";
-import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
+import {
+  ObjectType,
+  InputType,
+  Field,
+  ID,
+  registerEnumType,
+} from "type-graphql";
+import { MaxLength, IsEmail } from "class-validator";
 
+/**
+ * Types
+ */
 @ObjectType()
 export class User {
   @Field((_type) => ID, { nullable: false })
@@ -51,12 +61,6 @@ export class Category {
   @Field()
   label?: string;
 
-  @Field()
-  body?: string;
-
-  @Field((_type) => [Category])
-  categories?: [Category];
-
   @Field((_type) => EColor)
   color?: EColor;
 }
@@ -91,30 +95,40 @@ export class NotePreview {
   categories: Category[];
 }
 
-@ObjectType()
+/**
+ * Inputs
+ */
+@InputType()
 export class UserContent implements Partial<User> {
   @Field()
+  @MaxLength(300)
   googleId?: string;
 
   @Field()
-  email?: string;
+  @MaxLength(300)
+  @IsEmail()
+  email: string;
 
   @Field()
+  @MaxLength(100)
   name?: string;
 }
 
-@ObjectType()
+@InputType()
 export class NoteContent implements Partial<Note> {
   @Field()
+  @MaxLength(500)
   title?: string;
 
   @Field()
+  @MaxLength(15000)
   body?: string;
 }
 
-@ObjectType()
+@InputType()
 export class CategoryContent implements Partial<Category> {
   @Field()
+  @MaxLength(50)
   label?: string;
 
   @Field((_type) => EColor)
