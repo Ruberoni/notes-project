@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import { RowDataPacket } from "mysql2/promise";
 import { NotePreview, Category } from "../graphql";
 // import { INotePreview, ICategory } from "../graphql/dataSources";
@@ -52,4 +53,8 @@ export function cleanNotesPreview(notesPreview: RowDataPacket[]): NPCleaned {
     }
   }
   return notesPreviewCleaned;
+}
+
+export function isDatabaseError(err: GraphQLError): boolean {
+  return Object.prototype.hasOwnProperty.call(err.originalError, "sql");
 }

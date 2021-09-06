@@ -4,7 +4,7 @@ import { ApolloServer } from "apollo-server-hapi";
 import { DataSource } from "apollo-datasource";
 import Hapi from "@hapi/hapi";
 import { buildSchema } from "type-graphql";
-import { Queries, Mutations } from "../graphql";
+import { Queries, Mutations, formatError } from "../graphql";
 import { NotesProjectDataSource } from "../graphql/dataSources";
 
 /**
@@ -23,6 +23,7 @@ export const InitApolloServer = async (
     dataSources: () => ({
       notesProject: dataSource /*new NotesProjectDataSource()*/,
     }),
+    formatError,
   });
 
 /**
