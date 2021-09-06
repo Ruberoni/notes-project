@@ -7,7 +7,8 @@ export let connection: Connection | undefined = undefined;
  * Connects to DB
  */
 export async function connectDB(
-  connectionOptions?: ConnectionOptions
+  connectionOptions?: ConnectionOptions,
+  ref?: any
 ): Promise<void> {
   connection = await mysql.createConnection({
     // use enviorment variables
@@ -20,7 +21,9 @@ export async function connectDB(
         : process.env.DB_NAME,
     ...connectionOptions,
   });
-
+  if (ref) {
+    Object.assign(ref, connection);
+  }
   if (process.env.NODE_ENV == "development" || process.env.NODE_ENV == "test") {
     console.log("Database connected");
   }

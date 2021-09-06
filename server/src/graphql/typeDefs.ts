@@ -1,4 +1,5 @@
 // import { gql } from "apollo-server-hapi";
+import "reflect-metadata";
 import {
   ObjectType,
   InputType,

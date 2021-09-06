@@ -3,11 +3,12 @@ import { NotesProjectDataSource } from "../graphql/dataSources";
 export type numberBoolean = boolean | number | undefined;
 /**
  * Class for mocking 'NotesProjectDataSource' database ('DB' property).
+ *
  */
 export default class MockNPDataSource {
-  dataSource: NotesProjectDataSource | undefined;
+  dataSource: /* NotesProjectDataSource */ { DB: any } | undefined;
 
-  constructor(dataSource: NotesProjectDataSource) {
+  constructor(dataSource: /* NotesProjectDataSource */ { DB: any }) {
     this.dataSource = dataSource;
   }
 

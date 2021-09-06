@@ -205,7 +205,7 @@ describe("NotesProjectDataSource", () => {
         // arrange
         const UserContent = {
           id: "2",
-          google_id: "DEFAULT",
+          googleId: "DEFAULT",
           name: "John Doe",
           email: "JohnDoe@gmail.com",
         };

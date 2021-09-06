@@ -1,6 +1,6 @@
 import { Connection, RowDataPacket, FieldPacket } from "mysql2/promise";
 import { DataSource } from "apollo-datasource";
-import { connection } from "../config/database";
+import { connection, connectDB } from "../config";
 import { cleanNotesPreview } from "../utils/";
 import {
   User,
@@ -13,10 +13,16 @@ import {
 } from "./typeDefs";
 
 export class NotesProjectDataSource extends DataSource {
-  readonly DB: Connection | undefined;
+  // readonly DB: Connection | undefined;
+  DB: any = {};
 
   constructor() {
     super();
+    this.DB = connection;
+    // connectDB(undefined, this.DB);
+  }
+
+  initialize(): void {
     this.DB = connection;
   }
 
@@ -86,36 +92,10 @@ export class NotesProjectDataSource extends DataSource {
   }
 
   async register(content: UserContent): Promise<string> {
+    console.log("Hello from NotesProjectDataSource.register");
     if (!this.DB) throw new Error("No database connected.");
-    /*await this.DB.execute(
-      `INSERT INTO user SET google_id = ?, email = ?, name = ?, ${idQuery}`,
-      [
-        content.google_id,
-        content.email,
-        content.name,
-        content.id,
-      ]
-    );*/
-    // console.log(content);
-    // await this.DB.query(`INSERT INTO user SET ?`, content);
     const query = "INSERT INTO user SET ?";
-    // const badValues = ["20; DELETE FROM user;"];
     const queryFormatted = this.DB.format(query, content);
-    // const queryFormatted = this.DB.format(query, badValues);
-
-    // await this.DB.execute(query, content);
-
-    // testing Connection.format and Connection.execute, doesn't remove table with sql injection
-    /*const query2 = "INSERT INTO user SET name = ?";
-    const query2Formatted = this.DB.format(query2, [
-      "ruben; DELETE FROM user;",
-    ]);
-    
-    await this.DB.execute(query2Formatted);
-    */
-    /*const query3 = "SELECT * FROM user";
-    const [users, a]: [any, any] = await this.DB.execute(query3);
-    console.log("users should have 1 users:", users);*/
     await this.DB.execute(queryFormatted);
     return "OK";
   }
@@ -189,53 +169,3 @@ export class NotesProjectDataSource extends DataSource {
     return "OK";
   }
 }
-
-/*
-export interface ICategoryContent {
-  label?: string;
-  color?: string;
-}
-
-export interface INoteContent {
-  title?: string;
-  body?: string;
-}
-
-export interface IUserContent {
-  google_id?: string;
-  email?: string;
-  name?: string;
-}
-
-export type ID = string | number;
-
-export interface IUser {
-  id: ID;
-  google_id: string;
-  email: string;
-  name: string;
-  notes?: INote[];
-  categories?: ICategory[];
-}
-
-export interface INote {
-  id: ID;
-  user?: ID;
-  title: string;
-  body?: string | null;
-  categories?: ICategory[];
-}
-
-export interface NotePreview {
-  id: ID;
-  title: string;
-  categories: ICategory[];
-}
-
-export interface ICategory {
-  id: ID;
-  user?: string;
-  label: string;
-  color?: string;
-}
-*/

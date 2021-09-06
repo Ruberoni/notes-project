@@ -7,14 +7,14 @@ export default class Mutations {
     @Arg("userContent", { nullable: false }) userContent: UserContent,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.register(userContent);
+    return await ctx.dataSources.notesProject.register(userContent);
   }
   @Mutation((_returns) => String)
   async deleteUser(
     @Arg("id", { nullable: false }) id: string,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.deleteUser(id);
+    return await ctx.dataSources.notesProject.deleteUser(id);
   }
   @Mutation((_returns) => String)
   async createNote(
@@ -22,7 +22,7 @@ export default class Mutations {
     @Arg("content", { nullable: false }) content: NoteContent,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.createNote(userId, content);
+    return await ctx.dataSources.notesProject.createNote(userId, content);
   }
   @Mutation((_returns) => String)
   async updateNote(
@@ -30,14 +30,14 @@ export default class Mutations {
     @Arg("content", { nullable: false }) content: NoteContent,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.updateNote(id, content);
+    return await ctx.dataSources.notesProject.updateNote(id, content);
   }
   @Mutation((_returns) => String)
   async deleteNote(
     @Arg("id", { nullable: false }) id: string,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.deleteNote(id);
+    return await ctx.dataSources.notesProject.deleteNote(id);
   }
   @Mutation((_returns) => String)
   async createCategory(
@@ -45,7 +45,7 @@ export default class Mutations {
     @Arg("content", { nullable: false }) content: CategoryContent,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.createCategory(userId, content);
+    return await ctx.dataSources.notesProject.createCategory(userId, content);
   }
   @Mutation((_returns) => String)
   async updateCategory(
@@ -53,14 +53,14 @@ export default class Mutations {
     @Arg("content", { nullable: false }) content: CategoryContent,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.updateCategory(id, content);
+    return await ctx.dataSources.notesProject.updateCategory(id, content);
   }
   @Mutation((_returns) => String)
   async deleteCategory(
     @Arg("id", { nullable: false }) id: string,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.deleteCategory(id);
+    return await ctx.dataSources.notesProject.deleteCategory(id);
   }
   @Mutation((_returns) => String)
   async addCategoryNote(
@@ -68,7 +68,10 @@ export default class Mutations {
     @Arg("noteId", { nullable: false }) noteId: string,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.addCategoryNote(categoryId, noteId);
+    return await ctx.dataSources.notesProject.addCategoryNote(
+      categoryId,
+      noteId
+    );
   }
   @Mutation((_returns) => String)
   async deleteCategoryNote(
@@ -76,6 +79,9 @@ export default class Mutations {
     @Arg("noteId", { nullable: false }) noteId: string,
     @Ctx() ctx: any
   ): Promise<string> {
-    return ctx.dataSources.notesProject.deleteCategoryNote(categoryId, noteId);
+    return await ctx.dataSources.notesProject.deleteCategoryNote(
+      categoryId,
+      noteId
+    );
   }
 }

@@ -1,15 +1,17 @@
 import "reflect-metadata";
 import "./config/env";
-import { initServer } from "./config/server";
-import { connectDB } from "./config/database";
+import { initServer, connectDB } from "./config";
+// import {  } from "./config/database";
 /*
 import schema from "./schema";
 import resolvers from "./resolvers";
 */
+// let m: number |= undefined;
+// console.log(typeof m);
 
+connectDB();
 initServer(/*schema, resolvers*/);
 // const DBConnection = connectDB({});
-connectDB({});
 /*
 process.on("exit", () => {
   DBConnection.end((err: any) => {
