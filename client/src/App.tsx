@@ -1,10 +1,11 @@
 import React from "react";
-import CustomizingTheme from "./CustomizingTheme";
+import { TopBar, BottomBar } from "./components/AppBars";
 
 function App(): JSX.Element {
   return (
     <div>
-      <CustomizingTheme />
+      <TopBar />
+      <BottomBar />
     </div>
   );
 }
