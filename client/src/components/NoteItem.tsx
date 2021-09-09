@@ -9,33 +9,18 @@ import {
   Tooltip,
   CircularProgress,
   useAccordionItem,
-  CSSObject,
 } from "@chakra-ui/react";
+
+import { getHideScrollBarCSS } from "../utils";
 
 import { PropGetter } from "@chakra-ui/react-utils";
 
-/**
- * Hides the scrollbar 'x', 'y' or both
- */
-function getHideScrollBarCSS(scroll?: "x" | "y"): CSSObject {
-  const sufix = scroll ? "-" + scroll : "";
-  return {
-    ".delHScrollBar": {
-      ["overflow" + sufix]: "auto",
-      "scrollbar-width": "none" /* Firefox */,
-      "-ms-overflow-style": "none" /* Internet Explorer 10+ */,
-    },
-    ".delHScrollBar::-webkit-scrollbar": {
-      width: 0,
-      height: 0,
-    },
-  };
-}
 export interface NoteItemProps {
   title?: string;
   categories?: any;
   isReady?: boolean;
   isActive?: boolean;
+  handleOnClick?: any;
   setIsActive?: React.Dispatch<React.SetStateAction<boolean>>;
   [key: string]: any;
 }
@@ -76,6 +61,7 @@ export default function NoteItem({
   title,
   categories,
   isReady,
+  handleOnClick,
 }: NoteItemProps): JSX.Element {
   const { isOpen, getButtonProps } = useAccordionItem({
     isFocusable: true,
@@ -86,11 +72,12 @@ export default function NoteItem({
    */
   const onClick = () => {
     console.log("Hi, I have been clicked!");
+    handleOnClick?.();
   };
 
   const button = getButtonProps({ onClick }) as PropGetter<HTMLDivElement>;
 
-  const LoadingComponent = (
+  const LoadingComp = (
     <CircularProgress
       position="absolute"
       top="0"
@@ -121,7 +108,7 @@ export default function NoteItem({
         direction="column"
         position="relative"
       >
-        {isReady && LoadingComponent}
+        {isReady && LoadingComp}
 
         <Tooltip label={noteTitle} openDelay={500} gutter={0}>
           <Text fontSize="2xl" isTruncated>
