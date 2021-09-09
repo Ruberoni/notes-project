@@ -9,6 +9,13 @@ const theme = extendTheme({
   fonts: {
     body: "Source Sans Pro",
   },
+  components: {
+    Tag: {
+      defaultProps: {
+        variant: "solid",
+      },
+    },
+  },
 });
 
 ReactDOM.render(

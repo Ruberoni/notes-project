@@ -13,7 +13,7 @@ export default function CategoryTag({
   label,
 }: CategoryTagProps): JSX.Element {
   return (
-    <Tag size={size || "sm"} variant="solid" colorScheme={color || "messenger"}>
+    <Tag size={size || "sm"} colorScheme={color || "messenger"}>
       <TagLabel>{label || "Label"}</TagLabel>
     </Tag>
   );
