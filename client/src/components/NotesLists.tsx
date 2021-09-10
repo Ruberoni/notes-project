@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Box,
   useAccordion,
   AccordionDescendantsProvider,
   AccordionProvider,
@@ -7,6 +8,7 @@ import {
 
 export interface NotesListProps {
   children: JSX.Element | JSX.Element[];
+  [key: string]: any;
 }
 
 /**
@@ -16,11 +18,11 @@ export interface NotesListProps {
  *  item active at a time
  *
  * Features:
- * - Display Drawer when mobile device
+ * - NO -- This is job of the lateral section -- Display Drawer when mobile device
  * - Only one item can be active at a time
  *
  * @todo
- * - Display Drawer when mobile device [ ]
+ * - Scrollable notes [X]
  * - Only one item can be active at a time using *Implement_accordion_logic* [X]
  *
  * @Implement_accordion_logic
@@ -31,7 +33,10 @@ export interface NotesListProps {
  * 5. Wrap 'AccordionProvider' in 'AccordionDescendantsProvider' with value = descendants
  *
  */
-export default function NotesList({ children }: NotesListProps): JSX.Element {
+export default function NotesList({
+  children,
+  ...props
+}: NotesListProps): JSX.Element {
   const { descendants, ...context } = useAccordion({ allowToggle: true });
 
   const ctx = React.useMemo(
@@ -41,7 +46,12 @@ export default function NotesList({ children }: NotesListProps): JSX.Element {
 
   return (
     <AccordionDescendantsProvider value={descendants}>
-      <AccordionProvider value={ctx}>{children}</AccordionProvider>)
+      <AccordionProvider value={ctx}>
+        <Box className="hideScrollBar" {...props}>
+          {children}
+        </Box>
+      </AccordionProvider>
+      )
     </AccordionDescendantsProvider>
   );
 }

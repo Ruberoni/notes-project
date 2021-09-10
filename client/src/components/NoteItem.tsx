@@ -11,8 +11,6 @@ import {
   useAccordionItem,
 } from "@chakra-ui/react";
 
-import { getHideScrollBarCSS } from "../utils";
-
 import { PropGetter } from "@chakra-ui/react-utils";
 
 export interface NoteItemProps {
@@ -43,7 +41,7 @@ export interface NoteItemProps {
  * - The categories are scrollable.
  *
  * @todo
- * - Title [ ]
+ * - Title [X]
  * - Title tooltip [X]
  * - Categories [X]
  * - Loading icon [X]
@@ -97,7 +95,6 @@ export default function NoteItem({
       {...button}
       bg={/* "blue.100" */ bg}
       h="122px"
-      sx={getHideScrollBarCSS()}
       _hover={{ cursor: "pointer" }}
     >
       <Flex
@@ -115,9 +112,7 @@ export default function NoteItem({
             {noteTitle}
           </Text>
         </Tooltip>
-        <HScroll bg="red.100" className="delHScrollBar">
-          {categories}
-        </HScroll>
+        <HScroll bg="red.100">{categories}</HScroll>
       </Flex>
     </Center>
   );
@@ -130,24 +125,45 @@ export interface HScrollProps {
 
 /**
  * Displays the 'children' one after another horizontally.
+ * If width is not enough to displays all the children, them it become scrollable but
+ * the scrollbar is hiden
  */
 export function HScroll({ children, ...props }: HScrollProps): JSX.Element {
   return (
-    <HStack spacing="8px" shouldWrapChildren {...props}>
+    <HStack
+      className="hideScrollBar"
+      spacing="8px"
+      shouldWrapChildren
+      {...props}
+    >
       {children}
     </HStack>
   );
 }
 
-export function HScrollTest(): JSX.Element {
+export function HScrollTest(props?: any): JSX.Element {
   return (
-    <Box bg="red.100 " w="100px" sx={getHideScrollBarCSS()}>
-      <HScroll className="delHScrollBar">
-        <CategoryTag label="Personal" color="green" />
-        <CategoryTag label="Coding" color="blue" />
-        <CategoryTag label="Ocio" color="red" />
-        <CategoryTag label="Casa" />
-      </HScroll>
-    </Box>
+    <HScroll bg="red.100" className="delHScrollBar" {...props}>
+      <CategoryTag label="Personal" color="green" />
+      <CategoryTag label="Coding" color="blue" />
+      <CategoryTag label="Ocio" color="red" />
+      <CategoryTag label="Casa" />
+    </HScroll>
+  );
+}
+
+export function NoteItemContainer(props: any): JSX.Element {
+  const { id, title, categories, handleOnClick } = props;
+
+  const categoriesComp = categories.map((cat: any) => (
+    <CategoryTag key={cat.id} color={cat.color} label={cat.label} />
+  ));
+
+  return (
+    <NoteItem
+      title={title}
+      categories={categoriesComp}
+      handleOnClick={handleOnClick}
+    />
   );
 }

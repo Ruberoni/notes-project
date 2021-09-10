@@ -5,7 +5,7 @@ export default function CustomizingTheme(): JSX.Element {
   return (
     <div>
       <Heading fontWeight="normal">Some head</Heading>
-      <Text fontSize="lg">Hola</Text>
+      <Text fontSize="lg">update</Text>
     </div>
   );
 }
