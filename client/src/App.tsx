@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import CategoryTag from "./components/CategoryTag";
 import NoteItem, { HScrollTest } from "./components/NoteItem";
 import NotesList from "./components/NotesLists";
+import AccesibilityBar from "./components/AccesibilityBar";
 
 /*
 
@@ -37,6 +38,8 @@ function App(): JSX.Element {
 
   return (
     <div>
+      <AccesibilityBar />
+      {/*
       <NotesList>
         <NoteItem
           title="Very long title that wont fit in a small space"
@@ -46,16 +49,15 @@ function App(): JSX.Element {
           // setIsActive={setIsActive}
         />
         <NoteItem title="Another" categories={categories} isReady={isReady} />
-        {/*
         <NoteItem title="Another" categories={categories} isReady={isReady} />
         <NoteItem title="Another" categories={categories} isReady={isReady} />
         <NoteItem title="Another" categories={categories} isReady={isReady} />
         <NoteItem title="Another" categories={categories} isReady={isReady} />
         <NoteItem title="Another" categories={categories} isReady={isReady} />
         <NoteItem title="Another" categories={categories} isReady={isReady} />
-        */}
       </NotesList>
       <Button onClick={() => setIsReady(!isReady)}>Toggle isReady</Button>
+        */}
     </div>
   );
 }
