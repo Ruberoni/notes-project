@@ -5,9 +5,10 @@ import {
   AccordionDescendantsProvider,
   AccordionProvider,
 } from "@chakra-ui/react";
-
+import NoteItem from "./NoteItem";
+import { notePreview } from "../utils/seed";
 export interface NotesListProps {
-  children: JSX.Element | JSX.Element[];
+  children?: JSX.Element | JSX.Element[];
   [key: string]: any;
 }
 
@@ -18,8 +19,8 @@ export interface NotesListProps {
  *  item active at a time
  *
  * Features:
- * - NO -- This is job of the lateral section -- Display Drawer when mobile device
  * - Only one item can be active at a time
+ * - Fetches the notes data
  *
  * @todo
  * - Scrollable notes [X]
@@ -44,14 +45,22 @@ export default function NotesList({
     [context]
   );
 
+  // Fetch notes data
+  const notesPreviewData = notePreview;
+
   return (
     <AccordionDescendantsProvider value={descendants}>
       <AccordionProvider value={ctx}>
         <Box className="hideScrollBar" {...props}>
-          {children}
+          {notesPreviewData.map((noteP) => (
+            <NoteItem
+              key={noteP.id}
+              title={noteP.title}
+              categories={noteP.categories}
+            />
+          ))}
         </Box>
       </AccordionProvider>
-      )
     </AccordionDescendantsProvider>
   );
 }

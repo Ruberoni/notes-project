@@ -1,5 +1,5 @@
 import React from "react";
-import CategoryTag from "./CategoryTag";
+import CategoryTag, { CategoryTagProps } from "./CategoryTag";
 import {
   Box,
   Text,
@@ -14,9 +14,10 @@ import {
 import { PropGetter } from "@chakra-ui/react-utils";
 
 export interface NoteItemProps {
+  id?: string;
   title?: string;
-  categories?: any;
-  isReady?: boolean;
+  categories?: CategoryTagProps[];
+  isLoading?: boolean;
   isActive?: boolean;
   handleOnClick?: any;
   setIsActive?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -56,9 +57,10 @@ export interface NoteItemProps {
  * - The AccordionItemProvider isn't used because it's only used to accordion-only children like AccordionButton.
  */
 export default function NoteItem({
+  id,
   title,
   categories,
-  isReady,
+  isLoading,
   handleOnClick,
 }: NoteItemProps): JSX.Element {
   const { isOpen, getButtonProps } = useAccordionItem({
@@ -105,21 +107,25 @@ export default function NoteItem({
         direction="column"
         position="relative"
       >
-        {isReady && LoadingComp}
+        {isLoading && LoadingComp}
 
         <Tooltip label={noteTitle} openDelay={500} gutter={0}>
           <Text fontSize="2xl" isTruncated>
             {noteTitle}
           </Text>
         </Tooltip>
-        <HScroll bg="red.100">{categories}</HScroll>
+        <HScroll bg="red.100">
+          {categories?.map((category) => (
+            <CategoryTag key={category.id} {...category} />
+          ))}
+        </HScroll>
       </Flex>
     </Center>
   );
 }
 
 export interface HScrollProps {
-  children: JSX.Element | JSX.Element[];
+  children?: JSX.Element | JSX.Element[];
   [key: string]: any;
 }
 

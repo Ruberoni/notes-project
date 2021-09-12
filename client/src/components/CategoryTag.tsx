@@ -1,19 +1,22 @@
 import React from "react";
 import { Tag, TagLabel } from "@chakra-ui/react";
 
-interface CategoryTagProps {
+export interface CategoryTagProps {
+  id?: string;
   color?: string;
   size?: string;
   label?: string;
+  [key: string]: any;
 }
 
 export default function CategoryTag({
+  id,
   color,
-  size,
   label,
+  props
 }: CategoryTagProps): JSX.Element {
   return (
-    <Tag size={size || "sm"} colorScheme={color || "messenger"}>
+    <Tag size={"sm"} colorScheme={color || "messenger"} {...props}>
       <TagLabel>{label || "Label"}</TagLabel>
     </Tag>
   );
