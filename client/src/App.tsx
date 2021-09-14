@@ -5,13 +5,16 @@ import NoteItem, { HScrollTest } from "./components/NoteItem";
 import NotesList from "./components/NotesLists";
 import AccesibilityBar from "./components/AccesibilityBar";
 import LateralSection from "./components/LateralSection";
+import { TopBar } from "./components/AppBars";
 
 function App(): JSX.Element {
   return (
     <div>
       {/* <LateralSection /> */}
       {/* <AccesibilityBar /> */}
-      <NotesList />
+      {/* <NotesList /> */}
+      {/* <TopBar /> */}
+      This is the App component
     </div>
   );
 }

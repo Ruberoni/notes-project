@@ -6,13 +6,13 @@ import "@fontsource/source-sans-pro";
 
 import reportWebVitals from "./reportWebVitals";
 import App from "./App";
-import { ApolloProvider, theme } from "./config";
+import { ApolloProvider, theme, Routes } from "./config";
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <ApolloProvider>
-        <App />
+        <Routes />
       </ApolloProvider>
     </ChakraProvider>
   </React.StrictMode>,

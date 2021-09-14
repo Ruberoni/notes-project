@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, Box, Button, Heading, Grid } from "@chakra-ui/react";
+import { Text, Box, Button, Heading, Grid, Link } from "@chakra-ui/react";
+import { Link as RLink } from "react-router-dom";
 
 export function TopBar(): JSX.Element {
   const app = {
@@ -14,12 +15,24 @@ export function TopBar(): JSX.Element {
 
   const LoggetOutButtons = (
     <>
-      <Button bg="trasparent" mr="2" h="inherit">
+      <Link
+        as={RLink}
+        to="/login"
+        mr="2"
+        fontWeight="bold"
+        _hover={{ textDecoration: "none" }}
+      >
         LOGIN
-      </Button>
-      <Button bg="trasparent" h="inherit">
+      </Link>
+      <Link
+        as={RLink}
+        to="/register"
+        mr="2"
+        fontWeight="bold"
+        _hover={{ textDecoration: "none" }}
+      >
         REGISTER
-      </Button>
+      </Link>
     </>
   );
 
@@ -33,9 +46,11 @@ export function TopBar(): JSX.Element {
 
   return (
     <Grid h="26px" bg="#FFD66D" templateColumns="repeat(3, 1fr)">
-      <Heading bg="" size="md" pl="2%">
-        Notes Project
-      </Heading>
+      <div>
+        <Heading as={RLink} to="/" bg="" size="md" pl="2%">
+          Notes Project
+        </Heading>
+      </div>
       <Text bg="" textAlign="center" size="lg">
         {isLoggedIn ? LoggedInWelcomeText : LoggetOutWelcomeText}
       </Text>
