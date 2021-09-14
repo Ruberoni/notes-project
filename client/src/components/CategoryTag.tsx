@@ -13,10 +13,14 @@ export default function CategoryTag({
   id,
   color,
   label,
-  props
+  props,
 }: CategoryTagProps): JSX.Element {
   return (
-    <Tag size={"sm"} colorScheme={color || "messenger"} {...props}>
+    <Tag
+      size={"sm"}
+      colorScheme={color?.toLocaleLowerCase() || "messenger"}
+      {...props}
+    >
       <TagLabel>{label || "Label"}</TagLabel>
     </Tag>
   );

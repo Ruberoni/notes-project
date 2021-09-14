@@ -1,41 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import "@fontsource/source-sans-pro";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
 
-const theme = extendTheme({
-  fonts: {
-    body: "Source Sans Pro",
-  },
-  components: {
-    Tag: {
-      defaultProps: {
-        variant: "solid",
-      },
-    },
-  },
-  styles: {
-    global: {
-      // Styles to hide scrollbar
-      ".hideScrollBar": {
-        overflow: "auto",
-        "scrollbar-width": "none" /* Firefox */,
-        "-ms-overflow-style": "none" /* Internet Explorer 10+ */,
-      },
-      ".hideScrollBar::-webkit-scrollbar": {
-        width: 0,
-        height: 0,
-      },
-    },
-  },
-});
+import { ChakraProvider } from "@chakra-ui/react";
+import "@fontsource/source-sans-pro";
+
+import reportWebVitals from "./reportWebVitals";
+import App from "./App";
+import { ApolloProvider, theme } from "./config";
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <App />
+      <ApolloProvider>
+        <App />
+      </ApolloProvider>
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById("root")

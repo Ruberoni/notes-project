@@ -5,8 +5,10 @@ import {
   AccordionDescendantsProvider,
   AccordionProvider,
 } from "@chakra-ui/react";
+import { useQuery } from "@apollo/client";
 import NoteItem from "./NoteItem";
-import { notePreview } from "../utils/seed";
+// import { notePreview } from "../utils/seed";
+import { GET_NOTES_PREVIEW } from "../utils/queries";
 export interface NotesListProps {
   children?: JSX.Element | JSX.Element[];
   [key: string]: any;
@@ -38,6 +40,12 @@ export default function NotesList({
   children,
   ...props
 }: NotesListProps): JSX.Element {
+  const { loading, data } = useQuery(GET_NOTES_PREVIEW, {
+    variables: { id: "1" },
+  });
+  loading && console.log("Loading:", loading);
+  console.log("data:", data);
+
   const { descendants, ...context } = useAccordion({ allowToggle: true });
 
   const ctx = React.useMemo(
@@ -46,13 +54,13 @@ export default function NotesList({
   );
 
   // Fetch notes data
-  const notesPreviewData = notePreview;
+  // const notesPreviewData = notePreview;
 
   return (
     <AccordionDescendantsProvider value={descendants}>
       <AccordionProvider value={ctx}>
         <Box className="hideScrollBar" {...props}>
-          {notesPreviewData.map((noteP) => (
+          {data?.getUserNotesPreview.map((noteP: any) => (
             <NoteItem
               key={noteP.id}
               title={noteP.title}

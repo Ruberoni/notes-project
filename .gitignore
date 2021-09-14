@@ -8,7 +8,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-myproject.sql
+notes_project.sql
+my_project.sql
+seed.sql
 
 *.sublime-project
 *.sublime-workspace

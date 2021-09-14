@@ -41,7 +41,7 @@ export const initServer = async (): Promise<void> =>
     await apolloServer.start();
 
     const hapiServer = Hapi.server({
-      port: 3000,
+      port: process.env.PORT,
       host: "localhost",
     });
 

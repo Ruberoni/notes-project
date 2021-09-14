@@ -29,7 +29,16 @@ EXAMPLE CASE:
     ]}
   ]
 */
-export function cleanNotesPreview(notesPreview: RowDataPacket[]): NPCleaned {
+export interface INotesPreview {
+  note_id: number;
+  title: string;
+  category_id: number;
+  label: string;
+  color: string;
+}
+export function cleanNotesPreview(
+  notesPreview: RowDataPacket[] | INotesPreview[]
+): NPCleaned {
   const notesPreviewCleaned: NPCleaned = {};
   for (const noteP of notesPreview) {
     // for each row, creates a category object, only if there's category data
@@ -40,8 +49,8 @@ export function cleanNotesPreview(notesPreview: RowDataPacket[]): NPCleaned {
       color: noteP.color,
     };
 
-    if (!notesPreviewCleaned[noteP.id]) {
-      notesPreviewCleaned[noteP.id] = {
+    if (!notesPreviewCleaned[noteP.note_id]) {
+      notesPreviewCleaned[noteP.note_id] = {
         id: noteP.note_id,
         title: noteP.title,
         categories: categoryData.id ? [categoryData] : [],
@@ -49,7 +58,7 @@ export function cleanNotesPreview(notesPreview: RowDataPacket[]): NPCleaned {
       continue;
     }
     if (categoryData.id) {
-      notesPreviewCleaned[noteP.id].categories.push(categoryData);
+      notesPreviewCleaned[noteP.note_id].categories.push(categoryData);
     }
   }
   return notesPreviewCleaned;
