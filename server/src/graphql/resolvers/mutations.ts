@@ -1,5 +1,5 @@
 import { Resolver, Mutation, Ctx, Arg } from "type-graphql";
-import { UserContent, NoteContent, CategoryContent } from "../typeDefs";
+import { User, UserContent, NoteContent, CategoryContent } from "../typeDefs";
 @Resolver()
 export default class Mutations {
   @Mutation((_returns) => String)
@@ -8,6 +8,16 @@ export default class Mutations {
     @Ctx() ctx: any
   ): Promise<string> {
     return await ctx.dataSources.notesProject.register(userContent);
+  }
+  @Mutation((_returns) => User)
+  async googleLogin(
+    @Arg("googleId", { nullable: false }) googleId: string,
+    @Ctx() ctx: any
+  ): Promise<User> {
+    const user = await ctx.dataSources.notesProject.googleLogin(googleId);
+    if (!user.id)
+      throw new Error("Doesn't exist an user with the provided googleId.");
+    return user;
   }
   @Mutation((_returns) => String)
   async deleteUser(

@@ -20,8 +20,9 @@ export default class MockNPDataSource {
   ): Promise<void> {
     if (doUser) {
       // Insert user
-      const insertUserQuery = "INSERT INTO user (id, name) VALUES(?, ?)";
-      const userValues = [1, "Ruben"];
+      const insertUserQuery =
+        "INSERT INTO user (id, googleId, email, name) VALUES(?, ?, ?, ?)";
+      const userValues = [1, "12345", "rub@gmail.com", "Ruben"];
       await this.dataSource?.DB?.execute(insertUserQuery, userValues);
     }
 

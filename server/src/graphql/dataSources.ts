@@ -92,12 +92,22 @@ export class NotesProjectDataSource extends DataSource {
   }
 
   async register(content: UserContent): Promise<string> {
-    console.log("Hello from NotesProjectDataSource.register");
     if (!this.DB) throw new Error("No database connected.");
     const query = "INSERT INTO user SET ?";
     const queryFormatted = this.DB.format(query, content);
     await this.DB.execute(queryFormatted);
     return "OK";
+  }
+  async googleLogin(googleId: UserContent["googleId"]): Promise<User> {
+    if (!this.DB) throw new Error("No database connected.");
+    const query =
+      "SELECT id, googleId, email, name FROM user WHERE googleId = ?";
+    // const queryFormatted = this.DB.format(query, content);
+    const [user]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
+      query,
+      [googleId]
+    );
+    return (user[0] as User) || {};
   }
   async deleteUser(id: string): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");

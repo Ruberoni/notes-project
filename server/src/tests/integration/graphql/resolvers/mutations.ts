@@ -71,11 +71,52 @@ export default function Tests(): void {
 
         // Act
         const res = await server?.executeOperation(op);
-        console.log(res);
         // Assert
         expect(res?.errors).to.be.undefined;
         expect(res?.data).to.be.an("object");
         expect(res?.data?.register).to.be.an("string");
+      });
+    });
+    describe("googleLogin", () => {
+      const LOGIN_QUERY =
+        "mutation GoogleLogin($googleId: String!) { googleLogin(googleId: $googleId) { id googleId email name } }";
+      it("Calling with good googleId, res.data.googleLogin should return OK", async () => {
+        // Arrange
+        const op = {
+          query: LOGIN_QUERY,
+          variables: {
+            googleId: "12345",
+          },
+        };
+
+        // Act
+        const res = await server?.executeOperation(op);
+        // Assert
+        expect(res?.errors).to.be.undefined;
+        expect(res?.data).to.be.an("object");
+        expect(res?.data?.googleLogin).to.be.an("object");
+        expect(res?.data?.googleLogin.id).to.be.a("string");
+        expect(res?.data?.googleLogin.googleId).to.be.a("string");
+        expect(res?.data?.googleLogin.email).to.be.a("string");
+        expect(res?.data?.googleLogin.name).to.be.a("string");
+      });
+      it("Calling with bad googleId, should be an error message", async () => {
+        // Arrange
+        const op = {
+          query: LOGIN_QUERY,
+          variables: {
+            googleId: "1",
+          },
+        };
+
+        // Act
+        const res = await server?.executeOperation(op);
+        // Assert
+        expect(res?.errors).to.be.an("array");
+        expect(res?.errors?.[0]).to.be.an("object");
+        expect(res?.errors?.[0].message).to.equal(
+          "Doesn't exist an user with the provided googleId."
+        );
       });
     });
     describe("deleteUser", () => {
