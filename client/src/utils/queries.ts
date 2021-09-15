@@ -22,3 +22,9 @@ export const GET_TEST = gql`
     test
   }
 `;
+
+export const GOOGLE_LOGIN = gql`
+  mutation GoogleLogin($googleId: String!) {
+    googleLogin(googleId: $googleId)
+  }
+`;

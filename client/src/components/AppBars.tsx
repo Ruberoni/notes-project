@@ -1,17 +1,23 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { Text, Box, Button, Heading, Grid, Link } from "@chakra-ui/react";
 import { Link as RLink } from "react-router-dom";
+import {
+  useGoogleLogout,
+  UseGoogleLogoutProps,
+  UseGoogleLogoutResponse,
+} from "react-google-login";
+import { useToast, UseToastOptions } from "@chakra-ui/react";
+import { useAppContext } from "../config";
 
 export function TopBar(): JSX.Element {
-  const app = {
-    user: {
-      name: "Ruben",
-    },
-  };
-  const isLoggedIn = false;
+  const context = useAppContext();
+  const isLoggedIn = Boolean(context.state.userId);
 
   const LoggetOutWelcomeText = "Welcome, please login or register.";
-  const LoggedInWelcomeText = `Welcome ${app.user.name}`;
+  const LoggedInWelcomeText = `Welcome ${context.state.userName}`;
+
+  const [error, { signOut }] = customUseGoogleLogout();
+  if (error) return error;
 
   const LoggetOutButtons = (
     <>
@@ -38,7 +44,7 @@ export function TopBar(): JSX.Element {
 
   const LoggedInButton = (
     <>
-      <Button bg="trasparent" h="inherit">
+      <Button bg="trasparent" h="inherit" onClick={signOut}>
         LOGOUT
       </Button>
     </>
@@ -73,4 +79,61 @@ export function BottomBar(): JSX.Element {
       </Text>
     </Grid>
   );
+}
+
+/**
+ * This hook will:
+ * - Handle feedback with ChakraUI toasts
+ * - Logout with context.dispatch
+ *
+ * Returns [error_component, UseGoogleLogoutResponse]
+ * Please return *error_component* if exist
+ */
+export function customUseGoogleLogout(
+  props?: Partial<UseGoogleLogoutProps>
+): [ReactElement | null, Partial<UseGoogleLogoutResponse>] {
+  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  const context = useAppContext();
+
+  const toast = useToast();
+  const customToast = (
+    title = "Success logout.",
+    status: UseToastOptions["status"] = "success",
+    dsc = "Success Logout desc."
+  ) =>
+    toast({
+      title: title,
+      description: dsc,
+      status: status,
+      duration: 9000,
+      isClosable: true,
+    });
+
+  if (!clientId) {
+    const error = (
+      <p>
+        Please provide REACT_APP_GOOGLE_CLIENT_ID enviorment variable to use the
+        Google authentication feature.
+      </p>
+    );
+    return [error, {}];
+  }
+
+  const onLogoutSuccess = () => {
+    customToast();
+    context.dispatch({ type: "LOGOUT" });
+  };
+  const onFailure = () => {
+    customToast("Logout error.", "error", "Google error");
+  };
+
+  return [
+    null,
+    useGoogleLogout({
+      clientId,
+      onLogoutSuccess,
+      onFailure,
+      ...props,
+    }),
+  ];
 }

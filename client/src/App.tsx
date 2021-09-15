@@ -15,6 +15,7 @@ function App(): JSX.Element {
       {/* <NotesList /> */}
       {/* <TopBar /> */}
       This is the App component
+      <NotesList />
     </div>
   );
 }
