@@ -5,14 +5,15 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "@fontsource/source-sans-pro";
 
 import reportWebVitals from "./reportWebVitals";
-import App from "./App";
-import { ApolloProvider, theme, Routes } from "./config";
+import { ApolloProvider, theme, Routes, AppContextProvider } from "./config";
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <ApolloProvider>
-        <Routes />
+        <AppContextProvider>
+          <Routes />
+        </AppContextProvider>
       </ApolloProvider>
     </ChakraProvider>
   </React.StrictMode>,
