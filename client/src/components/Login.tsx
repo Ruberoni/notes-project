@@ -1,16 +1,15 @@
 import React, { ReactElement } from "react";
-import { GoogleLogin, GoogleLoginProps } from "react-google-login";
+import { GoogleLogin } from "react-google-login";
 import { useMutation } from "@apollo/client";
 import { GOOGLE_LOGIN } from "../utils/queries";
 import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { useAppContext } from "../config";
+import { useCustomGoogleLogin } from "../hooks";
 
 /**
  * Displays and handles Google Login
  */
 export default function Login(): ReactElement {
-  const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-
   const context = useAppContext();
   const toast = useToast();
 
@@ -27,18 +26,22 @@ export default function Login(): ReactElement {
       isClosable: true,
     });
 
+  function onError(err: any) {
+    console.log("[Network error] Google login. error:", err);
+    customToast("Login error", "error", "");
+  }
   /**
    * data: googleLogin{ id, googleId, email, name }
    * onError: if useMutation returns an error, this is thrown, so makes the React server to shutdown
    */
-  const [serverLogin, { data, loading, error }] = useMutation(GOOGLE_LOGIN, {
-    onError: (err) => console.log("[Network error]: error", err),
+  const [serverLogin, { data, loading }] = useMutation(GOOGLE_LOGIN, {
+    onError,
   });
-  if (error) {
-    customToast("Login error.", "error", "Server error");
-  }
+  /**
+   * Successful fetch
+   */
   if (data) {
-    console.log("[useMutation][GOOGLE_LOGIN] data:", data);
+    console.log("[Successful request] Google login.");
     customToast();
     const userData = {
       userId: data.googleLogin?.id,
@@ -47,35 +50,15 @@ export default function Login(): ReactElement {
     // Login
     context.dispatch({ type: "LOGIN", data: userData });
   }
-  /**
-   * Function called when Google login success
-   *
-   * Bug:
-   * - Trying to change this function's type to GoogleLoginProps["onSuccess"], doesn't let me
-   * get the res.googleId prperty. It say that doesn't satisfy GoogleLoginResponseOffline type
-   */
-  const onSuccess = (res: any) => {
-    console.log("[Login Success] res:", res);
-    const googleId = res.googleId;
-    serverLogin({
-      variables: { googleId },
-    });
-  };
 
-  /**
-   * Function called when Google login fails
-   */
-  const onFailure: GoogleLoginProps["onFailure"] = (res) => {
-    console.log("[Login Failed] res:", res);
-    customToast("Login error.", "error", "Google error");
-  };
-  if (!clientId)
-    return (
-      <p>
-        Please provide REACT_APP_GOOGLE_CLIENT_ID enviorment variable to use the
-        Google authentication feature.
-      </p>
-    );
+  const [clientIDError,,{ onSuccess, onFailure, clientId }] =
+    useCustomGoogleLogin();
+  if (clientIDError) return clientIDError;
+
+  function customOnSuccess(res: any) {
+    onSuccess(res);
+    serverLogin({ variables: { googleId: res.googleId } });
+  }
 
   return (
     <>
@@ -83,7 +66,7 @@ export default function Login(): ReactElement {
       <GoogleLogin
         clientId={clientId}
         buttonText="Login"
-        onSuccess={onSuccess}
+        onSuccess={customOnSuccess}
         onFailure={onFailure}
         cookiePolicy={"single_host_origin"}
       />

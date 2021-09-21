@@ -25,6 +25,17 @@ export const GET_TEST = gql`
 
 export const GOOGLE_LOGIN = gql`
   mutation GoogleLogin($googleId: String!) {
-    googleLogin(googleId: $googleId)
+    googleLogin(googleId: $googleId) {
+      id
+      googleId
+      email
+      name
+    }
+  }
+`;
+
+export const GOOGLE_REGISTER = gql`
+  mutation GoogleRegister($userContent: UserContent!) {
+    register(userContent: $userContent)
   }
 `;
