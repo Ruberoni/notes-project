@@ -60,7 +60,7 @@ export function AccesibilityBar({
   ...props
 }: AccesibilityBarProps): JSX.Element {
   return (
-    <HStack h="41px" bg="red.100" {...props}>
+    <HStack h="41px" bg="red.100" w="inherit" {...props}>
       {leftIcon && (
         <>
           <IconButton

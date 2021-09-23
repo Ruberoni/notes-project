@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   useAccordion,
@@ -9,6 +9,8 @@ import { useQuery } from "@apollo/client";
 import NoteItem from "./NoteItem";
 // import { notePreview } from "../utils/seed";
 import { GET_NOTES_PREVIEW } from "../utils/queries";
+import { notePreview } from '../utils/seed'
+
 export interface NotesListProps {
   children?: JSX.Element | JSX.Element[];
   [key: string]: any;
@@ -40,11 +42,15 @@ export default function NotesList({
   children,
   ...props
 }: NotesListProps): JSX.Element {
+  const [notesData, setNotesData] = useState(notePreview)
   const { loading, data } = useQuery(GET_NOTES_PREVIEW, {
     variables: { id: "1" },
   });
   loading && console.log("Loading:", loading);
   console.log("data:", data);
+  if (data) {
+    setNotesData(data.getUserNotesPreview)
+  }
 
   const { descendants, ...context } = useAccordion({ allowToggle: true });
 
@@ -59,8 +65,8 @@ export default function NotesList({
   return (
     <AccordionDescendantsProvider value={descendants}>
       <AccordionProvider value={ctx}>
-        <Box className="hideScrollBar" {...props}>
-          {data?.getUserNotesPreview.map((noteP: any) => (
+        <Box className="hideScrollBar" w="inherit" {...props}>
+          {notesData.map((noteP: any) => (
             <NoteItem
               key={noteP.id}
               title={noteP.title}

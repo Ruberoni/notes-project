@@ -71,7 +71,6 @@ export default function NoteItem({
    * Function called when the Item is pressed
    */
   const onClick = () => {
-    console.log("Hi, I have been clicked!");
     handleOnClick?.();
   };
 

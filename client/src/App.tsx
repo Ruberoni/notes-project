@@ -1,11 +1,6 @@
-import { Button } from "@chakra-ui/button";
-import React, { useState } from "react";
-import CategoryTag from "./components/CategoryTag";
-import NoteItem, { HScrollTest } from "./components/NoteItem";
-import NotesList from "./components/NotesLists";
-import AccesibilityBar from "./components/AccesibilityBar";
+import React from "react";
+// import NotesList from "./components/NotesLists";
 import LateralSection from "./components/LateralSection";
-import { TopBar } from "./components/AppBars";
 
 function App(): JSX.Element {
   return (
@@ -15,7 +10,7 @@ function App(): JSX.Element {
       {/* <NotesList /> */}
       {/* <TopBar /> */}
       This is the App component
-      <NotesList />
+      <LateralSection />
     </div>
   );
 }

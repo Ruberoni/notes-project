@@ -20,7 +20,7 @@ export default extendTheme({
       ".hideScrollBar": {
         overflow: "auto",
         "scrollbar-width": "none" /* Firefox */,
-        "-ms-overflow-style": "none" /* Internet Explorer 10+ */,
+        "msOverflowStyle": "none" /* Internet Explorer 10+ */,
       },
       ".hideScrollBar::-webkit-scrollbar": {
         width: 0,
