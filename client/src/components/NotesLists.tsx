@@ -4,17 +4,13 @@ import {
   useAccordion,
   AccordionDescendantsProvider,
   AccordionProvider,
+  BoxProps
 } from "@chakra-ui/react";
 import { useQuery } from "@apollo/client";
 import NoteItem from "./NoteItem";
 // import { notePreview } from "../utils/seed";
 import { GET_NOTES_PREVIEW } from "../utils/queries";
 import { notePreview } from '../utils/seed'
-
-export interface NotesListProps {
-  children?: JSX.Element | JSX.Element[];
-  [key: string]: any;
-}
 
 /**
  * **Notes Listcomponent.**
@@ -38,11 +34,8 @@ export interface NotesListProps {
  * 5. Wrap 'AccordionProvider' in 'AccordionDescendantsProvider' with value = descendants
  *
  */
-export default function NotesList({
-  children,
-  ...props
-}: NotesListProps): JSX.Element {
-  const [notesData, setNotesData] = useState(notePreview)
+export default function NotesList(props: BoxProps): JSX.Element {
+  const [notesData, setNotesData] = useState<typeof notePreview>(notePreview)
   const { loading, data } = useQuery(GET_NOTES_PREVIEW, {
     variables: { id: "1" },
   });
@@ -65,8 +58,8 @@ export default function NotesList({
   return (
     <AccordionDescendantsProvider value={descendants}>
       <AccordionProvider value={ctx}>
-        <Box className="hideScrollBar" w="inherit" {...props}>
-          {notesData.map((noteP: any) => (
+        <Box className="hideScrollBar" h="inherit" w="inherit" {...props}>
+          {notesData.map((noteP) => (
             <NoteItem
               key={noteP.id}
               title={noteP.title}

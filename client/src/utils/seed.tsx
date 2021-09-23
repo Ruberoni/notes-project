@@ -64,4 +64,5 @@ export const notes = {
   },
 };
 
-export const notePreview = [notes[1], notes[2], notes[3], notes[4]];
+export const notePreview = [notes[1], notes[2], notes[3], notes[4], notes[1], notes[2], notes[3], notes[4]];
+export const categoriesList = Object.values(categories)
