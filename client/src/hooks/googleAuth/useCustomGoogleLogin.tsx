@@ -1,10 +1,10 @@
-import React, { useState, ReactElement, useEffect } from "react";
+import { useState, ReactElement, useEffect } from "react";
 import { useToast, UseToastOptions } from "@chakra-ui/react";
 import { GoogleLoginProps } from "react-google-login";
 import useGoogleClientId from "./useGoogleClientId";
 
-interface SimpleGoogleLoginProps {
-  onSuccess: (res: any) => void;
+interface SimpleGoogleLoginProps  {
+  onSuccess: GoogleLoginProps["onSuccess"];
   onFailure: GoogleLoginProps["onFailure"];
   clientId: string;
 }
@@ -69,21 +69,6 @@ export default function useCustomGoogleLogin(): [
     customToast("Google Login error", "error", "Google error");
     setGoogleResponse(null);
   };
-  /**
-   * Change this to a hook like useGoogleClientID
-   * Why?:
-   * This same logic is used in others hooks (useCustomGoogleLogout or something like that)
-   *
-   */
-  /* if (!clientId) {
-    const error = (
-      <p>
-        Please provide REACT_APP_GOOGLE_CLIENT_ID enviorment variable to use the
-        Google authentication feature.
-      </p>
-    );
-    return [error, googleResponse, { onSuccess, onFailure, clientId: "" }];
-  } */
 
   if (clientIdError) {
     return [clientIdError, googleResponse, { onSuccess, onFailure, clientId }];
