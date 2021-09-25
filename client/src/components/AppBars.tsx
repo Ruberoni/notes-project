@@ -1,10 +1,18 @@
 import React from "react";
-import { Text, Box, Button, Heading, Grid, Link } from "@chakra-ui/react";
+import {
+  Text,
+  Box,
+  Button,
+  Heading,
+  Grid,
+  GridProps,
+  Link,
+} from "@chakra-ui/react";
 import { Link as RLink } from "react-router-dom";
 import { useAppContext } from "../config";
 import { customUseGoogleLogout } from "../hooks";
 
-export function TopBar(): JSX.Element {
+export function TopBar(props: GridProps): JSX.Element {
   const context = useAppContext();
   const isLoggedIn = Boolean(context.state.userId);
 
@@ -46,7 +54,7 @@ export function TopBar(): JSX.Element {
   );
 
   return (
-    <Grid h="26px" bg="#FFD66D" templateColumns="repeat(3, 1fr)">
+    <Grid h="26px" bg="#FFD66D" templateColumns="repeat(3, 1fr)" {...props}>
       <div>
         <Heading as={RLink} to="/" bg="" size="md" pl="2%">
           Notes Project
@@ -62,9 +70,15 @@ export function TopBar(): JSX.Element {
   );
 }
 
-export function BottomBar(): JSX.Element {
+export function BottomBar(props: GridProps): JSX.Element {
   return (
-    <Grid bg="#A8201A" h="26px" templateColumns="repeat(3, 1fr)" color="white">
+    <Grid
+      bg="#A8201A"
+      h="26px"
+      templateColumns="repeat(3, 1fr)"
+      color="white"
+      {...props}
+    >
       <Box bg=""></Box>
       <Text bg="" textAlign="center">
         Made by Ruben (c) 2021

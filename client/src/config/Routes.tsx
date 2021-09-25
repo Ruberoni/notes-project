@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 /**
  * Componentes
  */
-import { TopBar } from "../components/AppBars";
+import { TopBar, BottomBar } from "../components/AppBars";
 import App from "../App";
 import Login from "../components/Login";
 import Register from "../components/Register";
@@ -24,6 +24,7 @@ export default function Routes(): ReactElement {
           <App />
         </Route>
       </Switch>
+      <BottomBar h="4.2vh"/>
     </Router>
   );
 }

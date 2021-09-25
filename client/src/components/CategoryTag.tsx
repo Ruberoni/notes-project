@@ -1,19 +1,23 @@
-import React from "react";
-import { Tag, TagLabel } from "@chakra-ui/react";
+import React, { ReactElement } from "react";
+import {
+  Tag,
+  TagLabel,
+  TagProps,
+  TagCloseButton,
+  TagCloseButtonProps,
+} from "@chakra-ui/react";
 
-export interface CategoryTagProps {
+export interface CategoryTagProps extends TagProps {
   id?: string;
   color?: string;
   size?: string;
   label?: string;
-  [key: string]: any;
 }
 
 export default function CategoryTag({
-  id,
   color,
   label,
-  props,
+  ...props
 }: CategoryTagProps): JSX.Element {
   return (
     <Tag
@@ -22,6 +26,27 @@ export default function CategoryTag({
       {...props}
     >
       <TagLabel>{label || "Label"}</TagLabel>
+      {props.children}
     </Tag>
+  );
+}
+
+export interface RemovableCategoryTagProps extends CategoryTagProps {
+  onRemove?: (id: string) => void;
+  closeProps?: TagCloseButtonProps;
+}
+
+export function RemovableCategoryTag({
+  onRemove,
+  closeProps,
+  ...props
+}: RemovableCategoryTagProps): ReactElement {
+  const _onRemove = () => {
+    props.id && onRemove?.(props.id);
+  };
+  return (
+    <CategoryTag {...props}>
+      <TagCloseButton onClick={_onRemove} {...closeProps}></TagCloseButton>
+    </CategoryTag>
   );
 }

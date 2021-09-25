@@ -8,7 +8,7 @@ import {
   DrawerContent,
   useBreakpoint,
   DrawerOverlay,
-  StackProps
+  StackProps,
 } from "@chakra-ui/react";
 
 /**
@@ -17,7 +17,10 @@ import {
  * **Features**
  * - When on mobile phone, displays a drawer
  */
-export default function LateralSection(children: ReactNode, props: StackProps): JSX.Element {
+export default function LateralSection({
+  children,
+  ...props
+}: StackProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   function closeDrawer() {
@@ -26,6 +29,9 @@ export default function LateralSection(children: ReactNode, props: StackProps): 
   function openDrawer() {
     setDrawerOpen(true);
   }
+  const onDrawerProps =
+    currentBreakpoint === "base" ? { w: "100%", maxWidth: "100%" } : {};
+
   /**
    * Wraps inside a Chakra UI Drawer a components when the windows size get to a breakpoint
    * @param _breakpoint Breakpoint when the component is wrapped
@@ -48,15 +54,15 @@ export default function LateralSection(children: ReactNode, props: StackProps): 
   return (
     <>
       {currentBreakpoint === "base" && (
-        <Button position="absolute" left="0" onClick={openDrawer}>
+        <Button position="absolute" left="0" onClick={openDrawer} zIndex="1">
           open drawer
         </Button>
       )}
       {useBreakPointDrawer(
         "base",
-        <VStack h="inherit" w="100%" {...props}>
-          <NotesAccesibilityBar />
-          <NotesList />
+        <VStack h="inherit" w="100%" {...props} {...onDrawerProps}>
+          {/* <NotesAccesibilityBar />
+          <NotesList /> */}
           {children}
         </VStack>
       )}
