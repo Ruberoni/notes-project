@@ -64,5 +64,25 @@ export const notes = {
   },
 };
 
-export const notePreview = [notes[1], notes[2], notes[3], notes[4], notes[1], notes[2], notes[3], notes[4]];
+export const noteBodies = {
+  1: {
+    body: "Hellooo",
+    note: "1",
+  },
+  2: {
+    body: "Lorem impse",
+    note: "2",
+  },
+  3: {
+    body: "Pablo clavó un clavito",
+    note: "3",
+  },
+  4: {
+    body: "Byeeeee",
+    note: "4",
+  },
+}
+
+export const notePreview = [notes[1], notes[2], notes[3], notes[4]];
 export const categoriesList = Object.values(categories)
+export const bodiesList = Object.values(noteBodies)

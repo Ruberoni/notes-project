@@ -39,3 +39,12 @@ export const GOOGLE_REGISTER = gql`
     register(userContent: $userContent)
   }
 `;
+
+/**
+ * @param id String. The node id to retrieve its note body
+ */
+export const GET_NOTE_BODY = gql`
+  query GetNoteBody($id: String!) {
+    getNoteBody(id: $id)
+  }
+`

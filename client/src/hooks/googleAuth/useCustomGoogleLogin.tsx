@@ -4,7 +4,7 @@ import { GoogleLoginProps } from "react-google-login";
 import useGoogleClientId from "./useGoogleClientId";
 
 interface SimpleGoogleLoginProps  {
-  onSuccess: GoogleLoginProps["onSuccess"];
+  onSuccess: (a: any) => void;
   onFailure: GoogleLoginProps["onFailure"];
   clientId: string;
 }
