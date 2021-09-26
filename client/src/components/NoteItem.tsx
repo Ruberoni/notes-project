@@ -11,12 +11,10 @@ import {
 } from "@chakra-ui/react";
 import { PropGetter } from "@chakra-ui/react-utils";
 import CategoryTag, { CategoryTagProps } from "./CategoryTag";
+import { useNoteItem } from "../hooks";
+import { INote } from "../types";
 
-
-export interface NoteItemProps {
-  id?: string;
-  title?: string;
-  categories?: CategoryTagProps[];
+export interface NoteItemProps extends Omit<INote, "body"> {
   isLoading?: boolean;
   isActive?: boolean;
   handleOnClick?: () => void;
@@ -56,11 +54,14 @@ export interface NoteItemProps {
  * - The AccordionItemProvider isn't used because it's only used to accordion-only children like AccordionButton.
  */
 export default function NoteItem({
+  id,
   title,
   categories,
   isLoading,
   handleOnClick,
 }: NoteItemProps): JSX.Element {
+
+  const [handleNoteClick] = useNoteItem()
   const { isOpen, getButtonProps } = useAccordionItem({
     isFocusable: true,
   });
@@ -70,6 +71,7 @@ export default function NoteItem({
    */
   const onClick = () => {
     handleOnClick?.();
+    handleNoteClick({id, title, categories})
   };
 
   const button = getButtonProps({ onClick }) as PropGetter<HTMLDivElement>;

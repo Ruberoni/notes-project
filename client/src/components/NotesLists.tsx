@@ -11,6 +11,8 @@ import NoteItem from "./NoteItem";
 // import { notePreview } from "../utils/seed";
 import { GET_NOTES_PREVIEW } from "../utils/queries";
 import { notePreview } from '../utils/seed'
+import { INote } from "../types";
+import { useNoteContext } from '../context'
 
 /**
  * **Notes Listcomponent.**
@@ -35,7 +37,8 @@ import { notePreview } from '../utils/seed'
  *
  */
 export default function NotesList(props: BoxProps): JSX.Element {
-  const [notesData, setNotesData] = useState<typeof notePreview>(notePreview)
+  const [notesData, setNotesData] = useState<INote[]>(notePreview)
+  const { notesList } = useNoteContext()
   const { loading, data } = useQuery(GET_NOTES_PREVIEW, {
     variables: { id: "1" },
   });
@@ -59,9 +62,10 @@ export default function NotesList(props: BoxProps): JSX.Element {
     <AccordionDescendantsProvider value={descendants}>
       <AccordionProvider value={ctx}>
         <Box className="hideScrollBar" h="inherit" w="inherit" {...props}>
-          {notesData.map((noteP) => (
+          {notesList.map((noteP) => (
             <NoteItem
               key={noteP.id}
+              id={noteP.id}
               title={noteP.title}
               categories={noteP.categories}
             />

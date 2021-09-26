@@ -1,10 +1,13 @@
-import { useNoteContext } from '../../context'
+import { useNoteContext } from "../../context";
 
 export default function useNoteItem(): any {
-    const noteContext = useNoteContext()
+  const { setCurrentNote, notesList } = useNoteContext();
 
-    function handleNoteClick(noteData: any) {
-        noteContext.setCurrentNote(noteData)
-    }
-    return [handleNoteClick]
+  // change this to receive only note id
+  function handleNoteClick(noteData: any) {
+    console.log("[Hook][useNoteItem] Changing noteData:", noteData);
+    // noteContext.setCurrentNote(noteData)
+    setCurrentNote(notesList?.find((note) => note.id == noteData.id));
+  }
+  return [handleNoteClick];
 }

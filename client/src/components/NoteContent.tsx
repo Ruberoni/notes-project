@@ -1,38 +1,50 @@
-import React, { BaseSyntheticEvent, ReactElement, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import {
   VStack,
+  StackProps,
   HStack,
   Box,
   Heading,
   Wrap,
   Textarea,
 } from "@chakra-ui/react";
-import CategoryTag, { CategoryTagProps } from "./CategoryTag";
+import { RemovableCategoryTag } from "./CategoryTag";
+import { useNoteContent } from "../hooks";
+import { INote } from '../types'
 
-export interface NoteContentProps {
-  body?: string;
-  title?: string;
-  categories?: CategoryTagProps[]
+export interface NoteContentProps extends StackProps {
+  body?: INote["body"];
+  title?: INote["title"];
+  categories?: INote["categories"]
 }
 
+/**
+ * @useNoteContent [implementing]
+ */
 export default function NoteContent(props: NoteContentProps): ReactElement {
-  const [body, setBody] = useState(props.body || "")
+  const [note, ,{ handleCategoryRemove, handleBodyChange }] = useNoteContent()
+  const [categories, setCategories] = useState(note.categories || props.categories || [])
+  // const [body, setBody] = useState(note.body || props.body || "")
 
-  const handleBodyChange = (event: BaseSyntheticEvent) => {
-    const body = event.target.value
-    setBody(body)
-  }
-
+  // const handleBodyChange = (event: BaseSyntheticEvent) => {
+  //   const body = event.target.value
+  //   setBody(body)
+  // }
+  // const handleCategoryRemove = (id: string) => {
+  //   const _categories = categories.filter(cat => cat.id !== id)
+  //   setCategories(_categories)
+  // }
+  
   return (
-    <VStack h="inherit" w="100%" bg="lightblue">
+    <VStack h="inherit" w="100%" bg="lightblue" {...props}>
       <HStack spacing="0px" align="normal" w="inherit" bg="gray.100">
         <VStack w="inherit">
           <Heading w="inherit" pl="10px" bg="red.100">
-            {props.title || "."}
+            {note.title || props.title || ""}
           </Heading>
           <Wrap w="inherit" pl="10px" bg="purple.100">
-          {props.categories?.map((category) => (
-            <CategoryTag key={category.id} {...category} />
+          {note.categories?.map((category) => (
+            <RemovableCategoryTag key={category.id} onRemove={handleCategoryRemove} {...category}  />
           ))}
           </Wrap>
         </VStack>
@@ -42,21 +54,10 @@ export default function NoteContent(props: NoteContentProps): ReactElement {
         h="inherit"
         bg="green.100"
         resize="none"
-        value={body}
+        value={note.body || props.body || ""}
         onChange={handleBodyChange}
         focusBorderColor="none"
       />
-      {/* <Editable w="inherit" h="inherit" bg="green.100" defaultValue="Take some chakra">
-        <EditablePreview h="-webkit-fill-available" w="inherit"/>
-        {/**
-         * Figure out how to edit texarea styles to look ok
-         * Problem with EditableInput height!
-         */}
-      {/*<EditableInput minHeight="inherit" as="textarea" resize="none" _focus={{outline: "none"}} />
-      </Editable> */}
-      {/* <Text w="inherit" h="inherit" bg="green.100">
-        Note Body
-      </Text> */}
     </VStack>
   );
 }
