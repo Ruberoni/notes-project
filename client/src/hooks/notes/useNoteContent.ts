@@ -1,8 +1,15 @@
-import { useEffect, useCallback, useState, BaseSyntheticEvent } from "react";
+import { useEffect, useState, BaseSyntheticEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { useNoteContext } from "../../context";
 import { GET_NOTE_BODY } from "../../utils/queries";
 import { INote } from "../../types";
+
+export interface utils {
+  handleCategoryRemove: (categoryId: string) => void;
+  handleBodyChange: (event: BaseSyntheticEvent) => void;
+}
+
+export type useNoteContentProps = [Partial<INote>, boolean, utils];
 
 /**
  * Handles retrieving the note body correctly and caching it (caching not implemented)
@@ -17,7 +24,7 @@ import { INote } from "../../types";
  * - handle category add
  * - handle body change
  */
-export default function useNoteContent(): [Partial<INote>, boolean, any] {
+export default function useNoteContent(): useNoteContentProps {
   const [body, setBody] = useState<string>("");
   // const [_loading, setLoading] = useState(false)
   const noteContext = useNoteContext();
@@ -32,26 +39,21 @@ export default function useNoteContent(): [Partial<INote>, boolean, any] {
     // cache body
   }
 
-  const handleBodyChange = (event: BaseSyntheticEvent) => {
+  const handleBodyChange: utils["handleBodyChange"] = (event) => {
     const body = event.target.value;
     setBody(body);
   };
 
-  const handleCategoryRemove = (id: string) => {
+  const handleCategoryRemove: utils["handleCategoryRemove"] = (id) => {
     console.log("[Hook][useNoteContent][handleCategoryRemove] id:", id);
-    // Fetch
-    const _categories = currentNote?.categories.filter((cat) => cat.id !== id);
-    // setCategories(_categories)
-    if (currentNote && _categories) {
-      currentNote.categories = _categories;
-    }
-    noteContext.setCurrentNote((currentNote?: INote) => {
-      if (!currentNote) return currentNote;
-      const _categories = currentNote.categories.filter((cat) => cat.id !== id);
-      currentNote.categories = _categories;
-      return currentNote;
+    if (!currentNote) return;
+    const categoriesModified = currentNote.categories.filter(
+      (cat) => cat.id !== id
+    );
+    noteContext.updateCurrentNote({
+      ...currentNote,
+      categories: categoriesModified,
     });
-    noteContext.setNotesList(noteContext.notesList);
   };
 
   /**

@@ -7,18 +7,14 @@ import React, {
   useMemo,
 } from "react";
 import { INote } from "../types";
-import { notePreview } from '../utils/seed'
+import { notePreview } from "../utils/seed";
 
-//   import reducer, { State, Action } from "./reducer";
-
-//   type Dispatch = (action: Action) => void;
-//   type ContextType = { state: State; dispatch: Dispatch };
 export type ContextType = {
   currentNote?: INote;
-  setCurrentNote: React.Dispatch<React.SetStateAction<INote | undefined>>
-  // | ((a: (b?: INote) => INote | undefined) => void);
+  setCurrentNote: React.Dispatch<React.SetStateAction<INote | undefined>>;
   notesList: INote[];
-  setNotesList: React.Dispatch<React.SetStateAction<INote[]>>
+  setNotesList: React.Dispatch<React.SetStateAction<INote[]>>;
+  updateCurrentNote: (modifiedCurrentNote: INote) => void
 };
 const Context = createContext<ContextType | undefined>(undefined);
 
@@ -32,10 +28,28 @@ export function NoteContextProvider({
 }): ReactElement {
   const [notesList, setNotesList] = useState<INote[]>(notePreview);
   const [currentNote, setCurrentNote] = useState<INote>();
+  const updateCurrentNote = (modifiedCurrentNote: INote): void => {
+    setNotesList((notesList) => {
+      const notesListModified = notesList.map((note) => {
+        if (note.id === currentNote?.id) {
+          return modifiedCurrentNote;
+        }
+        return note;
+      });
+      setCurrentNote(modifiedCurrentNote);
+      return notesListModified;
+    });
+  };
   // const currentNote: INote | undefined = undefined
   const value = useMemo(() => {
-    return { notesList, setNotesList, currentNote, setCurrentNote };
-  }, [notesList, setNotesList, currentNote, setCurrentNote]);
+    return {
+      notesList,
+      setNotesList,
+      currentNote,
+      setCurrentNote,
+      updateCurrentNote,
+    };
+  }, [notesList, setNotesList, currentNote, setCurrentNote, updateCurrentNote]);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
