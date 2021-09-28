@@ -13,16 +13,20 @@ import { GET_NOTES_PREVIEW } from "../utils/queries";
 import { notePreview } from '../utils/seed'
 import { INote } from "../types";
 import { useNoteContext } from '../context'
+import { useNotesList } from "../hooks";
+
+export interface NotesListProps extends BoxProps {
+  notesList?: INote[]
+}
 
 /**
- * **Notes Listcomponent.**
+ * **Notes List component.**
  *
  *  This is a list of NotesItem implementing the accordion logic to limite to one
  *  item active at a time
  *
  * Features:
  * - Only one item can be active at a time
- * - Fetches the notes data
  *
  * @todo
  * - Scrollable notes [X]
@@ -36,28 +40,14 @@ import { useNoteContext } from '../context'
  * 5. Wrap 'AccordionProvider' in 'AccordionDescendantsProvider' with value = descendants
  *
  */
-export default function NotesList(props: BoxProps): JSX.Element {
-  const [notesData, setNotesData] = useState<INote[]>(notePreview)
-  const { notesList } = useNoteContext()
-  const { loading, data } = useQuery(GET_NOTES_PREVIEW, {
-    variables: { id: "1" },
-  });
-  loading && console.log("Loading:", loading);
-  console.log("data:", data);
-  if (data) {
-    setNotesData(data.getUserNotesPreview)
-  }
+export default function NotesList(props: NotesListProps): JSX.Element {
+  const [notesList, loading] = useNotesList()
 
   const { descendants, ...context } = useAccordion({ allowToggle: true });
-
   const ctx = React.useMemo(
     () => ({ ...context, reduceMotion: false }),
     [context]
   );
-
-  // Fetch notes data
-  // const notesPreviewData = notePreview;
-
   return (
     <AccordionDescendantsProvider value={descendants}>
       <AccordionProvider value={ctx}>
