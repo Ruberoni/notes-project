@@ -1,15 +1,19 @@
 import { useEffect, useState, BaseSyntheticEvent } from "react";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useNoteContext } from "../../context";
-import { GET_NOTE_BODY } from "../../utils/queries";
+import { GET_NOTE_BODY, DELETE_CATEGORY_NOTE } from "../../utils/queries";
 import { INote } from "../../types";
+import { NoteContentProps } from "../../components/NoteContent";
 
+export interface useNoteContentProps {
+  title: NoteContentProps["title"];
+  body: NoteContentProps["body"];
+  categories: NoteContentProps["categories"];
+}
 export interface utils {
   handleCategoryRemove: (categoryId: string) => void;
   handleBodyChange: (event: BaseSyntheticEvent) => void;
 }
-
-export type useNoteContentProps = [Partial<INote>, boolean, utils];
 
 /**
  * Handles retrieving the note body correctly and caching it (caching not implemented)
@@ -20,24 +24,40 @@ export type useNoteContentProps = [Partial<INote>, boolean, utils];
  * @see useNoteItem component
  *
  * @todo
- * - handle category remove
  * - handle category add
  * - handle body change
  */
-export default function useNoteContent(): useNoteContentProps {
-  const [body, setBody] = useState<string>("");
-  // const [_loading, setLoading] = useState(false)
-  const noteContext = useNoteContext();
-  const currentNote = noteContext.currentNote;
+export default function useNoteContent(): [Partial<INote>, boolean, utils] {
+  const { updateCurrentNote, currentNote } = useNoteContext();
+  const [body, setBody] = useState("");
+  const [loading, setLoading] = useState(false)
 
-  const [getNoteBody, { data, loading }] = useLazyQuery(GET_NOTE_BODY);
-  if (data) {
-    setBody(data.getNoteBody);
-    /* if (currentNote) {
-        currentNote.body = data.getNoteBody
-      } */
+/*   if (props) {
+    const _currentNote: INote | = {...currentNote}
+    // loop through props. properties?
+    let prop: keyof typeof props
+    for (prop in props) {
+      const _: any = props[prop]
+      if (_) {
+        _currentNote[prop] = _
+    }
+    }
+    setCurrentNote(_currentNote)
+  }
+ */
+  const onErrorDeleteCategoryNote = (err: any) => {
+    console.log("[Network error] error:", err)
+  }
+  const [getNoteBody, resGetNodeBody] = useLazyQuery(GET_NOTE_BODY);
+  const [deleteCategoryNote, resDeleteCategoryNote] = useMutation(DELETE_CATEGORY_NOTE, { onError: onErrorDeleteCategoryNote});
+  if (resGetNodeBody.data) {
+    setBody(resGetNodeBody.data.getNoteBody);
     // cache body
   }
+
+  useEffect(() => {
+    setLoading(resGetNodeBody.loading || resDeleteCategoryNote.loading)
+  }, [resGetNodeBody.loading, resDeleteCategoryNote.loading])
 
   const handleBodyChange: utils["handleBodyChange"] = (event) => {
     const body = event.target.value;
@@ -47,10 +67,16 @@ export default function useNoteContent(): useNoteContentProps {
   const handleCategoryRemove: utils["handleCategoryRemove"] = (id) => {
     console.log("[Hook][useNoteContent][handleCategoryRemove] id:", id);
     if (!currentNote) return;
+    // fetch
+    deleteCategoryNote({variables: {
+      categoryId: id,
+      noteId: currentNote.id,
+    }})
     const categoriesModified = currentNote.categories.filter(
       (cat) => cat.id !== id
     );
-    noteContext.updateCurrentNote({
+    // update context
+    updateCurrentNote({
       ...currentNote,
       categories: categoriesModified,
     });

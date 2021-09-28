@@ -41,10 +41,19 @@ export const GOOGLE_REGISTER = gql`
 `;
 
 /**
- * @param id String. The node id to retrieve its note body
+ * @param id String. The note id to retrieve its note body
  */
 export const GET_NOTE_BODY = gql`
   query GetNoteBody($id: String!) {
     getNoteBody(id: $id)
   }
+`
+/**
+ * @param categoryId String.
+ * @param noteId String.
+ */
+export const DELETE_CATEGORY_NOTE = gql`
+mutation DeleteCategoryNote($categoryId: String!, $noteId: String!) {
+  deleteCategoryNote(categoryId: $categoryId, noteId: $noteId)
+}
 `

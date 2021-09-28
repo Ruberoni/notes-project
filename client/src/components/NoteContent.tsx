@@ -21,9 +21,9 @@ export interface NoteContentProps extends StackProps {
 /**
  * @useNoteContent [implementing]
  */
-export default function NoteContent(props: NoteContentProps): ReactElement {
+export default function NoteContent({title, body, categories, ...props}: NoteContentProps): ReactElement {
   const [note, ,{ handleCategoryRemove, handleBodyChange }] = useNoteContent()
-  const [categories, setCategories] = useState(note.categories || props.categories || [])
+  // const [categories, setCategories] = useState(note.categories || props.categories || [])
   // const [body, setBody] = useState(note.body || props.body || "")
 
   // const handleBodyChange = (event: BaseSyntheticEvent) => {
@@ -40,7 +40,7 @@ export default function NoteContent(props: NoteContentProps): ReactElement {
       <HStack spacing="0px" align="normal" w="inherit" bg="gray.100">
         <VStack w="inherit">
           <Heading w="inherit" pl="10px" bg="red.100">
-            {note.title || props.title || ""}
+            {note.title || ""}
           </Heading>
           <Wrap w="inherit" pl="10px" bg="purple.100">
           {note.categories?.map((category) => (
@@ -54,7 +54,7 @@ export default function NoteContent(props: NoteContentProps): ReactElement {
         h="inherit"
         bg="green.100"
         resize="none"
-        value={note.body || props.body || ""}
+        value={note.body || ""}
         onChange={handleBodyChange}
         focusBorderColor="none"
       />
