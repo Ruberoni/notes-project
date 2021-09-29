@@ -3,9 +3,11 @@ import {
   Tag,
   TagLabel,
   TagProps,
+  TagRightIcon,
   TagCloseButton,
   TagCloseButtonProps,
 } from "@chakra-ui/react";
+import { AddIcon } from "@chakra-ui/icons";
 
 export interface CategoryTagProps extends TagProps {
   id?: string;
@@ -47,6 +49,21 @@ export function RemovableCategoryTag({
   return (
     <CategoryTag {...props}>
       <TagCloseButton onClick={_onRemove} {...closeProps}></TagCloseButton>
+    </CategoryTag>
+  );
+}
+
+export interface AddCategoryTagProps extends CategoryTagProps {
+  onAdd?: () => void
+}
+
+export function AddCategoryTag({onAdd, ...props}: AddCategoryTagProps): ReactElement {
+  return (
+    <CategoryTag bg="red.200" label="Add" {...props}>
+      <button onClick={onAdd}>
+        <TagRightIcon as={AddIcon} />
+      </button>
+      {/* <IconButton aria-label="Search database" icon={<AddIcon />} /> */}
     </CategoryTag>
   );
 }

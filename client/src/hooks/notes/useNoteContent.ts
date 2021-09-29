@@ -13,6 +13,8 @@ export interface useNoteContentProps {
 export interface utils {
   handleCategoryRemove: (categoryId: string) => void;
   handleBodyChange: (event: BaseSyntheticEvent) => void;
+  handleAddCategoryNote: () => void;
+  handleTitleChange: (event: BaseSyntheticEvent) => void;
 }
 
 /**
@@ -30,9 +32,10 @@ export interface utils {
 export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   const { updateCurrentNote, currentNote } = useNoteContext();
   const [body, setBody] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [title, setTitle] = useState(currentNote?.title || "");
+  const [loading, setLoading] = useState(false);
 
-/*   if (props) {
+  /*   if (props) {
     const _currentNote: INote | = {...currentNote}
     // loop through props. properties?
     let prop: keyof typeof props
@@ -46,40 +49,64 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   }
  */
   const onErrorDeleteCategoryNote = (err: any) => {
-    console.log("[Network error] error:", err)
-  }
+    console.log("[Network error] error:", err);
+  };
   const [getNoteBody, resGetNodeBody] = useLazyQuery(GET_NOTE_BODY);
-  const [deleteCategoryNote, resDeleteCategoryNote] = useMutation(DELETE_CATEGORY_NOTE, { onError: onErrorDeleteCategoryNote});
+  const [deleteCategoryNote, resDeleteCategoryNote] = useMutation(
+    DELETE_CATEGORY_NOTE,
+    { onError: onErrorDeleteCategoryNote }
+  );
   if (resGetNodeBody.data) {
     setBody(resGetNodeBody.data.getNoteBody);
     // cache body
   }
 
   useEffect(() => {
-    setLoading(resGetNodeBody.loading || resDeleteCategoryNote.loading)
-  }, [resGetNodeBody.loading, resDeleteCategoryNote.loading])
+    setLoading(resGetNodeBody.loading || resDeleteCategoryNote.loading);
+  }, [resGetNodeBody.loading, resDeleteCategoryNote.loading]);
 
-  const handleBodyChange: utils["handleBodyChange"] = (event) => {
-    const body = event.target.value;
-    setBody(body);
-  };
+  const utils: utils = {
+    handleBodyChange: (event) => {
+      const body = event.target.value;
+      setBody(body);
+    },
 
-  const handleCategoryRemove: utils["handleCategoryRemove"] = (id) => {
-    console.log("[Hook][useNoteContent][handleCategoryRemove] id:", id);
-    if (!currentNote) return;
-    // fetch
-    deleteCategoryNote({variables: {
-      categoryId: id,
-      noteId: currentNote.id,
-    }})
-    const categoriesModified = currentNote.categories.filter(
-      (cat) => cat.id !== id
-    );
-    // update context
-    updateCurrentNote({
-      ...currentNote,
-      categories: categoriesModified,
-    });
+    handleCategoryRemove: (id) => {
+      console.log("[Hook][useNoteContent][handleCategoryRemove] id:", id);
+      if (!currentNote) return;
+      // fetch
+      deleteCategoryNote({
+        variables: {
+          categoryId: id,
+          noteId: currentNote.id,
+        },
+      });
+      const categoriesModified = currentNote.categories.filter(
+        (cat) => cat.id !== id
+      );
+      // update context
+      updateCurrentNote({
+        ...currentNote,
+        categories: categoriesModified,
+      });
+    },
+
+    handleAddCategoryNote: () => {
+      console.log("[Hook][useNoteContent][handleAddCategoryNote]");
+    },
+
+    handleTitleChange: (event) => {
+      const title = event.target.value;
+      // setTitle(title);
+      if (!currentNote) return;
+      // set timer for fetching and updating context
+      // fetch
+      // update context
+      updateCurrentNote({
+        ...currentNote,
+        title,
+      });
+    },
   };
 
   /**
@@ -91,6 +118,8 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
 
   useEffect(() => {
     if (currentNote) {
+      setTitle(currentNote.title);
+
       const isBodyCached = getBodyCached(currentNote?.id);
       if (!isBodyCached) {
         getNoteBody({
@@ -106,9 +135,5 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
     }
   }, [currentNote?.id]);
 
-  return [
-    { ...currentNote, body },
-    loading,
-    { handleCategoryRemove, handleBodyChange },
-  ];
+  return [{ ...currentNote, body }, loading, utils];
 }

@@ -1,51 +1,53 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement } from "react";
 import {
   VStack,
   StackProps,
   HStack,
   Box,
-  Heading,
   Wrap,
   Textarea,
 } from "@chakra-ui/react";
-import { RemovableCategoryTag } from "./CategoryTag";
+import ResizeTextarea from "react-textarea-autosize";
+import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
-import { INote } from '../types'
+import { INote } from "../types";
 
 export interface NoteContentProps extends StackProps {
   body?: INote["body"];
   title?: INote["title"];
-  categories?: INote["categories"]
+  categories?: INote["categories"];
 }
 
-/**
- * @useNoteContent [implementing]
- */
-export default function NoteContent({title, body, categories, ...props}: NoteContentProps): ReactElement {
-  const [note, ,{ handleCategoryRemove, handleBodyChange }] = useNoteContent()
-  // const [categories, setCategories] = useState(note.categories || props.categories || [])
-  // const [body, setBody] = useState(note.body || props.body || "")
+export default function NoteContent(props: StackProps): ReactElement {
+  const [note, , utils] = useNoteContent();
 
-  // const handleBodyChange = (event: BaseSyntheticEvent) => {
-  //   const body = event.target.value
-  //   setBody(body)
-  // }
-  // const handleCategoryRemove = (id: string) => {
-  //   const _categories = categories.filter(cat => cat.id !== id)
-  //   setCategories(_categories)
-  // }
-  
   return (
     <VStack h="inherit" w="100%" bg="lightblue" {...props}>
       <HStack spacing="0px" align="normal" w="inherit" bg="gray.100">
         <VStack w="inherit">
-          <Heading w="inherit" pl="10px" bg="red.100">
-            {note.title || ""}
-          </Heading>
+          <Textarea
+            bg="red.100"
+            fontSize="2em"
+            fontWeight="bold"
+            p="0 10px"
+            minH="unset"
+            overflow="hidden"
+            w="100%"
+            resize="none"
+            minRows={1}
+            value={note.title}
+            onChange={utils.handleTitleChange}
+            as={ResizeTextarea}
+          />
           <Wrap w="inherit" pl="10px" bg="purple.100">
-          {note.categories?.map((category) => (
-            <RemovableCategoryTag key={category.id} onRemove={handleCategoryRemove} {...category}  />
-          ))}
+            {note.categories?.map((category) => (
+              <RemovableCategoryTag
+                key={category.id}
+                onRemove={utils.handleCategoryRemove}
+                {...category}
+              />
+            ))}
+            <AddCategoryTag onAdd={utils.handleAddCategoryNote} />
           </Wrap>
         </VStack>
         <Box w="30px" h="30px" bg="yellow"></Box>
@@ -55,7 +57,7 @@ export default function NoteContent({title, body, categories, ...props}: NoteCon
         bg="green.100"
         resize="none"
         value={note.body || ""}
-        onChange={handleBodyChange}
+        onChange={utils.handleBodyChange}
         focusBorderColor="none"
       />
     </VStack>
