@@ -1,13 +1,33 @@
+import { useState, useEffect } from 'react'
 import { useNoteContext } from "../../context";
 
-export default function useNoteItem(): any {
-  const { setCurrentNote, notesList } = useNoteContext();
+/**
+ * Handles NoteItem component logic integrated with NoteContext
+ * @logic
+ * - Click or press enter the note updates the 'currentNote' in the ctx
+ * - Know if the note is the 'currentNote' in the ctx, so the bg color in changed
+ */
+export default function useNoteItem(id: string): any {
+  const { setCurrentNote, notesList, currentNote } = useNoteContext();
+  const [isOpen, setOpen] = useState(false)
 
-  // change this to receive only note id
-  function handleNoteClick(noteData: any) {
-    console.log("[Hook][useNoteItem] Changing noteData:", noteData);
-    // noteContext.setCurrentNote(noteData)
-    setCurrentNote(notesList?.find((note) => note.id == noteData.id));
-  }
-  return [handleNoteClick];
+  const onClick = (event: React.MouseEvent | React.KeyboardEvent) => {
+    console.log("[Hook][useNoteItem][onClick] Changing to note:", id);
+    if ("key" in event && event.key !== "Enter") return
+    setCurrentNote(notesList?.find((note) => note.id == id));
+  };
+  
+  useEffect(() => {
+    console.log('[Hook][useNoteItem] Render!')
+  })
+
+  useEffect(() => {
+    if(currentNote?.id == id) {
+      setOpen(true)
+    } else if (isOpen) {
+      setOpen(false)
+    }
+  }, [currentNote?.id])
+
+  return [isOpen, onClick];
 }

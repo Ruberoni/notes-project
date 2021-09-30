@@ -2,29 +2,23 @@ import React from "react";
 import {
   Text,
   Center,
+  CenterProps,
   Flex,
   HStack,
   Tooltip,
   CircularProgress,
-  useAccordionItem,
-  StackProps
+  StackProps,
 } from "@chakra-ui/react";
-import { PropGetter } from "@chakra-ui/react-utils";
-import CategoryTag, { CategoryTagProps } from "./CategoryTag";
+import CategoryTag from "./CategoryTag";
 import { useNoteItem } from "../hooks";
 import { INote } from "../types";
 
-export interface NoteItemProps extends Omit<INote, "body"> {
-  isLoading?: boolean;
-  isActive?: boolean;
-  handleOnClick?: () => void;
-  setIsActive?: React.Dispatch<React.SetStateAction<boolean>>;
+export interface NoteItemProps extends Omit<INote, "body">, Omit<CenterProps, "id" | "title"> {
+
 }
 
 /**
  * **Note item component.**
- *
- * Has to be inside AccordionProvider and AccordionDescendantsProvider.
  *
  * Composed with:
  * - Note title.
@@ -37,44 +31,14 @@ export interface NoteItemProps extends Omit<INote, "body"> {
  * - Hovering the mouse in the note title, displays the full title. (Tooltip)
  * - The categories are shortened according to the width.
  * - The categories are scrollable.
- *
- * @todo
- * - Title [X]
- * - Title tooltip [X]
- * - Categories [X]
- * - Loading icon [X]
- * - Toggle background when click use *Implement_accordion_logic* [X]
- *
- * @Implement_accordion_logic
- * - https://github.com/chakra-ui/chakra-ui/blob/main/packages/accordion/src/use-accordion.ts
- * - https://github.com/chakra-ui/chakra-ui/blob/main/packages/accordion/src/accordion.tsx
- * 1. Initialize useAccordionItem
- * 2. Call getButtonProps (from useAccordionItem) with the onClick func and pass its return value as props of 'center' component
- * @notes
- * - The AccordionItemProvider isn't used because it's only used to accordion-only children like AccordionButton.
  */
 export default function NoteItem({
   id,
   title,
   categories,
-  isLoading,
-  handleOnClick,
+  ...props
 }: NoteItemProps): JSX.Element {
-
-  const [handleNoteClick] = useNoteItem()
-  const { isOpen, getButtonProps } = useAccordionItem({
-    isFocusable: true,
-  });
-
-  /**
-   * Function called when the Item is pressed
-   */
-  const onClick = () => {
-    handleOnClick?.();
-    handleNoteClick({id, title, categories})
-  };
-
-  const button = getButtonProps({ onClick }) as PropGetter<HTMLDivElement>;
+  const [isOpen, onClick] = useNoteItem(id);
 
   const LoadingComp = (
     <CircularProgress
@@ -93,10 +57,13 @@ export default function NoteItem({
 
   return (
     <Center
-      {...button}
+      tabIndex={0}
       bg={/* "blue.100" */ bg}
       h="122px"
       _hover={{ cursor: "pointer" }}
+      onClick={onClick}
+      onKeyDown={onClick}
+      {...props}
     >
       <Flex
         bg="green.100"
@@ -106,7 +73,7 @@ export default function NoteItem({
         direction="column"
         position="relative"
       >
-        {isLoading && LoadingComp}
+        {/* {isLoading && LoadingComp} */}
 
         <Tooltip label={noteTitle} openDelay={500} gutter={0}>
           <Text fontSize="2xl" isTruncated>
@@ -145,7 +112,7 @@ export function HScroll({ children, ...props }: HScrollProps): JSX.Element {
   );
 }
 
-export function HScrollTest(props?: any): JSX.Element {
+export function HScrollTest(props?: HScrollProps): JSX.Element {
   return (
     <HScroll bg="red.100" className="delHScrollBar" {...props}>
       <CategoryTag label="Personal" color="green" />

@@ -5,20 +5,44 @@ import {
   InputGroup,
   InputLeftElement,
   HStack,
+  StackProps,
   Flex,
   Spacer,
   FlexProps,
   IconButtonProps,
 } from "@chakra-ui/react";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
+import { useNoteContext } from "../context"
+import { INote } from '../types'
 
-export default function NotesAccesibilityBar(props: any): JSX.Element {
+export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
+  const a = useNoteContext()
+
+  const createNote = () => {
+    // fetch: create empty note
+    // on resolve: 
+      // get note id from response
+      // add note to context
+
+
+    
+    // add to context
+    const note: INote = {
+      id: "-1",
+      title: "",
+      categories: []
+    }
+    a.setNotesList([...a.notesList, note])
+    a.setCurrentNote(note)
+  }
+
   const rightIcon: IconButtonProps = {
     icon: <AddIcon />,
     "aria-label": "Create a note",
+    onClick: createNote
   };
   return (
-    <AccesibilityBar rightIcon={rightIcon}>
+    <AccesibilityBar rightIcon={rightIcon} {...props}>
       <InputGroup maxWidth="200px" size="sm">
         <InputLeftElement pointerEvents="none">
           <SearchIcon color="gray.900" />
@@ -35,12 +59,11 @@ export default function NotesAccesibilityBar(props: any): JSX.Element {
   );
 }
 
-export interface AccesibilityBarProps {
+export interface AccesibilityBarProps extends StackProps{
   leftIcon?: IconButtonProps;
   rightIcon?: IconButtonProps;
   children?: JSX.Element | JSX.Element[];
   childrenProps?: FlexProps;
-  props?: any;
 }
 
 /**
