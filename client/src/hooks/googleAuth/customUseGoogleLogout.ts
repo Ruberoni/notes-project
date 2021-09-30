@@ -5,7 +5,7 @@ import {
   UseGoogleLogoutResponse,
 } from "react-google-login";
 import { useToast, UseToastOptions } from "@chakra-ui/react";
-import { useAppContext } from "../../config";
+import { useAppContext } from "../../context";
 import useGoogleClientId from "./useGoogleClientId";
 
 /**

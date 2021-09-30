@@ -5,7 +5,7 @@ export type State = {
   userName: string | null;
 };
 
-export default function reducer(state: State, action: Action): State {
+export function appContextReducer(state: State, action: Action): State {
   switch (action.type) {
     case "LOGIN": {
       return {

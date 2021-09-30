@@ -6,7 +6,7 @@ import React, {
   ReactElement,
   useMemo,
 } from "react";
-import reducer, { State, Action } from "./reducer";
+import { appContextReducer, State, Action } from "./reducer";
 
 type Dispatch = (action: Action) => void;
 type ContextType = { state: State; dispatch: Dispatch };
@@ -24,7 +24,7 @@ export function AppContextProvider({
     userId: null,
     userName: null,
   };
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(appContextReducer, initialState);
   const contextValue = useMemo(() => {
     return { state, dispatch };
   }, [state, dispatch]);

@@ -3,7 +3,7 @@ import { GoogleLogin } from "react-google-login";
 import { useMutation } from "@apollo/client";
 import { GOOGLE_LOGIN } from "../utils/queries";
 import { useToast, UseToastOptions } from "@chakra-ui/react";
-import { useAppContext } from "../config";
+import { useAppContext } from "../context";
 import { useCustomGoogleLogin } from "../hooks";
 
 /**

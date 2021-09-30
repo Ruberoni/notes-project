@@ -9,7 +9,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { Link as RLink } from "react-router-dom";
-import { useAppContext } from "../config";
+import { useAppContext } from "../context";
 import { customUseGoogleLogout } from "../hooks";
 
 export function TopBar(props: GridProps): JSX.Element {

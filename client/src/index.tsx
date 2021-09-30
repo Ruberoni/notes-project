@@ -5,7 +5,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "@fontsource/source-sans-pro";
 
 import reportWebVitals from "./reportWebVitals";
-import { ApolloProvider, theme, Routes, AppContextProvider } from "./config";
+import { ApolloProvider, theme, Routes } from "./config";
+import { AppContextProvider } from './context'
 
 ReactDOM.render(
   <React.StrictMode>
