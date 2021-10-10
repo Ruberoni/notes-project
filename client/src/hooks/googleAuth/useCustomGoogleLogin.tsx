@@ -23,15 +23,10 @@ interface SimpleGoogleLoginProps  {
  */
 export default function useCustomGoogleLogin(): [
   ReactElement | null,
-  any | null,
   SimpleGoogleLoginProps
 ] {
-  const [googleResponse, setGoogleResponse] = useState(null);
   useEffect(() => {
     console.log("[Hook][useCustomGoogleLogin][RENDERED]");
-    if (googleResponse) {
-      setGoogleResponse(null);
-    }
   });
   const [clientIdError, clientId] = useGoogleClientId();
 
@@ -58,7 +53,6 @@ export default function useCustomGoogleLogin(): [
    */
   const onSuccess = (res: any) => {
     console.log("[Google Login Success] res:", res);
-    setGoogleResponse(res);
   };
 
   /**
@@ -67,12 +61,11 @@ export default function useCustomGoogleLogin(): [
   const onFailure: GoogleLoginProps["onFailure"] = (res) => {
     console.log("[Google Login Failed] res:", res);
     customToast("Google Login error", "error", "Google error");
-    setGoogleResponse(null);
   };
 
   if (clientIdError) {
-    return [clientIdError, googleResponse, { onSuccess, onFailure, clientId }];
+    return [clientIdError, { onSuccess, onFailure, clientId }];
   }
 
-  return [null, googleResponse, { onSuccess, onFailure, clientId }];
+  return [null, { onSuccess, onFailure, clientId }];
 }

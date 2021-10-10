@@ -38,16 +38,16 @@ export default function Register(): ReactElement {
     // Show a Chakra UI Alert to notify users to go to Login
   }
 
-  const [clientIDError, googleResponse, { onSuccess, onFailure, clientId }] =
+  const [clientIDError, { onSuccess, onFailure, clientId }] =
     useCustomGoogleLogin();
   if (clientIDError) return clientIDError;
 
   function customOnSuccess(res: any) {
     onSuccess(res);
     const userContent = {
-      googleId: googleResponse.profileObj.googleId,
-      email: googleResponse.profileObj.email,
-      name: googleResponse.profileObj.name,
+      googleId: res.profileObj.googleId,
+      email: res.profileObj.email,
+      name: res.profileObj.name,
     };
     console.log("[Google Register] userContent", userContent);
     serverRegister({ variables: { userContent } });

@@ -40,24 +40,22 @@ export default function Login(): ReactElement {
   /**
    * Successful fetch
    */
-  if (data) {
-    console.log("[Successful request] Google login.");
-    customToast();
-    const userData = {
-      userId: data.googleLogin?.id,
-      userName: data.googleLogin?.name,
-    };
-    // Login
-    context.dispatch({ type: "LOGIN", data: userData });
-  }
-
-  const [clientIDError,,{ onSuccess, onFailure, clientId }] =
+  const [clientIDError, { onSuccess, onFailure, clientId }] =
     useCustomGoogleLogin();
   if (clientIDError) return clientIDError;
 
   function customOnSuccess(res: any) {
     onSuccess(res);
-    serverLogin({ variables: { googleId: res.googleId } });
+    serverLogin({ variables: { googleId: res.googleId } }).then((res) => {
+      console.log("[Successful request] Google login.");
+      customToast();
+      const userData = {
+        userId: res.data.googleLogin?.id,
+        userName: res.data.googleLogin?.name,
+      };
+      // Login
+      context.dispatch({ type: "LOGIN", data: userData });
+    });
   }
 
   return (
