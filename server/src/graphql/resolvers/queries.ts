@@ -1,4 +1,5 @@
 import { Resolver, Query, Ctx, Arg } from "type-graphql";
+import { NoteContent } from "..";
 import { User, Note, Category, NotePreview } from "../typeDefs";
 @Resolver()
 export default class Queries {
@@ -38,7 +39,16 @@ export default class Queries {
     @Arg("userId") userId: string,
     @Ctx() ctx: any
   ): Promise<NotePreview[]> {
+    console.log("[Queries][getUserNotesPreview] userId:", userId)
     return await ctx.dataSources.notesProject.getUserNotesPreview(userId);
+  }
+
+  @Query((_returns) => Note)
+  async getNote(
+    @Arg("id", {nullable: false}) id: string,
+    @Ctx() ctx: any
+  ): Promise<Note> {
+    return await ctx.dataSources.notesProject.getNote(id);
   }
 
   @Query((_returns) => String)

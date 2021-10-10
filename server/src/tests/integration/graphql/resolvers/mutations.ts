@@ -152,9 +152,57 @@ export default function Tests(): void {
         expect(res?.errors?.[0].extensions?.code).to.equal("BAD_USER_INPUT");
       });
     });
+    describe("createNote", () => {
+      const CREATE_NOTE_QUERY =
+        `mutation CreateNote($userId: String!, $content: NoteContent!) { 
+          createNote(userId: $userId, content: $content) {
+            title
+          }
+        }`
+      it("Calling with good userid and good content, res.data.createNote should return a note", async () => {
+        // Arrange
+        const op = {
+          query: CREATE_NOTE_QUERY,
+          variables: {
+            userId: "1",
+            content: {
+              title: "Sample"
+            }
+          },
+        };
+
+        // Act
+        const res = await server?.executeOperation(op);
+        console.log(
+          "[TEST][Integration][Mutation][createNote] res.errors:",
+          res?.errors
+        );
+        // Assert
+        expect(res?.errors).to.be.undefined;
+        expect(res?.data).to.be.an("object");
+        expect(res?.data?.createNote).to.be.an("object");
+        expect(res?.data?.createNote).to.have.property("title", op.variables.content.title);
+      });
+      it("Calling with good userid and bad content, error code should be 'BAD_USER_INPUT'", async () => {
+        // Arrange
+        const op = {
+          query: CREATE_NOTE_QUERY,
+          variables: {
+            userId: "1",
+            content: {
+              title: false
+            }
+          },
+        };
+        // Act
+        const res = await server?.executeOperation(op);
+        // Assert
+        expect(res?.errors?.[0].extensions?.code).to.equal("BAD_USER_INPUT");
+      });
+    });
   });
 
-  describe.skip("Without database", () => {
+  describe("Without database", () => {
     function StubNotesProjectDataSource(method: any): SinonStub {
       return Sinon.stub(DSInstance, method);
     }
@@ -259,18 +307,22 @@ export default function Tests(): void {
     });
     describe("createNote", () => {
       const CREATE_NOTE_QUERY =
-        "mutation CreateNote($userId: String!, $content: NoteContent!) { createNote(userId: $userId, content: $content) }";
+        `mutation CreateNote($userId: String!, $content: NoteContent!) { 
+          createNote(userId: $userId, content: $content) {
+            title
+          }
+        }`;
 
       before(() => {
         stub = StubNotesProjectDataSource("createNote");
       });
       beforeEach(() => {
-        stub?.resolves("OK");
+        stub?.resolves({title: ""});
       });
       afterEach(() => {
         stub?.restore();
       });
-      it("Calling with good userid and good content, res.data.createNote should return OK", async () => {
+      it("Calling with good userid and good content, res.data.createNote should return a note", async () => {
         // Arrange
         const op = {
           query: CREATE_NOTE_QUERY,
@@ -286,9 +338,14 @@ export default function Tests(): void {
         // Act
         const res = await server?.executeOperation(op);
         // Assert
+        console.log(
+          "[TEST][Integration][Mutation][createNote] res.errors:",
+          res?.errors
+        );
         expect(res?.errors).to.be.undefined;
         expect(res?.data).to.be.an("object");
-        expect(res?.data?.createNote).to.be.an("string");
+        expect(res?.data?.createNote).to.be.an("object");
+        expect(res?.data?.createNote.title).to.be.an("string");
       });
       it("Calling with good userid and bad content, error code should be 'BAD_USER_INPUT'", async () => {
         // Arrange

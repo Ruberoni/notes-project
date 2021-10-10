@@ -10,17 +10,23 @@ export async function connectDB(
   connectionOptions?: ConnectionOptions,
   ref?: any
 ): Promise<void> {
-  connection = await mysql.createConnection({
-    // use enviorment variables
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database:
-      process.env.NODE_ENV == "test"
-        ? process.env.DB_NAME_TEST
-        : process.env.DB_NAME,
-    ...connectionOptions,
-  });
+  if (process.env.DB_URL) {
+    connection = await mysql.createConnection(process.env.DB_URL);
+
+  } else {
+    const _connectionOptions = {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database:
+        process.env.NODE_ENV == "test"
+          ? process.env.DB_NAME_TEST
+          : process.env.DB_NAME,
+      ...connectionOptions,
+    }
+    connection = await mysql.createConnection(_connectionOptions);
+
+  }
   if (ref) {
     Object.assign(ref, connection);
   }

@@ -1,5 +1,5 @@
 import { Resolver, Mutation, Ctx, Arg } from "type-graphql";
-import { User, UserContent, NoteContent, CategoryContent } from "../typeDefs";
+import { User, Note, UserContent, NoteContent, CategoryContent } from "../typeDefs";
 @Resolver()
 export default class Mutations {
   @Mutation((_returns) => String)
@@ -26,12 +26,12 @@ export default class Mutations {
   ): Promise<string> {
     return await ctx.dataSources.notesProject.deleteUser(id);
   }
-  @Mutation((_returns) => String)
+  @Mutation((_returns) => Note)
   async createNote(
     @Arg("userId", { nullable: false }) userId: string,
     @Arg("content", { nullable: false }) content: NoteContent,
     @Ctx() ctx: any
-  ): Promise<string> {
+  ): Promise<Note> {
     return await ctx.dataSources.notesProject.createNote(userId, content);
   }
   @Mutation((_returns) => String)

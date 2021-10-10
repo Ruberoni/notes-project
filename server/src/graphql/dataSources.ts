@@ -1,6 +1,6 @@
-import { Connection, RowDataPacket, FieldPacket } from "mysql2/promise";
+import { RowDataPacket, FieldPacket, ResultSetHeader } from "mysql2/promise";
 import { DataSource } from "apollo-datasource";
-import { connection, connectDB } from "../config";
+import { connection } from "../config";
 import { cleanNotesPreview } from "../utils/";
 import {
   User,
@@ -14,7 +14,7 @@ import {
 
 export class NotesProjectDataSource extends DataSource {
   // readonly DB: Connection | undefined;
-  DB: any = {};
+  DB: typeof connection;
 
   constructor() {
     super();
@@ -77,8 +77,19 @@ export class NotesProjectDataSource extends DataSource {
         [userId]
       );
     const notesPreviewCleaned = cleanNotesPreview(notesPreview);
-
+    
     return Object.values(notesPreviewCleaned);
+  }
+
+  async getNote(id: string): Promise<Note> {
+    if (!this.DB) throw new Error("No database connected.");
+    const query = "SELECT * FROM note WHERE id = ?";
+    // const queryFormatted = this.DB.format(query, content);
+    const [note]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
+      query,
+      [id]
+    );
+    return note[0] as Note;
   }
 
   async getNoteBody(noteId: string): Promise<string> {
@@ -123,12 +134,16 @@ export class NotesProjectDataSource extends DataSource {
     await this.DB.execute(queryFormatted);
     return "OK";
   }
-  async createNote(userId: string, content: NoteContent): Promise<string> {
+  async createNote(userId: string, content: NoteContent): Promise<Note> {
     if (!this.DB) throw new Error("No database connected.");
     const query = "INSERT INTO note SET user = ?, ?";
     const queryFormatted = this.DB.format(query, [userId, content]);
-    await this.DB.execute(queryFormatted);
-    return "OK";
+    const [rowPacket]: [ResultSetHeader, FieldPacket[]] = await this.DB.execute(
+      queryFormatted
+    );
+    const id = rowPacket.insertId;
+    const note = await this.getNote(String(id));
+    return note;
   }
   async updateNote(id: string, content: NoteContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");

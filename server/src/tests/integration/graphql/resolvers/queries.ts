@@ -97,5 +97,28 @@ export default function Tests(): void {
         expect(res?.data?.getUserNotes[0].title).to.be.an("string");
       });
     });
+    describe("getNotes", () => {
+      const GET_NOTES = `query GetNote($id: String!) { 
+          getNote(id: $id) { 
+            title 
+          } 
+        }`;
+      it("With good id, res.data.getNote should return a note", async () => {
+        // arrange
+        const op = {
+          query: GET_NOTES,
+          variables: {
+            id: "1",
+          },
+        };
+        //act
+        const res = await server?.executeOperation(op);
+        //assert
+        console.log("[TEST][Integration][Queries] res.errors:", res?.errors);
+        expect(res?.errors).to.be.undefined;
+        expect(res?.data?.getNote).to.be.an("object");
+        expect(res?.data?.getNote.title).to.be.an("string");
+      });
+    });
   });
 }
