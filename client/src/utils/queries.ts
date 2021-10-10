@@ -44,8 +44,8 @@ export const GOOGLE_REGISTER = gql`
  * @param id String. The note id to retrieve its note body
  */
 export const GET_NOTE_BODY = gql`
-  query GetNoteBody($id: String!) {
-    getNoteBody(id: $id)
+  query GetNoteBody($noteId: String!) {
+    getNoteBody(noteId: $noteId)
   }
 `
 /**
@@ -57,3 +57,25 @@ mutation DeleteCategoryNote($categoryId: String!, $noteId: String!) {
   deleteCategoryNote(categoryId: $categoryId, noteId: $noteId)
 }
 `
+
+/** 
+ * @param userId String
+ * @param content - { title: string, body: string }
+ */
+export const CREATE_NOTE = gql`
+mutation CreateNote($userId: String!, $content: NoteContent!) {
+  createNote(userId: $userId, content: $content) {
+    id
+  }
+}
+`;
+
+/** 
+ * @param id String
+ * @param content - { title: string, body: string }
+ */
+ export const UPDATE_NOTE = gql`
+ mutation UpdateNote($id: String!, $content: NoteContent!) {
+   updateNote(id: $id, content: $content)
+ }
+ `;

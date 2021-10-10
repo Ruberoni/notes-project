@@ -1,7 +1,11 @@
 import { useEffect, useState, BaseSyntheticEvent } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useNoteContext } from "../../context";
-import { GET_NOTE_BODY, DELETE_CATEGORY_NOTE } from "../../utils/queries";
+import {
+  GET_NOTE_BODY,
+  DELETE_CATEGORY_NOTE,
+  UPDATE_NOTE,
+} from "../../utils/queries";
 import { INote } from "../../types";
 import { NoteContentProps } from "../../components/NoteContent";
 
@@ -27,7 +31,6 @@ export interface utils {
  *
  * @todo
  * - handle category add
- * - handle body change
  */
 export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   const { updateCurrentNote, currentNote } = useNoteContext();
@@ -51,24 +54,66 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   const onErrorDeleteCategoryNote = (err: any) => {
     console.log("[Network error] error:", err);
   };
-  const [getNoteBody, resGetNodeBody] = useLazyQuery(GET_NOTE_BODY);
+  const getNoteBody = useQuery(GET_NOTE_BODY, {skip: true});
   const [deleteCategoryNote, resDeleteCategoryNote] = useMutation(
     DELETE_CATEGORY_NOTE,
     { onError: onErrorDeleteCategoryNote }
   );
-  if (resGetNodeBody.data) {
+  const [updateNote, resUpdateNote] = useMutation(UPDATE_NOTE, {
+    onError: onErrorDeleteCategoryNote,
+  });
+  /*if (resGetNodeBody.data) {
     setBody(resGetNodeBody.data.getNoteBody);
     // cache body
-  }
+  }*/
+  useEffect(() => {
+    if (currentNote) {
+      setTitle(currentNote.title);
+
+      const isBodyCached = getBodyCached(currentNote?.id);
+      if (!isBodyCached) {
+        console.log("[Hook][useNoteContent][useEffect] will call getNoteBody")
+        getNoteBody.refetch({
+            noteId: currentNote?.id,
+        }).then(res => {
+          setBody(res.data.getNoteBody)
+        }).catch(error => {
+        console.log("[Hook][useNoteContent][getNoteBody] error:", error)
+
+        })
+        /*
+        console.log(
+          "[Hook][useNoteContent] Trying to fetch GET_NOTE_BODY for note:",
+          currentNote?.id
+        ); */
+      }
+    }
+  }, [currentNote?.id]);
 
   useEffect(() => {
+    console.log("[Hook][useNoteContent] Render!")
+    
+  })
+
+  /*useEffect(() => {
     setLoading(resGetNodeBody.loading || resDeleteCategoryNote.loading);
   }, [resGetNodeBody.loading, resDeleteCategoryNote.loading]);
+  */
 
   const utils: utils = {
     handleBodyChange: (event) => {
+      console.log(
+        "[Hook][useNoteContent][handleBodyChange] updating body"
+      );
       const body = event.target.value;
       setBody(body);
+      updateNote({
+        variables: { id: currentNote?.id, content: { title: currentNote?.title, body } },
+      }).then(() => {
+        console.log(
+          "[Hook][useNoteContent][handleBodyChange][updateNote] updated body"
+        );
+      });
     },
 
     handleCategoryRemove: (id) => {
@@ -96,6 +141,7 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
     },
 
     handleTitleChange: (event) => {
+      console.log("[Hook][useNoteContent][handleAddCategoryNote]");
       const title = event.target.value;
       // setTitle(title);
       if (!currentNote) return;
@@ -105,6 +151,13 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
       updateCurrentNote({
         ...currentNote,
         title,
+      });
+      updateNote({
+        variables: { id: currentNote?.id, content: { title, body } },
+      }).then(() => {
+        console.log(
+          "[Hook][useNoteContent][handleTitleChange][updateNote] updated title"
+        );
       });
     },
   };
@@ -116,24 +169,7 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
     return false;
   };
 
-  useEffect(() => {
-    if (currentNote) {
-      setTitle(currentNote.title);
-
-      const isBodyCached = getBodyCached(currentNote?.id);
-      if (!isBodyCached) {
-        getNoteBody({
-          variables: {
-            id: currentNote?.id,
-          },
-        });
-        console.log(
-          "[Hook][useNoteContent] Trying to fetch GET_NOTE_BODY for note:",
-          currentNote?.id
-        );
-      }
-    }
-  }, [currentNote?.id]);
+ 
 
   return [{ ...currentNote, body }, loading, utils];
 }
