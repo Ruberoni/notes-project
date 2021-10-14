@@ -6,11 +6,15 @@ import {
   Box,
   Wrap,
   Textarea,
+  IconButton,
 } from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
+import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
 import { INote } from "../types";
+import { categoriesList } from "../utils/seed";
 
 export interface NoteContentProps extends StackProps {
   body?: INote["body"];
@@ -20,6 +24,11 @@ export interface NoteContentProps extends StackProps {
 
 export default function NoteContent(props: StackProps): ReactElement {
   const [note, , utils] = useNoteContent();
+  const [isCategoryListOpen, setCategoryListOpen] = React.useState(false);
+
+  const handleOpenCategoriesList = () =>
+    setCategoryListOpen(!isCategoryListOpen);
+  const onCategoryListClose = () => setCategoryListOpen(false);
 
   return (
     <VStack h="inherit" w="100%" bg="lightblue" {...props}>
@@ -47,10 +56,21 @@ export default function NoteContent(props: StackProps): ReactElement {
                 {...category}
               />
             ))}
-            <AddCategoryTag onAdd={utils.handleAddCategoryNote} />
+
+            <CategoryList
+              categories={note.categories || []}
+              gutter={1}
+              buttonAs={<AddCategoryTag />}
+            />
           </Wrap>
         </VStack>
-        <Box w="30px" h="30px" bg="yellow"></Box>
+        {/* <Box w="30px" h="30px" bg="yellow"></Box> */}
+        <IconButton
+          onClick={utils.handleDeleteNote}
+          aria-label="Delete note"
+          colorScheme="red"
+          icon={<DeleteIcon />}
+        />
       </HStack>
       <Textarea
         h="inherit"

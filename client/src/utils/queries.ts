@@ -79,3 +79,43 @@ mutation CreateNote($userId: String!, $content: NoteContent!) {
    updateNote(id: $id, content: $content)
  }
  `;
+
+ /** 
+ * @param categoryId String
+ * @param noteId String
+ */
+export const ADD_CATEGORY_NOTE = gql`
+mutation AddCategoryNote($categoryId: String!, $noteId: String!) {
+  addCategoryNote(categoryId: $categoryId, noteId: $noteId)
+}
+`
+/** 
+ * @param userId String
+ * @param content - { label: string, color: string }
+ */
+export const CREATE_CATEGORY = gql`
+mutation CreateCategory($userId: String!, $content: CategoryContent!) {
+  createCategory(userId: $userId, content: $content)
+}
+`
+
+/** 
+ * @param id String
+ */
+export const DELETE_CATEGORY = gql`
+mutation DeleteCategory($id: String!) {
+  deleteCategory(id: $id)
+}
+`
+/** 
+ * @param userId String
+ */
+export const GET_USER_CATEGORIES = gql`
+query GetUserCategories($userId: String!) {
+  getUserCategories(userId: $userId) {
+    id
+    label
+    color
+  }
+}
+`

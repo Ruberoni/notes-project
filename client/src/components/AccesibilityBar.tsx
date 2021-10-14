@@ -12,54 +12,52 @@ import {
   IconButtonProps,
 } from "@chakra-ui/react";
 import { AddIcon, SearchIcon } from "@chakra-ui/icons";
-import { useNoteContext } from "../context"
-import { INote } from '../types'
+import { useMutation } from "@apollo/client";
+import { useNoteContext, useAppContext } from "../context";
+import { INote } from "../types";
+import { CREATE_NOTE } from "../utils/queries";
+import { UserCategoryList } from './CategoryList'
 
 export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
-  const a = useNoteContext()
+  const appContext = useAppContext()
+  const { setNotesList, setCurrentNote, notesList } = useNoteContext();
+  console.log("appContext.state.userId:", appContext.state.userId)
+  const [createNote, ] = useMutation(CREATE_NOTE, {
+    variables: {
+      userId: appContext.state.userId,
+      content: {}
+    },
+  });
 
-  const createNote = () => {
-    // fetch: create empty note
-    // on resolve: 
-      // get note id from response
-      // add note to context
-
-
-    
-    // add to context
-    const note: INote = {
-      id: "-1",
-      title: "",
-      categories: []
-    }
-    a.setNotesList([...a.notesList, note])
-    a.setCurrentNote(note)
-  }
+  const onCreateNote = () => {
+    console.log("[NotesAccesibilityBar][onCreateNote]")
+    createNote().then(res => {
+      const note: INote = {
+        id: res.data.createNote.id,
+        title: "",
+        categories: [],
+      };
+      setNotesList([...notesList, note]);
+      setCurrentNote(note);
+    }).catch(err => {
+      console.log("[onCreateNote][Network Error] err:", err)
+    })
+  };
 
   const rightIcon: IconButtonProps = {
     icon: <AddIcon />,
-    "aria-label": "Create a note",
-    onClick: createNote
+    "aria-label": "Create note",
+    onClick: onCreateNote,
+    disabled: Boolean(!appContext.state.userId)
   };
   return (
     <AccesibilityBar rightIcon={rightIcon} {...props}>
-      <InputGroup maxWidth="200px" size="sm">
-        <InputLeftElement pointerEvents="none">
-          <SearchIcon color="gray.900" />
-        </InputLeftElement>
-        <Input placeholder="Search by title..." />
-      </InputGroup>
-      <InputGroup maxWidth="200px" size="sm">
-        <InputLeftElement pointerEvents="none">
-          <SearchIcon color="gray.900" />
-        </InputLeftElement>
-        <Input placeholder="Search by title..." />
-      </InputGroup>
+      <UserCategoryList />
     </AccesibilityBar>
   );
 }
 
-export interface AccesibilityBarProps extends StackProps{
+export interface AccesibilityBarProps extends StackProps {
   leftIcon?: IconButtonProps;
   rightIcon?: IconButtonProps;
   children?: JSX.Element | JSX.Element[];
@@ -67,8 +65,8 @@ export interface AccesibilityBarProps extends StackProps{
 }
 
 /**
- * Creates a horizontal bar highly customizable.
- * By default the children are in a Flex with justifyContent="space-evenly"
+ * Creates horizontal bar highly customizable.
+ * By default the children are in Flex with justifyContent="space-evenly"
  * @param {IconButtonProps} leftIcon *Optional* An object with the props for the left IconButton
  * @param {IconButtonProps} rightIcon *Optional* An object with the props for the right IconButton
  * @param {FlexProps} childrenProps *Optional* An object with the props for the Flex wrapping the children.
