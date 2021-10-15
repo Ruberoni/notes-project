@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "description": "Notes Project/server. Take notes easily, anywhere.",
   "main": "lib/index.js",
+  "engines": {
+    "node": "16.x",
+    "yarn": "1.22.x"
+  },
   "scripts": {
-    "tsc": "tsc",
+    "build": "tsc",
     "dev": "$env:NODE_ENV=\"development\"; yarn run nodemon --watch src src/index.ts",
     "lint": "eslint src/",
-    "start-prod": "node lib/index.js",
+    "start": "node lib/index.js",
     "test": "$env:NODE_ENV=\"test\"; $env:TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }'; yarn run mocha -r ts-node/register -r dotenv/config ./src/config/env.ts 'src/tests/**/*.ts'"
   },
   "author": "Ruben Paredes",
