@@ -4,7 +4,9 @@ import path from "path";
 
 export let connection: Connection | undefined = undefined;
 
-console.log(path.resolve(__dirname + "/cacert.pem"))
+// console.log(__dirname + "../../../../../cacert.pem")
+
+console.log(path.resolve(__dirname + "../../../../../../cacert.pem"))
 
 /**
  * DB connection
@@ -26,7 +28,7 @@ export async function connectDB(
         password: process.env.DB_TEST_PASSWORD,
         database: process.env.DB_NAME,
         ssl: {
-          cert: fs.readFileSync(__dirname + "../../../../../cacert.pem") as unknown as string,
+          cert: fs.readFileSync(path.resolve(__dirname + "../../../../../../cacert.pem")) as unknown as string,
         },
         ...connectionOptions,
       };
@@ -37,7 +39,7 @@ export async function connectDB(
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
         ssl: {
-          cert: fs.readFileSync(__dirname + "../../../../../cacert.pem") as unknown as string,
+          cert: fs.readFileSync(path.resolve(__dirname + "../../../../../../cacert.pem")) as unknown as string,
         },
         ...connectionOptions,
       };
