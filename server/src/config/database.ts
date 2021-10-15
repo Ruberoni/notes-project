@@ -1,6 +1,10 @@
 import mysql, { ConnectionOptions, Connection } from "mysql2/promise";
+import fs from "fs";
+import path from "path";
 
 export let connection: Connection | undefined = undefined;
+
+console.log(path.resolve(__dirname + "/cacert.pem"))
 
 /**
  * DB connection
@@ -12,20 +16,34 @@ export async function connectDB(
 ): Promise<void> {
   if (process.env.DB_URL) {
     connection = await mysql.createConnection(process.env.DB_URL);
-
   } else {
-    const _connectionOptions = {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database:
-        process.env.NODE_ENV == "test"
-          ? process.env.DB_NAME_TEST
-          : process.env.DB_NAME,
-      ...connectionOptions,
-    }
-    connection = await mysql.createConnection(_connectionOptions);
+    let _connectionOptions = {}
 
+    if (process.env.NODE_ENV == "test") {
+      _connectionOptions = {
+        host: process.env.DB_TEST_HOST,
+        user: process.env.DB_TEST_USER,
+        password: process.env.DB_TEST_PASSWORD,
+        database: process.env.DB_NAME,
+        ssl: {
+          cert: fs.readFileSync(__dirname + "/cacert.pem") as unknown as string,
+        },
+        ...connectionOptions,
+      };
+    } else {
+      _connectionOptions = {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        ssl: {
+          cert: fs.readFileSync(__dirname + "/cacert.pem") as unknown as string,
+        },
+        ...connectionOptions,
+      };
+    }
+
+    connection = await mysql.createConnection(_connectionOptions);
   }
   if (ref) {
     Object.assign(ref, connection);
