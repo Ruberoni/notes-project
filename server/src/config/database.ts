@@ -6,7 +6,7 @@ export let connection: Connection | undefined = undefined;
 
 // console.log(__dirname + "../../../../../cacert.pem")
 
-console.log(path.resolve(__dirname + "../../../../../../cacert.pem"))
+console.log(path.resolve(__dirname + "../../../../../../cacert.pem"));
 
 /**
  * DB connection
@@ -19,31 +19,37 @@ export async function connectDB(
   if (process.env.DB_URL) {
     connection = await mysql.createConnection(process.env.DB_URL);
   } else {
-    let _connectionOptions = {}
+    let _connectionOptions = {};
 
     if (process.env.NODE_ENV == "test") {
       _connectionOptions = {
         host: process.env.DB_TEST_HOST,
         user: process.env.DB_TEST_USER,
         password: process.env.DB_TEST_PASSWORD,
-        database: process.env.DB_NAME,
-        ssl: {
-          cert: fs.readFileSync(path.resolve(__dirname + "../../../../../../cacert.pem")) as unknown as string,
-        },
-        ...connectionOptions,
       };
     } else {
       _connectionOptions = {
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        ssl: {
-          cert: fs.readFileSync(path.resolve(__dirname + "../../../../../../cacert.pem")) as unknown as string,
-        },
-        ...connectionOptions,
       };
     }
+
+    // Configure SSL
+    if (process.env.DB_CACERT) {
+      _connectionOptions = {
+        ..._connectionOptions,
+        ssl: {
+          cert: Buffer.from(process.env.DB_CACERT, "base64").toString("ascii"),
+        },
+      };
+    }
+
+    _connectionOptions = {
+      ..._connectionOptions,
+      database: process.env.DB_NAME,
+      ...connectionOptions,
+    };
 
     connection = await mysql.createConnection(_connectionOptions);
   }

@@ -42,7 +42,6 @@ export const initServer = async (): Promise<void> =>
 
     const hapiServer = Hapi.server({
       port: process.env.PORT,
-      host: "localhost",
     });
 
     await apolloServer.applyMiddleware({
