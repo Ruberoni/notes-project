@@ -12,7 +12,7 @@ import { onError } from "@apollo/client/link/error";
  * Init ApolloClient
  */
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri: process.env.REACT_APP_SERVER_URI || "http://localhost:4000/graphql",
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {

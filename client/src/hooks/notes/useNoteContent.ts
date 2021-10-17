@@ -5,6 +5,7 @@ import {
   GET_NOTE_BODY,
   DELETE_CATEGORY_NOTE,
   UPDATE_NOTE,
+  DELETE_NOTE
 } from "../../utils/queries";
 import { INote } from "../../types";
 import { NoteContentProps } from "../../components/NoteContent";
@@ -19,6 +20,7 @@ export interface utils {
   handleBodyChange: (event: BaseSyntheticEvent) => void;
   handleAddCategoryNote: () => void;
   handleTitleChange: (event: BaseSyntheticEvent) => void;
+  handleDeleteNote: (event: BaseSyntheticEvent) => void;
 }
 
 /**
@@ -33,7 +35,7 @@ export interface utils {
  * - handle category add
  */
 export default function useNoteContent(): [Partial<INote>, boolean, utils] {
-  const { updateCurrentNote, currentNote } = useNoteContext();
+  const { updateCurrentNote, currentNote, setNotesList, setCurrentNote } = useNoteContext();
   const [body, setBody] = useState("");
   const [title, setTitle] = useState(currentNote?.title || "");
   const [loading, setLoading] = useState(false);
@@ -60,6 +62,9 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
     { onError: onErrorDeleteCategoryNote }
   );
   const [updateNote, resUpdateNote] = useMutation(UPDATE_NOTE, {
+    onError: onErrorDeleteCategoryNote,
+  });
+  const [deleteNote, resDeleteNote] = useMutation(DELETE_NOTE, {
     onError: onErrorDeleteCategoryNote,
   });
   /*if (resGetNodeBody.data) {
@@ -141,7 +146,7 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
     },
 
     handleTitleChange: (event) => {
-      console.log("[Hook][useNoteContent][handleAddCategoryNote]");
+      console.log("[Hook][useNoteContent][handleTitleChange]");
       const title = event.target.value;
       // setTitle(title);
       if (!currentNote) return;
@@ -157,6 +162,19 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
       }).then(() => {
         console.log(
           "[Hook][useNoteContent][handleTitleChange][updateNote] updated title"
+        );
+      });
+    },
+
+    handleDeleteNote: (event) => {
+      console.log("[Hook][useNoteContent][handleDeleteNote] Deleting note");
+      setNotesList(notesList => notesList.filter(note => note.id !== currentNote?.id))
+      setCurrentNote(undefined)
+      deleteNote({
+        variables: { id: currentNote?.id },
+      }).then(() => {
+        console.log(
+          "[Hook][useNoteContent][handleDeleteNote][deleteNote] Note deleted"
         );
       });
     },
