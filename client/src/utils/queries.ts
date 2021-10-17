@@ -48,15 +48,6 @@ export const GET_NOTE_BODY = gql`
     getNoteBody(noteId: $noteId)
   }
 `
-/**
- * @param categoryId String.
- * @param noteId String.
- */
-export const DELETE_CATEGORY_NOTE = gql`
-mutation DeleteCategoryNote($categoryId: String!, $noteId: String!) {
-  deleteCategoryNote(categoryId: $categoryId, noteId: $noteId)
-}
-`
 
 /** 
  * @param userId String
@@ -74,19 +65,36 @@ mutation CreateNote($userId: String!, $content: NoteContent!) {
  * @param id String
  * @param content - { title: string, body: string }
  */
- export const UPDATE_NOTE = gql`
- mutation UpdateNote($id: String!, $content: NoteContent!) {
-   updateNote(id: $id, content: $content)
- }
- `;
+export const UPDATE_NOTE = gql`
+mutation UpdateNote($id: String!, $content: NoteContent!) {
+  updateNote(id: $id, content: $content)
+}
+`;
+/** 
+ * @param id String
+ */
+export const DELETE_NOTE = gql`
+mutation DeleteNote($id: String!) {
+  deleteNote(id: $id)
+}
+`
 
- /** 
+/** 
  * @param categoryId String
  * @param noteId String
  */
 export const ADD_CATEGORY_NOTE = gql`
 mutation AddCategoryNote($categoryId: String!, $noteId: String!) {
   addCategoryNote(categoryId: $categoryId, noteId: $noteId)
+}
+`
+/**
+ * @param categoryId String.
+ * @param noteId String.
+ */
+export const DELETE_CATEGORY_NOTE = gql`
+mutation DeleteCategoryNote($categoryId: String!, $noteId: String!) {
+  deleteCategoryNote(categoryId: $categoryId, noteId: $noteId)
 }
 `
 /** 
