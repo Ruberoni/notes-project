@@ -9,6 +9,7 @@ import {
 } from "../../utils/queries";
 import { INote } from "../../types";
 import { NoteContentProps } from "../../components/NoteContent";
+import SavingTimer from "../../utils/SavingTimer";
 
 export interface useNoteContentProps {
   title: NoteContentProps["title"];
@@ -37,8 +38,7 @@ export interface utils {
 export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   const { updateCurrentNote, currentNote, setNotesList, setCurrentNote } = useNoteContext();
   const [body, setBody] = useState("");
-  const [title, setTitle] = useState(currentNote?.title || "");
-  const [loading, setLoading] = useState(false);
+  const [ savingTimer, ] = useState(SavingTimer(5000))
 
   /*   if (props) {
     const _currentNote: INote | = {...currentNote}
@@ -108,17 +108,18 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   const utils: utils = {
     handleBodyChange: (event) => {
       console.log(
-        "[Hook][useNoteContent][handleBodyChange] updating body"
+        "[Hook][useNoteContent][handleBodyChange]"
       );
       const body = event.target.value;
       setBody(body);
-      updateNote({
+      const _updateNote = () => updateNote({
         variables: { id: currentNote?.id, content: { title: currentNote?.title, body } },
       }).then(() => {
         console.log(
           "[Hook][useNoteContent][handleBodyChange][updateNote] updated body"
         );
       });
+      savingTimer.setToExecute(_updateNote)
     },
 
     handleCategoryRemove: (id) => {
@@ -157,13 +158,14 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
         ...currentNote,
         title,
       });
-      updateNote({
+      const _updateNote = () => updateNote({
         variables: { id: currentNote?.id, content: { title, body } },
       }).then(() => {
         console.log(
           "[Hook][useNoteContent][handleTitleChange][updateNote] updated title"
         );
       });
+      savingTimer.setToExecute(_updateNote)
     },
 
     handleDeleteNote: (event) => {
