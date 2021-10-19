@@ -1,5 +1,5 @@
 import { useEffect, useState, BaseSyntheticEvent } from "react";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, ApolloError } from "@apollo/client";
 import { useNoteContext } from "../../context";
 import {
   GET_NOTE_BODY,
@@ -38,34 +38,23 @@ export interface utils {
 export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   const { updateCurrentNote, currentNote, setNotesList, setCurrentNote } = useNoteContext();
   const [body, setBody] = useState("");
+  const [, setTitle] = useState(currentNote?.title || "");
   const [ savingTimer, ] = useState(SavingTimer(5000))
 
-  /*   if (props) {
-    const _currentNote: INote | = {...currentNote}
-    // loop through props. properties?
-    let prop: keyof typeof props
-    for (prop in props) {
-      const _: any = props[prop]
-      if (_) {
-        _currentNote[prop] = _
-    }
-    }
-    setCurrentNote(_currentNote)
-  }
- */
-  const onErrorDeleteCategoryNote = (err: any) => {
+  const [loading, ] = useState(false);
+  const onError = (err: ApolloError) => {
     console.log("[Network error] error:", err);
   };
   const getNoteBody = useQuery(GET_NOTE_BODY, {skip: true});
-  const [deleteCategoryNote, resDeleteCategoryNote] = useMutation(
+  const [deleteCategoryNote, ] = useMutation(
     DELETE_CATEGORY_NOTE,
-    { onError: onErrorDeleteCategoryNote }
+    { onError }
   );
-  const [updateNote, resUpdateNote] = useMutation(UPDATE_NOTE, {
-    onError: onErrorDeleteCategoryNote,
+  const [updateNote, ] = useMutation(UPDATE_NOTE, {
+    onError,
   });
-  const [deleteNote, resDeleteNote] = useMutation(DELETE_NOTE, {
-    onError: onErrorDeleteCategoryNote,
+  const [deleteNote, ] = useMutation(DELETE_NOTE, {
+    onError,
   });
   /*if (resGetNodeBody.data) {
     setBody(resGetNodeBody.data.getNoteBody);
@@ -151,8 +140,6 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
       const title = event.target.value;
       // setTitle(title);
       if (!currentNote) return;
-      // set timer for fetching and updating context
-      // fetch
       // update context
       updateCurrentNote({
         ...currentNote,
@@ -168,7 +155,7 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
       savingTimer.setToExecute(_updateNote)
     },
 
-    handleDeleteNote: (event) => {
+    handleDeleteNote: () => {
       console.log("[Hook][useNoteContent][handleDeleteNote] Deleting note");
       setNotesList(notesList => notesList.filter(note => note.id !== currentNote?.id))
       setCurrentNote(undefined)
@@ -187,9 +174,11 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
    */
   const getBodyCached = (note?: string) => {
     return false;
-  };
-
- 
+  }; 
 
   return [{ ...currentNote, body }, loading, utils];
 }
+
+// interface FrequentNoteContent extends Pick<INote, "title" | "body"> {
+// }
+
