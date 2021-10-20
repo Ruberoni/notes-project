@@ -32,13 +32,10 @@ export interface utils {
  * Actually noteContext.currentNote changes when a NoteItem is clicked
  * @see useNoteItem component
  *
- * @todo
- * - handle category add
  */
 export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   const { updateCurrentNote, currentNote, setNotesList, setCurrentNote } = useNoteContext();
   const [body, setBody] = useState("");
-  const [, setTitle] = useState(currentNote?.title || "");
   const [ savingTimer, ] = useState(SavingTimer(5000))
 
   const [loading, ] = useState(false);
@@ -56,13 +53,24 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
   const [deleteNote, ] = useMutation(DELETE_NOTE, {
     onError,
   });
+
+  const updateNoteWrapper = () => {
+    const _updateNote = () => updateNote({
+      variables: { id: currentNote?.id, content: { title: currentNote?.title, body } },
+    }).then(() => {
+      console.log(
+        "[Hook][useNoteContent][updateNoteWrapper] updated note"
+      );
+    });
+    savingTimer.setToExecute(_updateNote)
+  }
+
   /*if (resGetNodeBody.data) {
     setBody(resGetNodeBody.data.getNoteBody);
     // cache body
   }*/
   useEffect(() => {
     if (currentNote) {
-      setTitle(currentNote.title);
 
       const isBodyCached = getBodyCached(currentNote?.id);
       if (!isBodyCached) {
@@ -101,14 +109,19 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
       );
       const body = event.target.value;
       setBody(body);
-      const _updateNote = () => updateNote({
-        variables: { id: currentNote?.id, content: { title: currentNote?.title, body } },
-      }).then(() => {
-        console.log(
-          "[Hook][useNoteContent][handleBodyChange][updateNote] updated body"
-        );
+      updateNoteWrapper()
+      
+    },
+
+    handleTitleChange: (event) => {
+      if (!currentNote) return;
+      console.log("[Hook][useNoteContent][handleTitleChange]");
+      const title = event.target.value;
+      updateCurrentNote({
+        ...currentNote,
+        title,
       });
-      savingTimer.setToExecute(_updateNote)
+      updateNoteWrapper()
     },
 
     handleCategoryRemove: (id) => {
@@ -135,25 +148,6 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
       console.log("[Hook][useNoteContent][handleAddCategoryNote]");
     },
 
-    handleTitleChange: (event) => {
-      console.log("[Hook][useNoteContent][handleTitleChange]");
-      const title = event.target.value;
-      // setTitle(title);
-      if (!currentNote) return;
-      // update context
-      updateCurrentNote({
-        ...currentNote,
-        title,
-      });
-      const _updateNote = () => updateNote({
-        variables: { id: currentNote?.id, content: { title, body } },
-      }).then(() => {
-        console.log(
-          "[Hook][useNoteContent][handleTitleChange][updateNote] updated title"
-        );
-      });
-      savingTimer.setToExecute(_updateNote)
-    },
 
     handleDeleteNote: () => {
       console.log("[Hook][useNoteContent][handleDeleteNote] Deleting note");
