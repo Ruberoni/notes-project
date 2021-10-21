@@ -5,9 +5,10 @@ import React, {
   ReactNode,
   ReactElement,
   useMemo,
+  useEffect,
 } from "react";
 import { INote } from "../types";
-import { notePreview } from "../utils/seed";
+import { useAppContext } from './AppContext'
 
 export type ContextType = {
   currentNote?: INote;
@@ -26,7 +27,9 @@ export function NoteContextProvider({
 }: {
   children: ReactNode;
 }): ReactElement {
-  const [notesList, setNotesList] = useState<INote[]>(notePreview);
+  
+
+  const [notesList, setNotesList] = useState<INote[]>([]);
   const [currentNote, setCurrentNote] = useState<INote>();
   const updateCurrentNote = (modifiedCurrentNote: INote): void => {
     setNotesList((notesList) => {
@@ -50,6 +53,14 @@ export function NoteContextProvider({
       updateCurrentNote,
     };
   }, [notesList, setNotesList, currentNote, setCurrentNote, updateCurrentNote]);
+
+  const { state } = useAppContext()
+  useEffect(() => {
+    if (!state.userId) {
+      setNotesList([])
+      setCurrentNote(undefined)
+    }
+  }, [state.userId])
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

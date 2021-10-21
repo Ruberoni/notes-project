@@ -26,6 +26,8 @@ export default function NoteContent(props: StackProps): ReactElement {
   const [note, , utils] = useNoteContent();
   const [isCategoryListOpen, setCategoryListOpen] = React.useState(false);
 
+  if (!note) return <></>
+
   const handleOpenCategoriesList = () =>
     setCategoryListOpen(!isCategoryListOpen);
   const onCategoryListClose = () => setCategoryListOpen(false);

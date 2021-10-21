@@ -33,7 +33,7 @@ export interface utils {
  * @see useNoteItem component
  *
  */
-export default function useNoteContent(): [Partial<INote>, boolean, utils] {
+export default function useNoteContent(): [INote | undefined, boolean, utils] {
   const { updateCurrentNote, currentNote, setNotesList, setCurrentNote } = useNoteContext();
   const [body, setBody] = useState("");
   const [ savingTimer, ] = useState(SavingTimer(5000))
@@ -170,7 +170,7 @@ export default function useNoteContent(): [Partial<INote>, boolean, utils] {
     return false;
   }; 
 
-  return [{ ...currentNote, body }, loading, utils];
+  return [currentNote && { ...currentNote, body }, loading, utils];
 }
 
 // interface FrequentNoteContent extends Pick<INote, "title" | "body"> {
