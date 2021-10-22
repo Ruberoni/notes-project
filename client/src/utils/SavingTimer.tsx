@@ -6,6 +6,7 @@ type anyReturnFunction = (() => any)
 export interface SavingTimer {
   setToExecute: (func: undefined | anyReturnFunction) => void;
   setTime: (newTime: number) => void;
+  isActive: boolean;
 }
 
 /**
@@ -24,20 +25,43 @@ export interface SavingTimer {
  *  - The request will be delayed until the timer is zero.
  *  - If another request is made but there were another one already waiting for the timer, the older request will be replaced with the new one.
  */
+// Look for a workaround of this function but with setInterval
 export default function SavingTimer(Time = 2000, ToExecute?: anyReturnFunction): SavingTimer {
   let time = Time;
   function setTime(newTime: number) {
     time = newTime;
   }
-  let isActive = false;
+  /* let isActive = false;
   const setIsActive = (val: boolean) => {
     isActive = val;
-  };
-  let toExecute: undefined | anyReturnFunction = ToExecute
-  const setToExecute = (func: typeof toExecute) => {
-    toExecute = func;
+  }; */
+  const [isActive, setIsActive] = useState(false)
+  // let toExecute: {state: boolean, func: undefined | anyReturnFunction} = {state: false, func: undefined}
+  const [toExecute, _setToExecute] = useState<{state: boolean, func: undefined | anyReturnFunction}>({state: false, func: undefined})
+  // const [changedToExecute, setChangedToExecute] = useState<{state: boolean, func: undefined | anyReturnFunction}>({state: false, func: undefined})
+  // const [_toExecute, _setToExecute] = useState<undefined | anyReturnFunction>(ToExecute)
+
+  const setToExecute = (func: typeof toExecute.func) => {
+    // _setToExecute(func)
+    // toExecute = func
+    // setChangedToExecute(prev => ({state: !prev.state, func}))
+    _setToExecute(prev => ({state: !prev.state, func}))
     startTimer();
-  };
+  }
+
+  React.useEffect(() => {
+    console.log("Updated toExecute")
+  }, [toExecute])
+
+  // const toExecute = React.useMemo(() => _toExecute, [changedToExecute])
+  /* React.useEffect(() => {
+    console.log("changedToExecute!")
+    // toExecute = changedToExecute.func
+  }, [changedToExecute]) */
+  /* const setToExecute = (func: typeof toExecute) => {
+    // toExecute = func;
+    startTimer();
+  }; */
 
   function startTimer() {
     if (isActive) {
@@ -49,12 +73,12 @@ export default function SavingTimer(Time = 2000, ToExecute?: anyReturnFunction):
     console.log("[SavingTimer] Starting timer.");
     setIsActive(true);
     setTimeout(() => {
-      toExecute?.();
+      toExecute.func?.();
       setIsActive(false);
       console.log("[SavingTimer] Finishing timer.");
     }, time);
   }
-  return { setToExecute, setTime };
+  return { setToExecute, setTime, isActive };
 }
 
 /**
@@ -91,6 +115,10 @@ export class SavingTimerClass {
 export function SavingTimerTest(): React.ReactElement {
   const savingTimer = SavingTimer(2000);
   const [value, setValue] = useState(0)
+
+  React.useEffect(() => {
+    console.log("[SavingTimerTest] savingTimer.isActive:", savingTimer.isActive)
+  }, [savingTimer.isActive])
 
   const onClick = () => {
     savingTimer.setToExecute(() => console.log("Executed!"));
