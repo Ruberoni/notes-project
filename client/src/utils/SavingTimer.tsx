@@ -26,8 +26,9 @@ export interface ISavingTimer {
  *  - The request will be delayed until the timer is zero.
  *  - If another request is made but there were another one already waiting for the timer, the older request will be replaced with the new one.
  */
-export default function SavingTimer(_initialTime = 2): ISavingTimer {
+export default function SavingTimer(_initialTime = 4): ISavingTimer {
   
+  const [isActive, setIsActive] = useState(false)
   const [initialTime, setTime] = useState(_initialTime)
   const [currentCount, setCurrentCount] = useState(initialTime)
   const [toExecute, _setToExecute] = useState<{state: boolean, func?: anyReturnFunction}>({state: false })
@@ -48,8 +49,10 @@ export default function SavingTimer(_initialTime = 2): ISavingTimer {
   }
   
   React.useEffect(() => {
+    console.log("[SavingTimer] intervalId:", intervalId)
     if (currentCount === 0) {
       console.log("[SavingTimer] Executing 'toExecute'")
+      setIsActive(false)
       // execute function
       toExecute.func?.()
       // clear interval
@@ -64,10 +67,11 @@ export default function SavingTimer(_initialTime = 2): ISavingTimer {
     console.log("[SavingTimer] Changing 'toExecute'")
     if(!intervalId) {
       startTimer()
+      setIsActive(true)
     }
   }, [toExecute])
 
-  return { setToExecute, setTime, isActive: Boolean(intervalId), currentCount };
+  return { setToExecute, setTime, isActive, currentCount };
 }
 
 /**

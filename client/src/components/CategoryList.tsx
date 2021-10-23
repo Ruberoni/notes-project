@@ -130,7 +130,7 @@ export function UserCategoryList(
   const { state } = useAppContext();
 
   const getCategories = useQuery(GET_USER_CATEGORIES, {variables: {userId: state.userId} })
-  console.log("[Popover][UserCategoryList][getCategories] data:", getCategories.data)
+  // console.log("[Popover][UserCategoryList][getCategories] data:", getCategories.data)
   const userCategories: ICategory[] = getCategories.data?.getUserCategories || [];
 
   const [deleteCategory, deleteCategoryRes] = useMutation(DELETE_CATEGORY);

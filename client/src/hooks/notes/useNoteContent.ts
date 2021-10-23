@@ -36,7 +36,22 @@ export interface utils {
 export default function useNoteContent(): [INote | undefined, boolean, utils] {
   const { updateCurrentNote, currentNote, setNotesList, setCurrentNote } = useNoteContext();
   const [body, setBody] = useState("");
-  const [ savingTimer, ] = useState(SavingTimer(5000))
+  const savingTimer = SavingTimer()
+  
+  useEffect(() => {
+    const handlerBeforeUnload = (event: BeforeUnloadEvent) => {    
+      if (savingTimer.isActive) {
+        event.preventDefault();
+        const confirm = "Are?"
+        event.returnValue = confirm;
+        return confirm
+      }
+    }
+    window.addEventListener("beforeunload", handlerBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handlerBeforeUnload)
+    }
+  }, [savingTimer.isActive]);
 
   const [loading, ] = useState(false);
   const onError = (err: ApolloError) => {
@@ -55,20 +70,17 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
   });
 
   const updateNoteWrapper = () => {
-    const _updateNote = () => updateNote({
+    const _updateNote = () => {
+      updateNote({
       variables: { id: currentNote?.id, content: { title: currentNote?.title, body } },
     }).then(() => {
       console.log(
         "[Hook][useNoteContent][updateNoteWrapper] updated note"
       );
-    });
+    });}
     savingTimer.setToExecute(_updateNote)
   }
 
-  /*if (resGetNodeBody.data) {
-    setBody(resGetNodeBody.data.getNoteBody);
-    // cache body
-  }*/
   useEffect(() => {
     if (currentNote) {
 
@@ -83,18 +95,13 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
         console.log("[Hook][useNoteContent][getNoteBody] error:", error)
 
         })
-        /*
-        console.log(
-          "[Hook][useNoteContent] Trying to fetch GET_NOTE_BODY for note:",
-          currentNote?.id
-        ); */
       }
     }
   }, [currentNote?.id]);
 
   useEffect(() => {
     console.log("[Hook][useNoteContent] Render!")
-    
+    console.log("[Hook][useNoteContent] savingTimer.isActive:", savingTimer.isActive)
   })
 
   /*useEffect(() => {
@@ -172,7 +179,3 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
 
   return [currentNote && { ...currentNote, body }, loading, utils];
 }
-
-// interface FrequentNoteContent extends Pick<INote, "title" | "body"> {
-// }
-
