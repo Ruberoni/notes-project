@@ -3,10 +3,11 @@ import React, { useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type anyReturnFunction = (() => any)
 
-export interface SavingTimer {
+export interface ISavingTimer {
   setToExecute: (func: undefined | anyReturnFunction) => void;
   setTime: (newTime: number) => void;
   isActive: boolean;
+  currentCount: number;
 }
 
 /**
@@ -25,60 +26,48 @@ export interface SavingTimer {
  *  - The request will be delayed until the timer is zero.
  *  - If another request is made but there were another one already waiting for the timer, the older request will be replaced with the new one.
  */
-// Look for a workaround of this function but with setInterval
-export default function SavingTimer(Time = 2000, ToExecute?: anyReturnFunction): SavingTimer {
-  let time = Time;
-  function setTime(newTime: number) {
-    time = newTime;
-  }
-  /* let isActive = false;
-  const setIsActive = (val: boolean) => {
-    isActive = val;
-  }; */
-  const [isActive, setIsActive] = useState(false)
-  // let toExecute: {state: boolean, func: undefined | anyReturnFunction} = {state: false, func: undefined}
-  const [toExecute, _setToExecute] = useState<{state: boolean, func: undefined | anyReturnFunction}>({state: false, func: undefined})
-  // const [changedToExecute, setChangedToExecute] = useState<{state: boolean, func: undefined | anyReturnFunction}>({state: false, func: undefined})
-  // const [_toExecute, _setToExecute] = useState<undefined | anyReturnFunction>(ToExecute)
+export default function SavingTimer(_initialTime = 2): ISavingTimer {
+  
+  const [initialTime, setTime] = useState(_initialTime)
+  const [currentCount, setCurrentCount] = useState(initialTime)
+  const [toExecute, _setToExecute] = useState<{state: boolean, func?: anyReturnFunction}>({state: false })
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>()
 
   const setToExecute = (func: typeof toExecute.func) => {
-    // _setToExecute(func)
-    // toExecute = func
-    // setChangedToExecute(prev => ({state: !prev.state, func}))
-    _setToExecute(prev => ({state: !prev.state, func}))
-    startTimer();
+    _setToExecute(({ state }) => ({state: !state, func}))
   }
+
+  const startTimer = () => {
+    console.log("[SavingTimer][startTimer] starting timer")
+    const _intervalID = setInterval(handleCount, 1000)
+    setIntervalId(_intervalID)
+  }
+
+  const handleCount = () => {
+    setCurrentCount(current => (current - 1))
+  }
+  
+  React.useEffect(() => {
+    if (currentCount === 0) {
+      console.log("[SavingTimer] Executing 'toExecute'")
+      // execute function
+      toExecute.func?.()
+      // clear interval
+      intervalId && clearInterval(intervalId)
+      setIntervalId(undefined)
+      // reset current count
+      setCurrentCount(initialTime)
+    }
+  }, [currentCount])
 
   React.useEffect(() => {
-    console.log("Updated toExecute")
+    console.log("[SavingTimer] Changing 'toExecute'")
+    if(!intervalId) {
+      startTimer()
+    }
   }, [toExecute])
 
-  // const toExecute = React.useMemo(() => _toExecute, [changedToExecute])
-  /* React.useEffect(() => {
-    console.log("changedToExecute!")
-    // toExecute = changedToExecute.func
-  }, [changedToExecute]) */
-  /* const setToExecute = (func: typeof toExecute) => {
-    // toExecute = func;
-    startTimer();
-  }; */
-
-  function startTimer() {
-    if (isActive) {
-      console.log(
-        "[SavingTimer] Attempting to start a timer but there's already an active timer."
-      );
-      return;
-    }
-    console.log("[SavingTimer] Starting timer.");
-    setIsActive(true);
-    setTimeout(() => {
-      toExecute.func?.();
-      setIsActive(false);
-      console.log("[SavingTimer] Finishing timer.");
-    }, time);
-  }
-  return { setToExecute, setTime, isActive };
+  return { setToExecute, setTime, isActive: Boolean(intervalId), currentCount };
 }
 
 /**
