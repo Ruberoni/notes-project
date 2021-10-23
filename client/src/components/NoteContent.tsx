@@ -3,10 +3,11 @@ import {
   VStack,
   StackProps,
   HStack,
-  Box,
   Wrap,
   Textarea,
   IconButton,
+  Image,
+  Center
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
@@ -14,7 +15,7 @@ import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
 import { INote } from "../types";
-import { categoriesList } from "../utils/seed";
+import typingImg from "../assets/typing.jpg";
 
 export interface NoteContentProps extends StackProps {
   body?: INote["body"];
@@ -24,13 +25,13 @@ export interface NoteContentProps extends StackProps {
 
 export default function NoteContent(props: StackProps): ReactElement {
   const [note, , utils] = useNoteContent();
-  const [isCategoryListOpen, setCategoryListOpen] = React.useState(false);
 
-  if (!note) return <></>
-
-  const handleOpenCategoriesList = () =>
-    setCategoryListOpen(!isCategoryListOpen);
-  const onCategoryListClose = () => setCategoryListOpen(false);
+  if (!note)
+    return (
+      <Center h="inherit" w="100%">
+        <Image src={typingImg} boxSize="290px" objectFit="cover" alt="Typing" />;
+      </Center>
+    );
 
   return (
     <VStack h="inherit" w="100%" bg="lightblue" {...props}>
@@ -66,7 +67,6 @@ export default function NoteContent(props: StackProps): ReactElement {
             />
           </Wrap>
         </VStack>
-        {/* <Box w="30px" h="30px" bg="yellow"></Box> */}
         <IconButton
           onClick={utils.handleDeleteNote}
           aria-label="Delete note"
