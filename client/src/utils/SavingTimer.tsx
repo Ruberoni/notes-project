@@ -3,9 +3,11 @@ import React, { useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type anyReturnFunction = (() => any)
 
-export interface SavingTimer {
+export interface ISavingTimer {
   setToExecute: (func: undefined | anyReturnFunction) => void;
   setTime: (newTime: number) => void;
+  isActive: boolean;
+  currentCount: number;
 }
 
 /**
@@ -24,37 +26,52 @@ export interface SavingTimer {
  *  - The request will be delayed until the timer is zero.
  *  - If another request is made but there were another one already waiting for the timer, the older request will be replaced with the new one.
  */
-export default function SavingTimer(Time = 2000, ToExecute?: anyReturnFunction): SavingTimer {
-  let time = Time;
-  function setTime(newTime: number) {
-    time = newTime;
-  }
-  let isActive = false;
-  const setIsActive = (val: boolean) => {
-    isActive = val;
-  };
-  let toExecute: undefined | anyReturnFunction = ToExecute
-  const setToExecute = (func: typeof toExecute) => {
-    toExecute = func;
-    startTimer();
-  };
+export default function SavingTimer(_initialTime = 4): ISavingTimer {
+  
+  const [isActive, setIsActive] = useState(false)
+  const [initialTime, setTime] = useState(_initialTime)
+  const [currentCount, setCurrentCount] = useState(initialTime)
+  const [toExecute, _setToExecute] = useState<{state: boolean, func?: anyReturnFunction}>({state: false })
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>()
 
-  function startTimer() {
-    if (isActive) {
-      console.log(
-        "[SavingTimer] Attempting to start a timer but there's already an active timer."
-      );
-      return;
-    }
-    console.log("[SavingTimer] Starting timer.");
-    setIsActive(true);
-    setTimeout(() => {
-      toExecute?.();
-      setIsActive(false);
-      console.log("[SavingTimer] Finishing timer.");
-    }, time);
+  const setToExecute = (func: typeof toExecute.func) => {
+    _setToExecute(({ state }) => ({state: !state, func}))
   }
-  return { setToExecute, setTime };
+
+  const startTimer = () => {
+    console.log("[SavingTimer][startTimer] starting timer")
+    const _intervalID = setInterval(handleCount, 1000)
+    setIntervalId(_intervalID)
+  }
+
+  const handleCount = () => {
+    setCurrentCount(current => (current - 1))
+  }
+  
+  React.useEffect(() => {
+    console.log("[SavingTimer] intervalId:", intervalId)
+    if (currentCount === 0) {
+      console.log("[SavingTimer] Executing 'toExecute'")
+      setIsActive(false)
+      // execute function
+      toExecute.func?.()
+      // clear interval
+      intervalId && clearInterval(intervalId)
+      setIntervalId(undefined)
+      // reset current count
+      setCurrentCount(initialTime)
+    }
+  }, [currentCount])
+
+  React.useEffect(() => {
+    console.log("[SavingTimer] Changing 'toExecute'")
+    if(!intervalId) {
+      startTimer()
+      setIsActive(true)
+    }
+  }, [toExecute])
+
+  return { setToExecute, setTime, isActive, currentCount };
 }
 
 /**
@@ -91,6 +108,10 @@ export class SavingTimerClass {
 export function SavingTimerTest(): React.ReactElement {
   const savingTimer = SavingTimer(2000);
   const [value, setValue] = useState(0)
+
+  React.useEffect(() => {
+    console.log("[SavingTimerTest] savingTimer.isActive:", savingTimer.isActive)
+  }, [savingTimer.isActive])
 
   const onClick = () => {
     savingTimer.setToExecute(() => console.log("Executed!"));
