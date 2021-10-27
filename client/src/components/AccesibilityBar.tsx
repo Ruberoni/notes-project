@@ -1,9 +1,6 @@
 import React from "react";
 import {
   IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
   HStack,
   StackProps,
   Flex,
@@ -11,7 +8,7 @@ import {
   FlexProps,
   IconButtonProps,
 } from "@chakra-ui/react";
-import { AddIcon, SearchIcon } from "@chakra-ui/icons";
+import { AddIcon } from "@chakra-ui/icons";
 import { useMutation } from "@apollo/client";
 import { useNoteContext, useAppContext } from "../context";
 import { INote } from "../types";
@@ -52,7 +49,7 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
   };
   return (
     <AccesibilityBar rightIcon={rightIcon} {...props}>
-      <UserCategoryList />
+      <UserCategoryList enabled={false}/>
     </AccesibilityBar>
   );
 }
