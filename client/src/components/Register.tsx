@@ -1,11 +1,20 @@
-import React, { ReactElement } from "react";
-import { useToast, UseToastOptions } from "@chakra-ui/react";
+import React, { ReactElement, useState } from "react";
+import {
+  useToast,
+  UseToastOptions,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} from "@chakra-ui/react";
 import { GoogleLogin } from "react-google-login";
-import { useMutation } from "@apollo/client";
+import { useMutation, ApolloError } from "@apollo/client";
+import { Link } from 'react-router-dom'
 import { useCustomGoogleLogin } from "../hooks";
 import { GOOGLE_REGISTER } from "../utils/queries";
 
 export default function Register(): ReactElement {
+  const [showAlert, setShowAlert] = useState(false);
   const toast = useToast();
 
   const customToast = (
@@ -21,7 +30,7 @@ export default function Register(): ReactElement {
       isClosable: true,
     });
 
-  function onError(err: any) {
+  function onError(err: ApolloError) {
     console.log("[Network error] Google register. error:", err);
     customToast("Register error", "error", "");
   }
@@ -50,11 +59,21 @@ export default function Register(): ReactElement {
       name: res.profileObj.name,
     };
     console.log("[Google Register] userContent", userContent);
-    serverRegister({ variables: { userContent } });
+    serverRegister({ variables: { userContent } }).then((res) => !res.errors && setShowAlert(true));
   }
 
   return (
     <>
+      {showAlert && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle mr={2}>Successful register!</AlertTitle>
+          <AlertDescription>
+            <Link to="/login">Go to login page</Link>
+          </AlertDescription>
+          {/* <CloseButton position="absolute" right="8px" top="8px" /> */}
+        </Alert>
+      )}
       {loading && <p>Loading, plese wait...</p>}
       <GoogleLogin
         clientId={clientId}
