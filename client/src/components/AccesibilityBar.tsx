@@ -78,7 +78,7 @@ export function AccesibilityBar({
   ...props
 }: AccesibilityBarProps): JSX.Element {
   return (
-    <HStack h="41px" bg="red.100" w="inherit" {...props}>
+    <HStack h="41px" w="inherit" {...props}>
       {leftIcon && (
         <>
           <IconButton
@@ -95,7 +95,6 @@ export function AccesibilityBar({
         w="100%"
         alignItems="center"
         justifyContent="space-evenly"
-        bg="gray.100"
         {...childrenProps}
       >
         {children || "Use 'children' to insert here any element."}

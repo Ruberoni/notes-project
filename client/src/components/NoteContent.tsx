@@ -34,11 +34,10 @@ export default function NoteContent(props: StackProps): ReactElement {
     );
 
   return (
-    <VStack h="inherit" w="100%" bg="lightblue" {...props}>
-      <HStack spacing="0px" align="normal" w="inherit" bg="gray.100">
+    <VStack h="inherit" w="100%" {...props}>
+      <HStack spacing="0px" align="normal" w="inherit" >
         <VStack w="inherit">
           <Textarea
-            bg="red.100"
             fontSize="2em"
             fontWeight="bold"
             p="0 10px"
@@ -50,8 +49,9 @@ export default function NoteContent(props: StackProps): ReactElement {
             value={note.title}
             onChange={utils.handleTitleChange}
             as={ResizeTextarea}
+            border="0px"
           />
-          <Wrap w="inherit" pl="10px" bg="purple.100">
+          <Wrap w="inherit" pl="10px">
             {note.categories?.map((category) => (
               <RemovableCategoryTag
                 key={category.id}
@@ -76,11 +76,11 @@ export default function NoteContent(props: StackProps): ReactElement {
       </HStack>
       <Textarea
         h="inherit"
-        bg="green.100"
         resize="none"
         value={note.body || ""}
         onChange={utils.handleBodyChange}
         focusBorderColor="none"
+        border="0px"
       />
     </VStack>
   );
