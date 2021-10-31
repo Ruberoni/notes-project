@@ -58,7 +58,7 @@ export default function NoteItem({
   return (
     <Center
       tabIndex={0}
-      bg={/* "blue.100" */ bg}
+      bg={bg}
       h="122px"
       _hover={{ cursor: "pointer" }}
       onClick={onClick}
@@ -66,7 +66,6 @@ export default function NoteItem({
       {...props}
     >
       <Flex
-        bg="green.100"
         w="87%"
         h="75%"
         justify="center"
@@ -80,7 +79,7 @@ export default function NoteItem({
             {noteTitle}
           </Text>
         </Tooltip>
-        <HScroll bg="red.100">
+        <HScroll>
           {categories?.map((category) => (
             <CategoryTag key={category.id} {...category} />
           ))}

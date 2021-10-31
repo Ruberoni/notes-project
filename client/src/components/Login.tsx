@@ -1,8 +1,9 @@
 import React, { ReactElement } from "react";
 import { GoogleLogin } from "react-google-login";
-import { useMutation } from "@apollo/client";
+import { useMutation, ApolloError } from "@apollo/client";
 import { GOOGLE_LOGIN } from "../utils/queries";
 import { useToast, UseToastOptions } from "@chakra-ui/react";
+import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../context";
 import { useCustomGoogleLogin } from "../hooks";
 
@@ -12,6 +13,7 @@ import { useCustomGoogleLogin } from "../hooks";
 export default function Login(): ReactElement {
   const context = useAppContext();
   const toast = useToast();
+  const history = useHistory()
 
   const customToast = (
     title = "Success login.",
@@ -26,7 +28,7 @@ export default function Login(): ReactElement {
       isClosable: true,
     });
 
-  function onError(err: any) {
+  function onError(err: ApolloError) {
     console.log("[Network error] Google login. error:", err);
     customToast("Login error", "error", "");
   }
@@ -34,7 +36,7 @@ export default function Login(): ReactElement {
    * data: googleLogin{ id, googleId, email, name }
    * onError: if useMutation returns an error, this is thrown, so makes the React server to shutdown
    */
-  const [serverLogin, { data, loading }] = useMutation(GOOGLE_LOGIN, {
+  const [serverLogin, { loading }] = useMutation(GOOGLE_LOGIN, {
     onError,
   });
   /**
@@ -55,6 +57,7 @@ export default function Login(): ReactElement {
       };
       // Login
       context.dispatch({ type: "LOGIN", data: userData });
+      history.push("/")
     });
   }
 

@@ -23,32 +23,32 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { DeleteIcon, AddIcon, CheckIcon } from "@chakra-ui/icons";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, ApolloError } from "@apollo/client";
 import CategoryTag, { CategoryTagProps } from "./CategoryTag";
 import { ADD_CATEGORY_NOTE } from "../utils/queries";
 import { ICategory } from "../types";
 import { useNoteContext, useAppContext } from "../context";
-import { categoriesList } from "../utils/seed";
-import { CREATE_CATEGORY, DELETE_CATEGORY, GET_USER_CATEGORIES } from "../utils/queries";
+// import { categoriesList } from "../utils/seed";
+import { CREATE_CATEGORY, DELETE_CATEGORY } from "../utils/queries";
 
 export interface CategoryListProps extends Omit<MenuProps, "children"> {
   categories?: ICategory[];
-  buttonAs?: ReactElement; //MenuButtonProps['as'];
+  buttonAs?: ReactElement; 
 }
 
 export default function CategoryList(props: CategoryListProps): ReactElement {
-  const { currentNote, updateCurrentNote } = useNoteContext();
-  const { state } = useAppContext()
+  const { currentNote, updateCurrentNote, userCategories } = useNoteContext();
+  // const { state } = useAppContext()
   if (!currentNote) return <></>;
 
-  const getCategories = useQuery(GET_USER_CATEGORIES, {variables: {userId: state.userId} })
-  console.log("[Popover][CategoryList][getCategories] data:", getCategories.data)
-  const userCategories: ICategory[] = getCategories.data?.getUserCategories || [];
+  // const getCategories = useQuery(GET_USER_CATEGORIES, {variables: {userId: state.userId} })
+  // console.log("[Popover][CategoryList][getCategories] data:", getCategories.data)
+  // const userCategories: ICategory[] = getCategories.data?.getUserCategories || [];
 
-  const onAddCategoryNoteError = (error: any) => {
+  const onAddCategoryNoteError = (error: ApolloError) => {
     console.log("[Component][CategoryList][addCategoryNote] error:", error);
   };
-  const [addCategoryNote, res] = useMutation(ADD_CATEGORY_NOTE, {
+  const [addCategoryNote, ] = useMutation(ADD_CATEGORY_NOTE, {
     onError: onAddCategoryNoteError,
   });
 
@@ -128,17 +128,40 @@ export function UserCategoryList(
 ): ReactElement {
 
   const { state } = useAppContext();
+  const { userCategories, setUserCategories } = useNoteContext()
 
-  const getCategories = useQuery(GET_USER_CATEGORIES, {variables: {userId: state.userId} })
+  // const getCategories = useQuery(GET_USER_CATEGORIES, {variables: {userId: state.userId} })
   // console.log("[Popover][UserCategoryList][getCategories] data:", getCategories.data)
-  const userCategories: ICategory[] = getCategories.data?.getUserCategories || [];
+  // const userCategories: ICategory[] = getCategories.data?.getUserCategories || [];
 
-  const [deleteCategory, deleteCategoryRes] = useMutation(DELETE_CATEGORY);
+  const [deleteCategory, ] = useMutation(DELETE_CATEGORY);
+  
+  const handleDeleteCategory = (cat: ICategory) => {
+    console.log("[Popover][UserCategoryList] Deleting category");
+    setUserCategories(prev => prev.filter(_cat => cat.id !== _cat.id))
+    deleteCategory({
+      variables: {
+        id: cat.id,
+      },
+    })
+      .then(() => {
+        console.log(
+          "[Popover][UserCategoryList] Sucessfully deleted category"
+          );
+          // getUserCategories()
+      })
+      .catch((error) => {
+        console.log(
+          "[Popover][UserCategoryList] Error deleting category:",
+          error
+        );
+      });
+  };
 
   return (
     <Popover {...props}>
       <PopoverTrigger>
-        <Button colorScheme="blue" size="sm">Categories</Button>
+        <Button disabled={Boolean(!state.userId)} colorScheme="blue" size="sm">Categories</Button>
       </PopoverTrigger>
       <PopoverContent w="auto">
         <PopoverBody>
@@ -146,30 +169,12 @@ export function UserCategoryList(
             const onClick = () => {
               console.log("Category clicked with label:", cat.label);
             };
-            const handleDeleteCategory = () => {
-              console.log("[Popover][UserCategoryList] Deleting category");
-              deleteCategory({
-                variables: {
-                  id: cat.id,
-                },
-              })
-                .then(() => {
-                  console.log(
-                    "[Popover][UserCategoryList] Sucessfully deleted category"
-                  );
-                })
-                .catch((error) => {
-                  console.log(
-                    "[Popover][UserCategoryList] Error deleting category:",
-                    error
-                  );
-                });
-            };
+            const _handleDeleteCategory = () => handleDeleteCategory(cat)
             return (
               <HStack key={cat.id} onClick={onClick}>
                 <CategoryTag mr="auto" {...cat} />
                 <IconButton
-                  onClick={handleDeleteCategory}
+                  onClick={_handleDeleteCategory}
                   aria-label="Delete category"
                   variant="unstyled"
                   icon={<DeleteIcon />}
@@ -181,9 +186,6 @@ export function UserCategoryList(
         <CreateCategoryPopover
           trigger={
             <PopoverFooter
-            // as={HStack}
-            // bg="green.200"
-            // sx={{ cursor: "pointer" }}
             >
               <Button colorScheme="green" w="100%" leftIcon={<AddIcon />}>
                 Create
@@ -223,7 +225,8 @@ export function CreateCategoryPopover({
   };
 
   const { state } = useAppContext();
-  const [createCategory, createCategoryRes] = useMutation(CREATE_CATEGORY);
+  const { getUserCategories } = useNoteContext()
+  const [createCategory, ] = useMutation(CREATE_CATEGORY);
 
   const handleSubmit = () => {
     console.log("[Popover][CreateCategoryPopover] Creating category");
@@ -237,6 +240,7 @@ export function CreateCategoryPopover({
         console.log(
           "[Popover][CreateCategoryPopover] Sucessfully created category"
         );
+        getUserCategories()
       })
       .catch((error) => {
         console.log(

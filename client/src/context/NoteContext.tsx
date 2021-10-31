@@ -7,7 +7,10 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import { INote } from "../types";
+import { useQuery } from '@apollo/client'
+import { GET_USER_CATEGORIES } from '../utils/queries'
+import { INote, ICategory } from "../types";
+// import { notePreview } from "../utils/seed";
 import { useAppContext } from './AppContext'
 
 export type ContextType = {
@@ -15,7 +18,10 @@ export type ContextType = {
   setCurrentNote: React.Dispatch<React.SetStateAction<INote | undefined>>;
   notesList: INote[];
   setNotesList: React.Dispatch<React.SetStateAction<INote[]>>;
-  updateCurrentNote: (modifiedCurrentNote: INote) => void
+  updateCurrentNote: (modifiedCurrentNote: INote) => void;
+  userCategories: ICategory[];
+  setUserCategories: React.Dispatch<React.SetStateAction<ICategory[]>>;
+  getUserCategories: () => void
 };
 const Context = createContext<ContextType | undefined>(undefined);
 
@@ -43,7 +49,30 @@ export function NoteContextProvider({
       return notesListModified;
     });
   };
-  // const currentNote: INote | undefined = undefined
+  
+  const { state } = useAppContext()
+  
+  const [userCategories, setUserCategories] = useState<ICategory[]>([])
+  const userCategoriesData = useQuery(GET_USER_CATEGORIES, { variables: { userId: state.userId }, skip: true })
+  
+  function getUserCategories() {
+    userCategoriesData.refetch({ userId: state.userId }).then(res => {
+      console.log("[NoteContext] userCategoriesData.data:", res.data)
+      setUserCategories(res.data.getUserCategories)
+    })
+  }
+
+  useEffect(() => {
+    if (!state.userId) {
+      setNotesList([])
+      setCurrentNote(undefined)
+      setUserCategories([])
+    } else {
+      getUserCategories()
+    }
+
+  }, [state.userId])
+
   const value = useMemo(() => {
     return {
       notesList,
@@ -51,16 +80,13 @@ export function NoteContextProvider({
       currentNote,
       setCurrentNote,
       updateCurrentNote,
+      userCategories,
+      setUserCategories,
+      getUserCategories
     };
-  }, [notesList, setNotesList, currentNote, setCurrentNote, updateCurrentNote]);
+  }, [notesList, setNotesList, currentNote, setCurrentNote, updateCurrentNote, userCategories, setUserCategories, getUserCategories]);
 
-  const { state } = useAppContext()
-  useEffect(() => {
-    if (!state.userId) {
-      setNotesList([])
-      setCurrentNote(undefined)
-    }
-  }, [state.userId])
+
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
