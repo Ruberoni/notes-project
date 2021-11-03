@@ -6,6 +6,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Box,
 } from "@chakra-ui/react";
 import { GoogleLogin } from "react-google-login";
 import { useMutation, ApolloError } from "@apollo/client";
@@ -63,7 +64,7 @@ export default function Register(): ReactElement {
   }
 
   return (
-    <>
+    <Box h="100%">
       {showAlert && (
         <Alert status="success">
           <AlertIcon />
@@ -82,6 +83,6 @@ export default function Register(): ReactElement {
         onFailure={onFailure}
         cookiePolicy={"single_host_origin"}
       />
-    </>
+    </Box>
   );
 }

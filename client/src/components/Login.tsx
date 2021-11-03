@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { GoogleLogin } from "react-google-login";
 import { useMutation, ApolloError } from "@apollo/client";
 import { GOOGLE_LOGIN } from "../utils/queries";
-import { useToast, UseToastOptions } from "@chakra-ui/react";
+import { useToast, UseToastOptions, Box } from "@chakra-ui/react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../context";
 import { useCustomGoogleLogin } from "../hooks";
@@ -62,7 +62,7 @@ export default function Login(): ReactElement {
   }
 
   return (
-    <>
+    <Box h="100%">
       {loading && <p>Loading, plese wait...</p>}
       <GoogleLogin
         clientId={clientId}
@@ -71,6 +71,6 @@ export default function Login(): ReactElement {
         onFailure={onFailure}
         cookiePolicy={"single_host_origin"}
       />
-    </>
+    </Box>
   );
 }
