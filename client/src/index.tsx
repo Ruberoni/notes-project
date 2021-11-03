@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Box } from "@chakra-ui/react";
 import "@fontsource/source-sans-pro";
 
 import reportWebVitals from "./reportWebVitals";
@@ -13,7 +13,7 @@ ReactDOM.render(
     <ChakraProvider theme={theme}>
       <ApolloProvider>
         <AppContextProvider>
-          <Routes />
+          <Box display="flex" h="100vh" flexDirection="column"><Routes /></Box>
         </AppContextProvider>
       </ApolloProvider>
     </ChakraProvider>

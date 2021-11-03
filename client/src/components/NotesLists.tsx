@@ -22,10 +22,10 @@ export interface NotesListProps extends BoxProps {
  * - Only one item can be active at a time using *Implement_accordion_logic* [X]
  */
 export default function NotesList(props: NotesListProps): JSX.Element {
-  const [notesList, loading] = useNotesList();
+  const [notesList, ] = useNotesList();
 
   return (
-    <Box className="hideScrollBar" h="inherit" w="inherit" {...props}>
+    <Box className="hideScrollBar" h="100%" w="inherit" {...props}>
       {notesList.map((noteP) => (
         <NoteItem
           key={noteP.id}
