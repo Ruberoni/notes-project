@@ -2,8 +2,14 @@ import React, { ReactElement } from "react";
 import { GoogleLogin } from "react-google-login";
 import { useMutation, ApolloError } from "@apollo/client";
 import { GOOGLE_LOGIN } from "../utils/queries";
-import { useToast, UseToastOptions, Box } from "@chakra-ui/react";
-import { useHistory } from 'react-router-dom'
+import {
+  useToast,
+  UseToastOptions,
+  Box,
+  Flex,
+  Heading,
+} from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
 import { useAppContext } from "../context";
 import { useCustomGoogleLogin } from "../hooks";
 
@@ -13,7 +19,7 @@ import { useCustomGoogleLogin } from "../hooks";
 export default function Login(): ReactElement {
   const context = useAppContext();
   const toast = useToast();
-  const history = useHistory()
+  const history = useHistory();
 
   const customToast = (
     title = "Success login.",
@@ -57,20 +63,28 @@ export default function Login(): ReactElement {
       };
       // Login
       context.dispatch({ type: "LOGIN", data: userData });
-      history.push("/")
+      history.push("/");
     });
   }
 
   return (
     <Box h="100%">
-      {loading && <p>Loading, plese wait...</p>}
-      <GoogleLogin
-        clientId={clientId}
-        buttonText="Login"
-        onSuccess={customOnSuccess}
-        onFailure={onFailure}
-        cookiePolicy={"single_host_origin"}
-      />
+      <Flex align="center" direction="column">
+        {loading && (
+          <Heading mt="2%" size="md">
+            Loading, please wait...
+          </Heading>
+        )}
+        <Box mt="2%">
+          <GoogleLogin
+            clientId={clientId}
+            buttonText="Login"
+            onSuccess={customOnSuccess}
+            onFailure={onFailure}
+            cookiePolicy={"single_host_origin"}
+          />
+        </Box>
+      </Flex>
     </Box>
   );
 }

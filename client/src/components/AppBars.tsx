@@ -67,7 +67,7 @@ export function TopBar(props: BoxProps): JSX.Element {
           </Text> 
         </Flex>
       )}
-      <Flex position="absolute" left="0" top="0" right="0" bottom="0">
+      <Flex h="inherit" position="absolute" left="0" top="0" right="0" bottom="0">
         {currentBreakpoint !== "base" && (
           <Heading as={RLink} to="/" bg="" size="md" pl="2%">
             Notes Project
