@@ -1,16 +1,14 @@
 import React, { useState, ReactNode } from "react";
-import NotesAccesibilityBar from "./AccesibilityBar";
-import NotesList from "./NotesLists";
 import {
   VStack,
   Drawer,
-  Button,
   DrawerContent,
   useBreakpoint,
   DrawerOverlay,
   StackProps,
+  IconButton,
 } from "@chakra-ui/react";
-
+import { HamburgerIcon } from "@chakra-ui/icons";
 /**
  * Lateral section
  *
@@ -54,15 +52,25 @@ export default function LateralSection({
   return (
     <>
       {currentBreakpoint === "base" && (
-        <Button position="absolute" left="0" onClick={openDrawer} zIndex="1">
+        <IconButton
+          aria-label="Open notes"
+          icon={<HamburgerIcon />}
+          position="absolute"
+          left="0"
+          top="0"
+          onClick={openDrawer}
+          h="26px"
+          w="26px"
+          zIndex="1"
+          bg="orange.400"
+          borderRadius={0}
+        >
           open drawer
-        </Button>
+        </IconButton>
       )}
       {useBreakPointDrawer(
         "base",
-        <VStack h="inherit" w="100%" {...props} {...onDrawerProps}>
-          {/* <NotesAccesibilityBar />
-          <NotesList /> */}
+        <VStack h="100%" w="100%" {...props} {...onDrawerProps}>
           {children}
         </VStack>
       )}

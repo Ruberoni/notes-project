@@ -6,10 +6,13 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Box,
+  Flex,
+  Heading,
 } from "@chakra-ui/react";
 import { GoogleLogin } from "react-google-login";
 import { useMutation, ApolloError } from "@apollo/client";
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 import { useCustomGoogleLogin } from "../hooks";
 import { GOOGLE_REGISTER } from "../utils/queries";
 
@@ -59,11 +62,13 @@ export default function Register(): ReactElement {
       name: res.profileObj.name,
     };
     console.log("[Google Register] userContent", userContent);
-    serverRegister({ variables: { userContent } }).then((res) => !res.errors && setShowAlert(true));
+    serverRegister({ variables: { userContent } }).then(
+      (res) => !res.errors && setShowAlert(true)
+    );
   }
 
   return (
-    <>
+    <Box h="100%">
       {showAlert && (
         <Alert status="success">
           <AlertIcon />
@@ -74,14 +79,22 @@ export default function Register(): ReactElement {
           {/* <CloseButton position="absolute" right="8px" top="8px" /> */}
         </Alert>
       )}
-      {loading && <p>Loading, plese wait...</p>}
-      <GoogleLogin
-        clientId={clientId}
-        buttonText="Register"
-        onSuccess={customOnSuccess}
-        onFailure={onFailure}
-        cookiePolicy={"single_host_origin"}
-      />
-    </>
+      <Flex align="center" direction="column">
+        {loading && (
+          <Heading mt="2%" size="md">
+            Loading, please wait...
+          </Heading>
+        )}
+        <Box mt="2%">
+          <GoogleLogin
+            clientId={clientId}
+            buttonText="Register"
+            onSuccess={customOnSuccess}
+            onFailure={onFailure}
+            cookiePolicy={"single_host_origin"}
+          />
+        </Box>
+      </Flex>
+    </Box>
   );
 }

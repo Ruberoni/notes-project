@@ -29,12 +29,12 @@ export default function NoteContent(props: StackProps): ReactElement {
   if (!note)
     return (
       <Center h="inherit" w="100%">
-        <Image src={typingImg} boxSize="290px" objectFit="cover" alt="Typing" />;
+        <Image src={typingImg} boxSize="290px" objectFit="cover" alt="Typing" />
       </Center>
     );
 
   return (
-    <VStack h="inherit" w="100%" {...props}>
+    <VStack h="100%" w="100%" {...props}>
       <HStack spacing="0px" align="normal" w="inherit" >
         <VStack w="inherit">
           <Textarea
