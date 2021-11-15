@@ -4,8 +4,9 @@ import NoteItem from "./NoteItem";
 import { INote } from "../types";
 import { useNotesList } from "../hooks";
 
-export interface NotesListProps extends BoxProps {
+export interface NotesListProps extends Omit<BoxProps, "filter"> {
   notesList?: INote[];
+  filter: string[]
 }
 
 /**
@@ -22,7 +23,7 @@ export interface NotesListProps extends BoxProps {
  * - Only one item can be active at a time using *Implement_accordion_logic* [X]
  */
 export default function NotesList(props: NotesListProps): JSX.Element {
-  const [notesList, ] = useNotesList();
+  const [notesList, ] = useNotesList(props.filter);
 
   return (
     <Box className="hideScrollBar" h="100%" w="inherit" {...props}>

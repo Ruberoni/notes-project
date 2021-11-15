@@ -11,8 +11,12 @@ function App(): JSX.Element {
     <HStack flex={1} spacing={0} overflow="auto">
       <NoteContextProvider>
         <LateralSection maxWidth="30%">
-          <AccesibilityBar />
-          <NotesList />
+          {(filter, setFilter) => (
+            <>
+              <AccesibilityBar filter={filter} setFilter={setFilter}/>
+              <NotesList filter={filter}/>
+            </>
+          )}
         </LateralSection>
         <NoteContent />
       </NoteContextProvider>
