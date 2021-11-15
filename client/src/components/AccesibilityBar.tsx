@@ -14,8 +14,13 @@ import { useNoteContext, useAppContext } from "../context";
 import { INote } from "../types";
 import { CREATE_NOTE } from "../utils/queries";
 import { UserCategoryList } from './CategoryList'
+import CategoriesFilter from "./CategoriesFilter";
+export interface NotesAccesibilityBarProps extends Omit<StackProps, "filter"> {
+  filter: string[]
+  setFilter: React.Dispatch<React.SetStateAction<string[]>>
+}
 
-export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
+export default function NotesAccesibilityBar({filter, setFilter, ...props}: NotesAccesibilityBarProps): JSX.Element {
   const appContext = useAppContext()
   const { setNotesList, setCurrentNote, notesList } = useNoteContext();
   console.log("appContext.state.userId:", appContext.state.userId)
@@ -49,6 +54,7 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
   };
   return (
     <AccesibilityBar rightIcon={rightIcon} {...props}>
+      <CategoriesFilter filter={filter} setFilter={setFilter}/>
       <UserCategoryList enabled={false}/>
     </AccesibilityBar>
   );

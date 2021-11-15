@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from "react";
+import React, { ReactElement, useState, ReactNode } from "react";
 import {
   VStack,
   Drawer,
@@ -9,6 +9,11 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+
+export interface ILateralSection extends StackProps{
+  children(filter: string[], setFilter: React.Dispatch<React.SetStateAction<string[]>>): ReactElement
+}
+
 /**
  * Lateral section
  *
@@ -18,7 +23,9 @@ import { HamburgerIcon } from "@chakra-ui/icons";
 export default function LateralSection({
   children,
   ...props
-}: StackProps): JSX.Element {
+}: ILateralSection): JSX.Element {
+  const [filter, setFilter] = useState<string[]>([])
+
   const currentBreakpoint = useBreakpoint();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   function closeDrawer() {
@@ -71,7 +78,7 @@ export default function LateralSection({
       {useBreakPointDrawer(
         "base",
         <VStack h="100%" w="100%" {...props} {...onDrawerProps}>
-          {children}
+          {children(filter, setFilter)}
         </VStack>
       )}
     </>
