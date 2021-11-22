@@ -15,6 +15,7 @@ import { Link as RLink } from "react-router-dom";
 import { useApolloClient } from "@apollo/client";
 import { useAppContext } from "../context";
 import { customUseGoogleLogout } from "../hooks";
+import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
@@ -93,17 +94,17 @@ export function BottomBar(props: FlexProps): JSX.Element {
   return (
     <Flex
       bg="#A8201A"
-      h="26px"
+      h="24px"
       color="white"
       justify="space-between"
       {...props}
     >
-      <Text bg="" textAlign="center" pl="2%">
-        Made by Ruben (c) 2021
-      </Text>
-      <Text bg="" textAlign="right" pr="2%">
-        About
-      </Text>
+      <Flex w="-webkit-fill-available">
+        <Text bg="" alignSelf="center" textAlign="center" pl="2%">
+          Made by Ruben (c) 2021
+        </Text>
+      </Flex>
+      <AboutModal mr="2%"/>
     </Flex>
   );
 }
