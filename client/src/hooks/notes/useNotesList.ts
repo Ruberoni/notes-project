@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@apollo/client";
 import { useNoteContext, useAppContext } from "../../context";
-// import { notePreview } from "../../utils/seed";
-import { GET_NOTES_PREVIEW } from "../../utils/queries";
 import { INote, ICategory } from "../../types";
+import { useNotesPreviewQuery } from "../../api/notes"
 
 export interface useNotesListProps {
   filter: string[]
@@ -35,35 +33,26 @@ export default function useNotesList(filter: string[]): [INote[], boolean] {
     }
   }, [filter])
 
-  const getNotes = useQuery(GET_NOTES_PREVIEW, {
-    variables: { userId: appContext.state.userId },
-    skip: true,
-  });
+  const notesPreviewQuery = useNotesPreviewQuery(appContext.state.userId as string, {
+    onCompleted: (data) => {
+      setNotesList(data?.getUserNotesPreview || [])
+    }
+  })
 
   useEffect(() => {
     if (appContext.state.userId) {
-      getNotes.refetch().then((res) => {
-        setNotesList(res.data.getUserNotesPreview);
-      }).catch(err => {
-        console.log('[Hook][useNotesList][getNotes] error:', err)
-      });
+      notesPreviewQuery.refetch()
     }
   }, [appContext.state.userId]);
 
   // This executes a 2nd render
   useEffect(() => {
-    setLoading(getNotes.loading);
-  }, [getNotes.loading]);
+    setLoading(notesPreviewQuery.loading);
+  }, [notesPreviewQuery.loading]);
 
   useEffect(() => {
     console.log('[Hook][useNotesList] Render!')
   })
-
-  console.log("data:", getNotes.data);
-  /*
-  if (getNotes.data) {
-    setNotesList(getNotes.data.getUserNotesPreview)
-  }*/
 
   return [filteredNotesList, loading];
 }

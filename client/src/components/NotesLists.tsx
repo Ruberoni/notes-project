@@ -20,7 +20,6 @@ export interface NotesListProps extends Omit<BoxProps, "filter"> {
  *
  * @todo
  * - Scrollable notes [X]
- * - Only one item can be active at a time using *Implement_accordion_logic* [X]
  */
 export default function NotesList(props: NotesListProps): JSX.Element {
   const [notesList, ] = useNotesList(props.filter);

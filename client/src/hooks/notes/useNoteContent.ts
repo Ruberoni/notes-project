@@ -1,15 +1,14 @@
 import { useEffect, useState, BaseSyntheticEvent } from "react";
-import { useMutation, useQuery, ApolloError } from "@apollo/client";
+import { useMutation, ApolloError } from "@apollo/client";
 import { useNoteContext } from "../../context";
 import {
-  GET_NOTE_BODY,
-  DELETE_CATEGORY_NOTE,
   UPDATE_NOTE,
   DELETE_NOTE
 } from "../../utils/queries";
 import { INote } from "../../types";
 import { NoteContentProps } from "../../components/NoteContent";
 import SavingTimer from "../../utils/SavingTimer";
+import { useNoteBodyQuery, useDeleteCategoryNoteMutation } from "../../api/notes"; 
 
 export interface useNoteContentProps {
   title: NoteContentProps["title"];
@@ -57,11 +56,19 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
   const onError = (err: ApolloError) => {
     console.log("[Network error] error:", err);
   };
-  const getNoteBody = useQuery(GET_NOTE_BODY, {skip: true});
-  const [deleteCategoryNote, ] = useMutation(
-    DELETE_CATEGORY_NOTE,
-    { onError }
-  );
+
+  const noteBodyQuery = useNoteBodyQuery(currentNote?.id as string, {
+    onCompleted: (data) => {
+      setBody(data.getNoteBody)
+    }
+  })
+
+  const [deleteCategoryNote] = useDeleteCategoryNoteMutation({
+    onCompleted: () => {
+      console.log('Deleted category note')
+    }
+  })
+
   const [updateNote, ] = useMutation(UPDATE_NOTE, {
     onError,
   });
@@ -83,31 +90,11 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
 
   useEffect(() => {
     if (currentNote) {
-
-      const isBodyCached = getBodyCached(currentNote?.id);
-      if (!isBodyCached) {
-        console.log("[Hook][useNoteContent][useEffect] will call getNoteBody")
-        getNoteBody.refetch({
-            noteId: currentNote?.id,
-        }).then(res => {
-          setBody(res.data.getNoteBody)
-        }).catch(error => {
-        console.log("[Hook][useNoteContent][getNoteBody] error:", error)
-
-        })
-      }
+      noteBodyQuery.refetch({
+        noteId: currentNote?.id,
+      })
     }
   }, [currentNote?.id]);
-
-  useEffect(() => {
-    console.log("[Hook][useNoteContent] Render!")
-    console.log("[Hook][useNoteContent] savingTimer.isActive:", savingTimer.isActive)
-  })
-
-  /*useEffect(() => {
-    setLoading(resGetNodeBody.loading || resDeleteCategoryNote.loading);
-  }, [resGetNodeBody.loading, resDeleteCategoryNote.loading]);
-  */
 
   const utils: utils = {
     handleBodyChange: (event) => {
@@ -169,13 +156,6 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
       });
     },
   };
-
-  /**
-   * To implement
-   */
-  const getBodyCached = (note?: string) => {
-    return false;
-  }; 
 
   return [currentNote && { ...currentNote, body }, loading, utils];
 }
