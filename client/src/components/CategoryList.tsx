@@ -23,13 +23,11 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { DeleteIcon, AddIcon, CheckIcon } from "@chakra-ui/icons";
-import { useMutation, ApolloError } from "@apollo/client";
 import CategoryTag, { CategoryTagProps } from "./CategoryTag";
-import { ADD_CATEGORY_NOTE } from "../utils/queries";
 import { ICategory } from "../types";
 import { useNoteContext, useAppContext } from "../context";
-// import { categoriesList } from "../utils/seed";
-import { CREATE_CATEGORY, DELETE_CATEGORY } from "../utils/queries";
+import { useAddCategoryNoteMutation } from "../api/notes";
+import { useDeleteCategoryMutation, useCreateCategoryMutation } from "../api/categories";
 
 export interface CategoryListProps extends Omit<MenuProps, "children"> {
   categories?: ICategory[];
@@ -38,41 +36,16 @@ export interface CategoryListProps extends Omit<MenuProps, "children"> {
 
 export default function CategoryList(props: CategoryListProps): ReactElement {
   const { currentNote, updateCurrentNote, userCategories } = useNoteContext();
-  // const { state } = useAppContext()
   if (!currentNote) return <></>;
-
-  // const getCategories = useQuery(GET_USER_CATEGORIES, {variables: {userId: state.userId} })
-  // console.log("[Popover][CategoryList][getCategories] data:", getCategories.data)
-  // const userCategories: ICategory[] = getCategories.data?.getUserCategories || [];
-
-  const onAddCategoryNoteError = (error: ApolloError) => {
-    console.log("[Component][CategoryList][addCategoryNote] error:", error);
-  };
-  const [addCategoryNote, ] = useMutation(ADD_CATEGORY_NOTE, {
-    onError: onAddCategoryNoteError,
-  });
+  const [addCategoryNote] = useAddCategoryNoteMutation()
 
   const handleAddCategoryNote = (cat: ICategory) => {
-    console.log("[Popover][CategoryList] Adding category note");
     addCategoryNote({
       variables: {
         categoryId: cat.id,
         noteId: currentNote.id,
       },
     })
-      .then((res) => {
-        if (res.data !== undefined) {
-          console.log(
-            "[Popover][CategoryList] Sucessfully added category note"
-          );
-        }
-      })
-      .catch((error) => {
-        console.log(
-          "[Popover][CategoryList] Error adding category note:",
-          error
-        );
-      });
 
     updateCurrentNote({
       ...currentNote,
@@ -130,32 +103,15 @@ export function UserCategoryList(
   const { state } = useAppContext();
   const { userCategories, setUserCategories } = useNoteContext()
 
-  // const getCategories = useQuery(GET_USER_CATEGORIES, {variables: {userId: state.userId} })
-  // console.log("[Popover][UserCategoryList][getCategories] data:", getCategories.data)
-  // const userCategories: ICategory[] = getCategories.data?.getUserCategories || [];
-
-  const [deleteCategory, ] = useMutation(DELETE_CATEGORY);
+  const [deleteCategory, ] = useDeleteCategoryMutation();
   
   const handleDeleteCategory = (cat: ICategory) => {
-    console.log("[Popover][UserCategoryList] Deleting category");
     setUserCategories(prev => prev.filter(_cat => cat.id !== _cat.id))
     deleteCategory({
       variables: {
         id: cat.id,
       },
     })
-      .then(() => {
-        console.log(
-          "[Popover][UserCategoryList] Sucessfully deleted category"
-          );
-          // getUserCategories()
-      })
-      .catch((error) => {
-        console.log(
-          "[Popover][UserCategoryList] Error deleting category:",
-          error
-        );
-      });
   };
 
   return (
@@ -226,28 +182,20 @@ export function CreateCategoryPopover({
 
   const { state } = useAppContext();
   const { getUserCategories } = useNoteContext()
-  const [createCategory, ] = useMutation(CREATE_CATEGORY);
+  const [createCategory] = useCreateCategoryMutation({
+    onCompleted: () => {
+      getUserCategories()
+    }
+  });
 
   const handleSubmit = () => {
     console.log("[Popover][CreateCategoryPopover] Creating category");
     createCategory({
       variables: {
-        userId: state.userId,
+        userId: state.userId as string,
         content: formValues,
       },
     })
-      .then(() => {
-        console.log(
-          "[Popover][CreateCategoryPopover] Sucessfully created category"
-        );
-        getUserCategories()
-      })
-      .catch((error) => {
-        console.log(
-          "[Popover][CreateCategoryPopover] Error creating category:",
-          error
-        );
-      });
   };
 
   return (

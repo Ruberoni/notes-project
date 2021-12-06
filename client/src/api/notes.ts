@@ -3,7 +3,9 @@ import {
   GET_NOTE_BODY,
   DELETE_CATEGORY_NOTE,
   UPDATE_NOTE,
-  DELETE_NOTE
+  DELETE_NOTE,
+  CREATE_NOTE,
+  ADD_CATEGORY_NOTE
 } from "../utils/queries";
 import {
   useQuery,
@@ -14,7 +16,18 @@ import {
   QueryResult,
   MutationTuple,
 } from "@apollo/client";
+import { INote } from "../types";
 
+/**
+ * Helpers 
+ */
+const onError = (err: ApolloError) => {
+  console.log("[Network error] error:", err);
+};
+
+/**
+ * Hooks 
+ */
 export function useNotesPreviewQuery(
   userId: string,
   extraOptions?: QueryHookOptions
@@ -24,9 +37,6 @@ export function useNotesPreviewQuery(
     ...extraOptions,
   });
 }
-const onError = (err: ApolloError) => {
-  console.log("[Network error] error:", err);
-};
 
 export function useNoteBodyQuery(
   noteId: string,
@@ -39,8 +49,7 @@ export function useNoteBodyQuery(
     ...extraOptions,
   });
 }
-
-interface categoryNote {
+interface IDeleteCategoryNoteMutationVars {
   categoryId: string;
   noteId: string;
 }
@@ -48,16 +57,16 @@ interface categoryNote {
 export function useDeleteCategoryNoteMutation(
   extraOptions?: MutationHookOptions<
     { deleteCategoryNote: string },
-    categoryNote
+    IDeleteCategoryNoteMutationVars
   >
-): MutationTuple<{ deleteCategoryNote: string }, categoryNote> {
+): MutationTuple<{ deleteCategoryNote: string }, IDeleteCategoryNoteMutationVars> {
   return useMutation(DELETE_CATEGORY_NOTE, {
     onError,
     ...extraOptions,
   });
 }
 
-interface IUseUpdateNtoteMutationVariables {
+interface IUpdateNoteMutationVars {
   id: string,
   content: { title: string, body: string }
 }
@@ -65,8 +74,8 @@ interface IUseUpdateNtoteMutationVariables {
 export function useUpdateNoteMutation(
   extraOptions?: MutationHookOptions<
   { updateNote: string },
-  IUseUpdateNtoteMutationVariables
->): MutationTuple<{ updateNote: string }, IUseUpdateNtoteMutationVariables> {
+  IUpdateNoteMutationVars
+>): MutationTuple<{ updateNote: string }, IUpdateNoteMutationVars> {
   return useMutation(UPDATE_NOTE, {
     onError,
     ...extraOptions,
@@ -79,6 +88,36 @@ export function useDeleteNoteMutation(
   {id: string}
 >): MutationTuple<{ deleteNote: string }, {id: string}> {
   return useMutation(DELETE_NOTE, {
+    onError,
+    ...extraOptions,
+  });
+}
+
+interface ICreateNoteMutationVars {
+  userId: string,
+  content: Partial<INote>
+}
+export function useCreateNoteMutation(
+  extraOptions?: MutationHookOptions<
+  { createNote: INote },
+  ICreateNoteMutationVars
+>): MutationTuple<{ createNote: INote }, ICreateNoteMutationVars> {
+  return useMutation(CREATE_NOTE, {
+    onError,
+    ...extraOptions,
+  });
+}
+
+interface IAddCategoryNoteMutationVars {
+  categoryId: string;
+  noteId: string;
+}
+export function useAddCategoryNoteMutation(
+  extraOptions?: MutationHookOptions<
+  { addCategoryNote: string },
+  IAddCategoryNoteMutationVars
+>): MutationTuple<{ addCategoryNote: string }, IAddCategoryNoteMutationVars> {
+  return useMutation(ADD_CATEGORY_NOTE, {
     onError,
     ...extraOptions,
   });
