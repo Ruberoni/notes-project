@@ -2,6 +2,8 @@ import {
   GET_NOTES_PREVIEW,
   GET_NOTE_BODY,
   DELETE_CATEGORY_NOTE,
+  UPDATE_NOTE,
+  DELETE_NOTE
 } from "../utils/queries";
 import {
   useQuery,
@@ -50,6 +52,33 @@ export function useDeleteCategoryNoteMutation(
   >
 ): MutationTuple<{ deleteCategoryNote: string }, categoryNote> {
   return useMutation(DELETE_CATEGORY_NOTE, {
+    onError,
+    ...extraOptions,
+  });
+}
+
+interface IUseUpdateNtoteMutationVariables {
+  id: string,
+  content: { title: string, body: string }
+}
+
+export function useUpdateNoteMutation(
+  extraOptions?: MutationHookOptions<
+  { updateNote: string },
+  IUseUpdateNtoteMutationVariables
+>): MutationTuple<{ updateNote: string }, IUseUpdateNtoteMutationVariables> {
+  return useMutation(UPDATE_NOTE, {
+    onError,
+    ...extraOptions,
+  });
+}
+
+export function useDeleteNoteMutation(
+  extraOptions?: MutationHookOptions<
+  { deleteNote: string },
+  {id: string}
+>): MutationTuple<{ deleteNote: string }, {id: string}> {
+  return useMutation(DELETE_NOTE, {
     onError,
     ...extraOptions,
   });
