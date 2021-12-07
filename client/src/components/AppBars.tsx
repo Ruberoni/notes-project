@@ -12,11 +12,14 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { Link as RLink } from "react-router-dom";
+import { useApolloClient } from "@apollo/client";
 import { useAppContext } from "../context";
 import { customUseGoogleLogout } from "../hooks";
+import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
+  const apolloClient = useApolloClient()
 
   const context = useAppContext();
   const isLoggedIn = Boolean(context.state.userId);
@@ -26,6 +29,11 @@ export function TopBar(props: BoxProps): JSX.Element {
 
   const [error, { signOut }] = customUseGoogleLogout();
   if (error) return error;
+
+  const handleLogout = async () => {
+    await apolloClient.clearStore()
+    signOut?.()
+  }
 
   const LoggedOutButtons = (
     <>
@@ -52,7 +60,7 @@ export function TopBar(props: BoxProps): JSX.Element {
 
   const LoggedInButton = (
     <>
-      <Button bg="trasparent" h="inherit" onClick={signOut}>
+      <Button bg="trasparent" h="inherit" onClick={handleLogout}>
         LOGOUT
       </Button>
     </>
@@ -86,17 +94,17 @@ export function BottomBar(props: FlexProps): JSX.Element {
   return (
     <Flex
       bg="#A8201A"
-      h="26px"
+      h="24px"
       color="white"
       justify="space-between"
       {...props}
     >
-      <Text bg="" textAlign="center" pl="2%">
-        Made by Ruben (c) 2021
-      </Text>
-      <Text bg="" textAlign="right" pr="2%">
-        About
-      </Text>
+      <Flex w="-webkit-fill-available">
+        <Text bg="" alignSelf="center" textAlign="center" pl="2%">
+          Made by <Link href='https://github.com/Ruberoni/' isExternal>Ruben</Link> (c) 2021
+        </Text>
+      </Flex>
+      <AboutModal mr="2%" modalBodyProps={{ fontSize: "lg" }} />
     </Flex>
   );
 }

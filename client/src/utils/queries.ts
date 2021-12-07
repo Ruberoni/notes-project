@@ -34,7 +34,7 @@ export const GOOGLE_LOGIN = gql`
   }
 `;
 
-export const GOOGLE_REGISTER = gql`
+export const REGISTER = gql`
   mutation GoogleRegister($userContent: UserContent!) {
     register(userContent: $userContent)
   }

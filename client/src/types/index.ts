@@ -1,5 +1,15 @@
-export interface hasUser {
+export interface Node {
   id: string;
+}
+export interface IUser extends Node {
+  id: string;
+  googleId?: string;
+  email?: string;
+  name?: string;
+  notes?: INote[];
+  categories?: ICategory[];
+}
+export interface hasUser extends Node {
   user?: string;
 }
 

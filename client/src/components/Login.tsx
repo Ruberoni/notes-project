@@ -1,7 +1,5 @@
 import React, { ReactElement } from "react";
 import { GoogleLogin } from "react-google-login";
-import { useMutation, ApolloError } from "@apollo/client";
-import { GOOGLE_LOGIN } from "../utils/queries";
 import {
   useToast,
   UseToastOptions,
@@ -12,6 +10,7 @@ import {
 import { useHistory } from "react-router-dom";
 import { useAppContext } from "../context";
 import { useCustomGoogleLogin } from "../hooks";
+import { useGoogleLoginMutation } from "../api/auth";
 
 /**
  * Displays and handles Google Login
@@ -34,17 +33,11 @@ export default function Login(): ReactElement {
       isClosable: true,
     });
 
-  function onError(err: ApolloError) {
-    console.log("[Network error] Google login. error:", err);
-    customToast("Login error", "error", "");
-  }
   /**
    * data: googleLogin{ id, googleId, email, name }
    * onError: if useMutation returns an error, this is thrown, so makes the React server to shutdown
    */
-  const [serverLogin, { loading }] = useMutation(GOOGLE_LOGIN, {
-    onError,
-  });
+  const [serverLogin, { loading }] = useGoogleLoginMutation()
   /**
    * Successful fetch
    */
@@ -52,19 +45,22 @@ export default function Login(): ReactElement {
     useCustomGoogleLogin();
   if (clientIDError) return clientIDError;
 
-  function customOnSuccess(res: any) {
+  const customOnSuccess = async (res: any) => {
     onSuccess(res);
-    serverLogin({ variables: { googleId: res.googleId } }).then((res) => {
-      console.log("[Successful request] Google login.");
-      customToast();
-      const userData = {
-        userId: res.data.googleLogin?.id,
-        userName: res.data.googleLogin?.name,
-      };
-      // Login
-      context.dispatch({ type: "LOGIN", data: userData });
-      history.push("/");
-    });
+    const loginRes = await serverLogin({
+      variables: {
+        googleId: res.googleId
+      }
+    })
+    console.log("[Successful request] Google login.");
+    customToast();
+    const userData = {
+      userId: loginRes?.data?.googleLogin?.id as string,
+      userName: loginRes?.data?.googleLogin?.name as string,
+    };
+    // Login
+    context.dispatch({ type: "LOGIN", data: userData });
+    history.push("/");
   }
 
   return (
