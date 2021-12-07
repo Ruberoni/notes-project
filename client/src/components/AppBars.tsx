@@ -101,10 +101,10 @@ export function BottomBar(props: FlexProps): JSX.Element {
     >
       <Flex w="-webkit-fill-available">
         <Text bg="" alignSelf="center" textAlign="center" pl="2%">
-          Made by Ruben (c) 2021
+          Made by <Link href='https://github.com/Ruberoni/' isExternal>Ruben</Link> (c) 2021
         </Text>
       </Flex>
-      <AboutModal mr="2%"/>
+      <AboutModal mr="2%" modalBodyProps={{ fontSize: "lg" }} />
     </Flex>
   );
 }
