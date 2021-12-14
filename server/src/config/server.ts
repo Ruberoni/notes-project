@@ -6,6 +6,7 @@ import Hapi from "@hapi/hapi";
 import { buildSchema } from "type-graphql";
 import { Queries, Mutations, formatError } from "../graphql";
 import { NotesProjectDataSource } from "../graphql/dataSources";
+import authChecker from './authChecker'
 
 /**
  * This InitApolloServer function is needed for two things:
@@ -19,11 +20,17 @@ export const InitApolloServer = async (
     schema: await buildSchema({
       resolvers: [Queries, Mutations],
       nullableByDefault: true,
+      authChecker,
     }),
     dataSources: () => ({
       notesProject: dataSource /*new NotesProjectDataSource()*/,
     }),
     formatError,
+    context: async ({ request }) => {
+      return {
+        headers: request.headers
+      }
+    }
   });
 
 /**
