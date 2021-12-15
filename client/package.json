@@ -31,6 +31,7 @@
     "@types/react-dom": "^17.0.0",
     "framer-motion": "^4",
     "graphql": "^15.5.3",
+    "jsonwebtoken": "^8.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
@@ -59,6 +60,7 @@
     ]
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.6",
     "@types/react-router-dom": "^5.1.8",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",

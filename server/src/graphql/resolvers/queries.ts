@@ -49,7 +49,6 @@ export default class Queries {
     @Arg("userId") userId: string,
     @Ctx() ctx: any
   ): Promise<NotePreview[]> {
-    console.log("[Queries][getUserNotesPreview] userId:", userId)
     return await ctx.dataSources.notesProject.getUserNotesPreview(userId);
   }
 
@@ -68,7 +67,6 @@ export default class Queries {
     @Arg("noteId") noteId: string,
     @Ctx() ctx: any
   ): Promise<string> {
-    console.log('[getNoteBody] context:', ctx)
     return await ctx.dataSources.notesProject.getNoteBody(noteId);
   }
 }
