@@ -12,28 +12,18 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { Link as RLink } from "react-router-dom";
-import { useApolloClient } from "@apollo/client";
 import { useAppContext } from "../context";
-import { customUseGoogleLogout } from "../hooks";
+
 import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
-  const apolloClient = useApolloClient()
 
   const context = useAppContext();
   const isLoggedIn = Boolean(context.state.userId);
 
   const LoggedOutWelcomeText = "Welcome, please login or register.";
   const LoggedInWelcomeText = `Welcome ${context.state.userName}`;
-
-  const [error, { signOut }] = customUseGoogleLogout();
-  if (error) return error;
-
-  const handleLogout = async () => {
-    await apolloClient.clearStore()
-    signOut?.()
-  }
 
   const LoggedOutButtons = (
     <>
@@ -60,7 +50,7 @@ export function TopBar(props: BoxProps): JSX.Element {
 
   const LoggedInButton = (
     <>
-      <Button bg="trasparent" h="inherit" onClick={handleLogout}>
+      <Button bg="trasparent" h="inherit" onClick={context.auth.logout}>
         LOGOUT
       </Button>
     </>

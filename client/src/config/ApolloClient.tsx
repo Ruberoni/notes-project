@@ -27,9 +27,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const authLink = setContext((_, { headers }) => {
-  // const token = localStorage.getItem('token');
-  const token = "Fake token"
-  // return the headers to the context so httpLink can read them
+  const token = localStorage.getItem('userToken');
   return {
     headers: {
       ...headers,

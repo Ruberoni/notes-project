@@ -13,10 +13,10 @@ const onError = (err: ApolloError) => {
 
 export function useGoogleLoginMutation(
   extraOptions?: MutationHookOptions<
-    { googleLogin: Partial<IUser> },
+    { googleLogin: string },
     { googleId: string }
   >
-): MutationTuple<{ googleLogin: Partial<IUser> }, { googleId: string }> {
+): MutationTuple<{ googleLogin: string }, { googleId: string }> {
   return useMutation(GOOGLE_LOGIN, {
     onError,
     ...extraOptions,
