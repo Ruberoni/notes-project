@@ -2,8 +2,10 @@
 
 import { ApolloServer } from "apollo-server-hapi";
 import { DataSource } from "apollo-datasource";
-import Hapi from "@hapi/hapi";
+import Hapi, { server as hapiServer } from "@hapi/hapi";
 import { buildSchema } from "type-graphql";
+import jwksRsa from 'jwks-rsa'
+import jwt from 'hapi-auth-jwt2'
 import { Queries, Mutations, formatError } from "../graphql";
 import { NotesProjectDataSource } from "../graphql/dataSources";
 import authChecker from './authChecker'
@@ -50,6 +52,62 @@ export const initServer = async (): Promise<void> =>
     const hapiServer = Hapi.server({
       port: process.env.PORT,
     });
+
+    await hapiServer.register(jwt)
+
+    hapiServer.auth.strategy('jwt', 'jwt', {
+      // Get the complete decoded token, because we need info from the header (the kid)
+      complete: true,
+      
+      headerKey: 'authorization',
+      tokenType: 'Bearer',
+      
+      // Dynamically provide a signing key based on the kid in the header and the signing keys provided by the JWKS endpoint.
+      key: jwksRsa.hapiJwt2KeyAsync({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: 'https://dev-ipdx4j09.us.auth0.com/.well-known/jwks.json'
+      }),
+      
+      // Your own logic to validate the user.
+      validate: (decoded: any, request: any, h: any): any => {
+        console.log("Validating user... decoded:", decoded)
+        return {
+          isValid: true
+        }
+      },
+      
+      // Validate the audience and the issuer.
+      verifyOptions: {
+        audience: '8d3d6a7b-a2f8-40dd-9233-f14c3115efe4',
+        issuer: 'https://dev-ipdx4j09.us.auth0.com/',
+        algorithms: [ 'RS256' ]
+      }
+    });
+
+    hapiServer.auth.default('jwt')
+
+    hapiServer.route([
+      {
+        method: "GET",
+        path: "/",
+        options: { auth: false },
+        handler: function(request, h) {
+          return {text: 'Token not required'};
+        }
+      },
+      {
+        method: 'GET',
+        path: '/restricted',
+        options: { auth: 'jwt' },
+        handler: function(request, h) {
+          const response = h.response({text: 'You used a Token!', token: request.headers.authorization});
+          response.header("Authorization", request.headers.authorization);
+          return response;
+        }
+      }
+    ]);
 
     await apolloServer.applyMiddleware({
       app: hapiServer,

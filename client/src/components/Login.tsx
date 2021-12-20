@@ -55,8 +55,8 @@ export default function Login(): ReactElement {
     console.log("[Successful request] Google login.");
     customToast();
     // Login
-    const error = context.auth.login(loginRes?.data?.googleLogin as string)
-    if (!error) history.push("/");
+    // const error = context.auth.login(loginRes?.data?.googleLogin as string)
+    // if (!error) history.push("/");
   }
 
   return (

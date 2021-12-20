@@ -12,30 +12,34 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { Link as RLink } from "react-router-dom";
+import { useAuth0 } from '@auth0/auth0-react';
 import { useAppContext } from "../context";
 
 import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
-
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const context = useAppContext();
-  const isLoggedIn = Boolean(context.state.userId);
+
+  // const isLoggedIn = Boolean(context.state.userId);
+  const isLoggedIn = isAuthenticated;
 
   const LoggedOutWelcomeText = "Welcome, please login or register.";
   const LoggedInWelcomeText = `Welcome ${context.state.userName}`;
 
   const LoggedOutButtons = (
     <>
-      <Link
-        as={RLink}
-        to="/login"
+      <Button
+        // as={RLink}
+        // to="/login"
+        onClick={loginWithRedirect}
         mr="2"
         fontWeight="bold"
         _hover={{ textDecoration: "none" }}
       >
         LOGIN
-      </Link>
+      </Button>
       <Link
         as={RLink}
         to="/register"
