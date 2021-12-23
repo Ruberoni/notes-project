@@ -72,7 +72,8 @@ export const initServer = async (): Promise<void> =>
       
       // Your own logic to validate the user.
       validate: (decoded: any, request: any, h: any): any => {
-        console.log("Validating user... decoded:", decoded)
+        console.log("[validate] Validating user... decoded:", decoded)
+        // console.log("[validate] request:", request)
         return {
           isValid: true
         }
