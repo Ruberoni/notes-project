@@ -1,22 +1,13 @@
 import { AuthChecker, ResolverData } from "type-graphql";
 import jwt from "jsonwebtoken";
 import { getBearerValue } from "../utils";
+import { request } from "http";
 
-const authChecker: AuthChecker<{ headers: any }> = async ({
+const authChecker: AuthChecker<{ request: any }> = async ({
   context,
-}: ResolverData<{ headers: any }>) => {
-  // const token = getBearerValue(context.headers.authorization) as string;
-  // try {
-  //   jwt.verify(token, process.env.token || "SECRET", {
-  //     algorithms: ['RS256'],
-  //     issuer: 'https://dev-ipdx4j09.us.auth0.com/',
-  //     audience: '8d3d6a7b-a2f8-40dd-9233-f14c3115efe4',
-      
-  //   })
-  // } catch (error) {
-  //   return false;
-  // }
-  // return true;
+}: ResolverData<{ request: any }>) => {
+  if (!context.request.auth.isAuthenticated) return false
+
   return true
 };
 

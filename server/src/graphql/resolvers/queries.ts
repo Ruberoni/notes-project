@@ -1,6 +1,6 @@
-import { Resolver, Query, Ctx, Arg, Authorized } from "type-graphql";
-import { NoteContent } from "..";
+import { Resolver, Query, Ctx, Arg, Authorized, UseMiddleware } from "type-graphql";
 import { User, Note, Category, NotePreview } from "../typeDefs";
+import { ExposeUser } from '../middlewares'
 @Resolver()
 export default class Queries {
   @Query()
@@ -20,36 +20,40 @@ export default class Queries {
   }
 
   @Authorized()
+  @UseMiddleware(ExposeUser)
   @Query((_returns) => User)
   async getUser(@Arg("id") id: string, @Ctx() ctx: any): Promise<User> {
-    return await ctx.dataSources.notesProject.getUser(id);
+    return await ctx.dataSources.notesProject.getUser(ctx.user.id || id);
   }
 
   @Authorized()
+  @UseMiddleware(ExposeUser)
   @Query((_returns) => [Note])
   async getUserNotes(
     @Arg("userId") userId: string,
     @Ctx() ctx: any
   ): Promise<Note[]> {
-    return await ctx.dataSources.notesProject.getUserNotes(userId);
+    return await ctx.dataSources.notesProject.getUserNotes(ctx.user.id || userId);
   }
 
   @Authorized()
+  @UseMiddleware(ExposeUser)
   @Query((_returns) => [Category])
   async getUserCategories(
     @Arg("userId") userId: string,
     @Ctx() ctx: any
   ): Promise<Category[]> {
-    return await ctx.dataSources.notesProject.getUserCategories(userId);
+    return await ctx.dataSources.notesProject.getUserCategories(ctx.user.id || userId);
   }
 
   @Authorized()
+  @UseMiddleware(ExposeUser)
   @Query((_returns) => [NotePreview])
   async getUserNotesPreview(
     @Arg("userId") userId: string,
     @Ctx() ctx: any
   ): Promise<NotePreview[]> {
-    return await ctx.dataSources.notesProject.getUserNotesPreview(userId);
+    return await ctx.dataSources.notesProject.getUserNotesPreview(ctx.user.id || userId);
   }
 
   @Authorized()

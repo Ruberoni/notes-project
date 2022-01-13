@@ -1,6 +1,7 @@
-import { Resolver, Mutation, Ctx, Arg, Authorized } from "type-graphql";
+import { Resolver, Mutation, Ctx, Arg, Authorized, UseMiddleware } from "type-graphql";
 import { User, Note, UserContent, NoteContent, CategoryContent } from "../typeDefs";
 import { authenticate } from "../../services/auth";
+import { ExposeUser } from "../middlewares";
 @Resolver()
 export default class Mutations {
   @Mutation((_returns) => String)
@@ -26,22 +27,24 @@ export default class Mutations {
   }
 
   @Authorized()
+  @UseMiddleware(ExposeUser)
   @Mutation((_returns) => String)
   async deleteUser(
     @Arg("id", { nullable: false }) id: string,
     @Ctx() ctx: any
   ): Promise<string> {
-    return await ctx.dataSources.notesProject.deleteUser(id);
+    return await ctx.dataSources.notesProject.deleteUser(ctx.user.id || id);
   }
 
   @Authorized()
+  @UseMiddleware(ExposeUser)
   @Mutation((_returns) => Note)
   async createNote(
     @Arg("userId", { nullable: false }) userId: string,
     @Arg("content", { nullable: false }) content: NoteContent,
     @Ctx() ctx: any
   ): Promise<Note> {
-    return await ctx.dataSources.notesProject.createNote(userId, content);
+    return await ctx.dataSources.notesProject.createNote(ctx.user.id || userId, content);
   }
 
   @Authorized()
@@ -55,6 +58,7 @@ export default class Mutations {
   }
 
   @Authorized()
+  @UseMiddleware(ExposeUser)
   @Mutation((_returns) => String)
   async deleteNote(
     @Arg("id", { nullable: false }) id: string,
@@ -64,13 +68,14 @@ export default class Mutations {
   }
 
   @Authorized()
+  @UseMiddleware(ExposeUser)
   @Mutation((_returns) => String)
   async createCategory(
     @Arg("userId", { nullable: false }) userId: string,
     @Arg("content", { nullable: false }) content: CategoryContent,
     @Ctx() ctx: any
   ): Promise<string> {
-    return await ctx.dataSources.notesProject.createCategory(userId, content);
+    return await ctx.dataSources.notesProject.createCategory(ctx.user.id || userId, content);
   }
 
   @Authorized()

@@ -11,7 +11,7 @@ import {
   FlexProps,
   Spacer,
 } from "@chakra-ui/react";
-import { Link as RLink } from "react-router-dom";
+import { Link as RLink,  } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
 import { useAppContext } from "../context";
 
@@ -33,6 +33,7 @@ export function TopBar(props: BoxProps): JSX.Element {
       <Button
         // as={RLink}
         // to="/login"
+        h="inherit"
         onClick={loginWithRedirect}
         mr="2"
         fontWeight="bold"

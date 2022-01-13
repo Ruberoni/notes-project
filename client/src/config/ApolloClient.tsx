@@ -45,9 +45,6 @@ export default function Provider({
     const authLink = setContext(async (_, { headers }) => {
       const token = await getAccessTokenSilently()
       
-      console.log("[ApolloClient][authLink] token:", token)
-    
-      // const token = localStorage.getItem('userToken');
       return {
         headers: {
           ...headers,

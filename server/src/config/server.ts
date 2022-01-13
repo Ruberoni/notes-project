@@ -30,7 +30,8 @@ export const InitApolloServer = async (
     formatError,
     context: async ({ request }) => {
       return {
-        headers: request.headers
+        request,
+        user: request.auth?.credentials?.payload?.['http://www.8d3d6a7b-a2f8-40dd-9233-f14c3115efe4.com/user'] || {}
       }
     }
   });
@@ -70,10 +71,8 @@ export const initServer = async (): Promise<void> =>
         jwksUri: 'https://dev-ipdx4j09.us.auth0.com/.well-known/jwks.json'
       }),
       
-      // Your own logic to validate the user.
-      validate: (decoded: any, request: any, h: any): any => {
-        console.log("[validate] Validating user... decoded:", decoded)
-        // console.log("[validate] request:", request)
+      // User validation is done in Auth0 and AuthChecker.
+      validate: () => {
         return {
           isValid: true
         }
