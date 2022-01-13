@@ -18,7 +18,7 @@ interface IContext {
  */
 const ExposeUser: MiddlewareFn<IContext> = async ({ context }, next) => {
   const authPayload = context.request.auth.credentials.payload as any
-  const { email } = authPayload['http://www.8d3d6a7b-a2f8-40dd-9233-f14c3115efe4.com/user']
+  const { email } = authPayload[`http://www.${process.env.AUTH0_AUDIENCE}.com/user`]
   const user = await context.dataSources.notesProject.getUserByEmail(email);
   context.user.id = user.id;
   return next();
