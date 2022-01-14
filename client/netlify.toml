@@ -1,2 +1,0 @@
-[context.deploy-preview]
-environment = { REACT_APP_SERVER_URI = "https://notes-project-pr-37.herokuapp.com/graphql" }
