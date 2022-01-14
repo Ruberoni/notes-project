@@ -7,7 +7,6 @@
       "url": "heroku/nodejs"
     }
   ],
-  ,
   "env": {
     "PROJECT_PATH": {
       "value": "server"
