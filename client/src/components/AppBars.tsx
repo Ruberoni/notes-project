@@ -41,15 +41,6 @@ export function TopBar(props: BoxProps): JSX.Element {
       >
         LOGIN
       </Button>
-      <Link
-        as={RLink}
-        to="/register"
-        mr="2"
-        fontWeight="bold"
-        _hover={{ textDecoration: "none" }}
-      >
-        REGISTER
-      </Link>
     </>
   );
 

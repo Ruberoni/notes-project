@@ -31,7 +31,7 @@ export const InitApolloServer = async (
     context: async ({ request }) => {
       return {
         request,
-        user: request.auth?.credentials?.payload?.[`http://www.${process.env.AUTH0_AUDIENCE}com/user`] || {},
+        user: request.auth?.credentials?.payload?.[`http://www.${process.env.AUTH0_AUDIENCE}.com/user`] || {},
       };
     },
   });
