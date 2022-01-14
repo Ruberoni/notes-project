@@ -1,0 +1,19 @@
+{
+  "buildpacks": [
+    {
+      "url": "https://github.com/timanovsky/subdir-heroku-buildpack"
+    },
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  ,
+  "env": {
+    "PROJECT_PATH": {
+      "value": "server"
+    },
+    "NODE_ENV": {
+      "value": "production"
+    }
+  }
+}
