@@ -7,11 +7,9 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import { useQuery } from '@apollo/client'
-import { GET_USER_CATEGORIES } from '../utils/queries'
 import { INote, ICategory } from "../types";
-// import { notePreview } from "../utils/seed";
 import { useAppContext } from './AppContext'
+import { useUserCategoriesQuery } from "../api/user";
 
 export type ContextType = {
   currentNote?: INote;
@@ -53,10 +51,10 @@ export function NoteContextProvider({
   const { state } = useAppContext()
   
   const [userCategories, setUserCategories] = useState<ICategory[]>([])
-  const userCategoriesData = useQuery(GET_USER_CATEGORIES, { variables: { userId: state.userId }, skip: true })
-  
+  const userCategoriesQuery = useUserCategoriesQuery(state.userId as string, {skip: true})
+
   function getUserCategories() {
-    userCategoriesData.refetch({ userId: state.userId }).then(res => {
+    userCategoriesQuery.refetch({ userId: state.userId }).then(res => {
       console.log("[NoteContext] userCategoriesData.data:", res.data)
       setUserCategories(res.data.getUserCategories)
     })

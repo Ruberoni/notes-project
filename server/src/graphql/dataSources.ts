@@ -36,6 +36,15 @@ export class NotesProjectDataSource extends DataSource {
     return users[0] as User;
   }
 
+  async getUserByEmail(email: string): Promise<User> {
+    if (!this.DB) throw new Error("No database connected.");
+    const [users]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
+      "SELECT * FROM user WHERE email = ?",
+      [email]
+    );
+    return users[0] as User;
+  }
+
   async getUserNotes(userId: string): Promise<Note[]> {
     if (!this.DB) throw new Error("No database connected.");
     const [notes]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(

@@ -21,6 +21,9 @@ export class User {
   googleId?: string;
 
   @Field()
+  oauthId?: string;
+
+  @Field()
   email?: string;
 
   @Field()
@@ -108,7 +111,7 @@ export class UserContent implements Partial<User> {
   @Field()
   @MaxLength(300)
   @IsEmail()
-  email: string;
+  email?: string;
 
   @Field()
   @MaxLength(100)

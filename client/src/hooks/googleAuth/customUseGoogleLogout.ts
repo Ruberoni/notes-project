@@ -5,7 +5,6 @@ import {
   UseGoogleLogoutResponse,
 } from "react-google-login";
 import { useToast, UseToastOptions } from "@chakra-ui/react";
-import { useAppContext } from "../../context";
 import useGoogleClientId from "./useGoogleClientId";
 
 /**
@@ -20,7 +19,6 @@ export default function (
   props?: Partial<UseGoogleLogoutProps>
 ): [ReactElement | null, Partial<UseGoogleLogoutResponse>] {
   //   const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  const context = useAppContext();
   const [clientIdError, clientId] = useGoogleClientId();
 
   const toast = useToast();
@@ -43,7 +41,6 @@ export default function (
 
   const onLogoutSuccess = () => {
     customToast();
-    context.dispatch({ type: "LOGOUT" });
   };
   const onFailure = () => {
     customToast("Logout error.", "error", "Google error");

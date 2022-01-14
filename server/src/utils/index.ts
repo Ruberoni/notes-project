@@ -67,3 +67,9 @@ export function cleanNotesPreview(
 export function isDatabaseError(err: GraphQLError): boolean {
   return Object.prototype.hasOwnProperty.call(err.originalError, "sql");
 }
+
+export function getBearerValue(bearer: string): string | undefined {
+  if (bearer?.startsWith("Bearer ")){
+    return bearer.substring(7, bearer.length);
+  }
+}

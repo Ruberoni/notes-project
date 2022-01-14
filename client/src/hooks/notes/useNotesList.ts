@@ -50,9 +50,5 @@ export default function useNotesList(filter: string[]): [INote[], boolean] {
     setLoading(notesPreviewQuery.loading);
   }, [notesPreviewQuery.loading]);
 
-  useEffect(() => {
-    console.log('[Hook][useNotesList] Render!')
-  })
-
   return [filteredNotesList, loading];
 }

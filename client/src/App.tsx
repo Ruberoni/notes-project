@@ -6,7 +6,12 @@ import AccesibilityBar from "./components/AccesibilityBar";
 import { HStack } from "@chakra-ui/react";
 import { NoteContextProvider } from "./context";
 
+import { useAuth0 } from '@auth0/auth0-react';
+
 function App(): JSX.Element {
+  const { user } = useAuth0();
+  console.log("[App] user:", user)
+
   return (
     <HStack flex={1} spacing={0} overflow="auto">
       <NoteContextProvider>
