@@ -65,7 +65,7 @@ export function AppContextProvider({
   /**
    * At login, send an upsert to the database
    */
-  useEffect(() => {
+  /* useEffect(() => {
     if (user && isAuthenticated) {
       registerMutation[0]({
         variables: {
@@ -77,7 +77,7 @@ export function AppContextProvider({
         },
       });
     }
-  }, [user?.name]);
+  }, [user?.name]); */
 
   const contextValue = useMemo(() => {
     return {

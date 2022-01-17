@@ -1,5 +1,5 @@
 # Notes Project
-> [Start taking notes!](https://jovial-engelbart-bf785b.netlify.app/)
+> [Start taking notes!](https://notes-project-1.netlify.app/)
 
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/c1b566dd-bdf3-487c-a177-fdc2aacb6542/deploy-status)](https://app.netlify.com/sites/jovial-engelbart-bf785b/deploys)
