@@ -1,7 +1,7 @@
 import { RowDataPacket, FieldPacket, ResultSetHeader } from "mysql2/promise";
 import { DataSource } from "apollo-datasource";
 import { connection } from "../config";
-import { cleanNotesPreview } from "../utils/";
+import { cleanNotesPreview, removeNonExistentProps } from "../utils/";
 import {
   User,
   Note,
@@ -113,9 +113,10 @@ export class NotesProjectDataSource extends DataSource {
 
   async register(content: UserContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
-    const query = "INSERT INTO user SET ?";
-    const queryFormatted = this.DB.format(query, content);
-    await this.DB.execute(queryFormatted);
+    content = removeNonExistentProps(content)
+    const query = "INSERT INTO user SET ? ON DUPLICATE KEY UPDATE ?";
+    const queryFormatted = this.DB.format(query, [content, content]);
+    await this.DB.execute(queryFormatted)
     return "OK";
   }
   async googleLogin(googleId: UserContent["googleId"]): Promise<User> {

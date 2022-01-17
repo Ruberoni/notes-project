@@ -73,3 +73,12 @@ export function getBearerValue(bearer: string): string | undefined {
     return bearer.substring(7, bearer.length);
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function removeNonExistentProps(object: {[p: string]: any}): {[p: string]: any} {
+  const copy = {...object}
+  for (const prop in copy) {
+    if (!copy[prop]) delete copy[prop]
+  }
+  return copy
+}
