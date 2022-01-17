@@ -11,56 +11,42 @@ import {
   FlexProps,
   Spacer,
 } from "@chakra-ui/react";
-import { Link as RLink } from "react-router-dom";
-import { useApolloClient } from "@apollo/client";
+import { Link as RLink,  } from "react-router-dom";
+import { useAuth0 } from '@auth0/auth0-react';
 import { useAppContext } from "../context";
-import { customUseGoogleLogout } from "../hooks";
+
 import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
-  const apolloClient = useApolloClient()
-
+  const { loginWithRedirect, isAuthenticated, user } = useAuth0();
   const context = useAppContext();
-  const isLoggedIn = Boolean(context.state.userId);
+
+  // const isLoggedIn = Boolean(context.state.userId);
+  const isLoggedIn = isAuthenticated;
 
   const LoggedOutWelcomeText = "Welcome, please login or register.";
-  const LoggedInWelcomeText = `Welcome ${context.state.userName}`;
-
-  const [error, { signOut }] = customUseGoogleLogout();
-  if (error) return error;
-
-  const handleLogout = async () => {
-    await apolloClient.clearStore()
-    signOut?.()
-  }
+  const LoggedInWelcomeText = `Welcome ${user?.name || user?.email || ''}`;
 
   const LoggedOutButtons = (
     <>
-      <Link
-        as={RLink}
-        to="/login"
+      <Button
+        // as={RLink}
+        // to="/login"
+        h="inherit"
+        onClick={loginWithRedirect}
         mr="2"
         fontWeight="bold"
         _hover={{ textDecoration: "none" }}
       >
         LOGIN
-      </Link>
-      <Link
-        as={RLink}
-        to="/register"
-        mr="2"
-        fontWeight="bold"
-        _hover={{ textDecoration: "none" }}
-      >
-        REGISTER
-      </Link>
+      </Button>
     </>
   );
 
   const LoggedInButton = (
     <>
-      <Button bg="trasparent" h="inherit" onClick={handleLogout}>
+      <Button bg="trasparent" h="inherit" onClick={context.auth.logout}>
         LOGOUT
       </Button>
     </>

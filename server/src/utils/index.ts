@@ -67,3 +67,18 @@ export function cleanNotesPreview(
 export function isDatabaseError(err: GraphQLError): boolean {
   return Object.prototype.hasOwnProperty.call(err.originalError, "sql");
 }
+
+export function getBearerValue(bearer: string): string | undefined {
+  if (bearer?.startsWith("Bearer ")){
+    return bearer.substring(7, bearer.length);
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function removeNonExistentProps(object: {[p: string]: any}): {[p: string]: any} {
+  const copy = {...object}
+  for (const prop in copy) {
+    if (!copy[prop]) delete copy[prop]
+  }
+  return copy
+}

@@ -1,6 +1,7 @@
-export type userData = { userId: string; userName: string };
-export type Action = { type: "LOGIN"; data: userData } | { type: "LOGOUT" };
-export type State = {
+export type IUserData = { userId: string; userName: string };
+
+export type Action = { type: "LOGIN"; data: IUserData } | { type: "LOGOUT" };
+export interface State {
   userId: string | null;
   userName: string | null;
 };

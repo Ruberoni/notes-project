@@ -1,17 +1,18 @@
 import React, { ReactElement } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 
 /**
  * Componentes
  */
 import { TopBar, BottomBar } from "../components/AppBars";
 import App from "../App";
+import Test from "../components/Test";
 import Login from "../components/Login";
 import Register from "../components/Register";
 
 export default function Routes(): ReactElement {
   return (
-    <Router>
+    <>
       <TopBar />
       <Switch>
         <Route path="/login">
@@ -21,10 +22,14 @@ export default function Routes(): ReactElement {
           <Register />
         </Route>
         <Route path="/">
+          {/* <Test /> */}
           <App />
         </Route>
+        <Route path="/test">
+          <Test />
+        </Route>
       </Switch>
-      <BottomBar h="4.2vh"/>
-    </Router>
+      <BottomBar h="4.2vh" />
+    </>
   );
 }

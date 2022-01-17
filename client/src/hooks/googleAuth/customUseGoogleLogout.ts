@@ -4,8 +4,6 @@ import {
   UseGoogleLogoutProps,
   UseGoogleLogoutResponse,
 } from "react-google-login";
-import { useToast, UseToastOptions } from "@chakra-ui/react";
-import { useAppContext } from "../../context";
 import useGoogleClientId from "./useGoogleClientId";
 
 /**
@@ -15,38 +13,25 @@ import useGoogleClientId from "./useGoogleClientId";
  *
  * Returns [error_component, UseGoogleLogoutResponse]
  * Please return *error_component* if exist
+ *
+ * @deprecated
+ * After upgrading to Auth0
  */
-export default function (
+export default function customuseGoogleLogout(
   props?: Partial<UseGoogleLogoutProps>
 ): [ReactElement | null, Partial<UseGoogleLogoutResponse>] {
   //   const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  const context = useAppContext();
   const [clientIdError, clientId] = useGoogleClientId();
-
-  const toast = useToast();
-  const customToast = (
-    title = "Success logout.",
-    status: UseToastOptions["status"] = "success",
-    dsc = "Success Logout desc."
-  ) =>
-    toast({
-      title: title,
-      description: dsc,
-      status: status,
-      duration: 9000,
-      isClosable: true,
-    });
 
   if (clientIdError) {
     return [clientIdError, {}];
   }
 
   const onLogoutSuccess = () => {
-    customToast();
-    context.dispatch({ type: "LOGOUT" });
+    return;
   };
   const onFailure = () => {
-    customToast("Logout error.", "error", "Google error");
+    return;
   };
 
   return [
