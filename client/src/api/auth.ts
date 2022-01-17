@@ -5,7 +5,6 @@ import {
   ApolloError,
   MutationTuple,
 } from "@apollo/client";
-import { IUser } from "../types";
 
 const onError = (err: ApolloError) => {
   console.log("[Network error] error:", err);
@@ -25,9 +24,10 @@ export function useGoogleLoginMutation(
 
 export interface IRegisterMutationVars {
   userContent: {
-    googleId: string;
+    googleId?: string;
     email: string;
     name: string;
+    oauthId?: string;
   }
 }
 export function useRegisterMutation(

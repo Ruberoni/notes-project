@@ -1,38 +1,19 @@
 import React, { ReactElement } from "react";
 import { GoogleLogin } from "react-google-login";
 import {
-  useToast,
-  UseToastOptions,
   Box,
   Flex,
   Heading,
 } from "@chakra-ui/react";
-import { useHistory } from "react-router-dom";
-import { useAppContext } from "../context";
 import { useCustomGoogleLogin } from "../hooks";
 import { useGoogleLoginMutation } from "../api/auth";
 
 /**
  * Displays and handles Google Login
+ * @deprecated
+ * After upgrading to Auth0
  */
 export default function Login(): ReactElement {
-  const context = useAppContext();
-  const toast = useToast();
-  const history = useHistory();
-
-  const customToast = (
-    title = "Success login.",
-    status: UseToastOptions["status"] = "success",
-    dsc = "Success Login desc."
-  ) =>
-    toast({
-      title: title,
-      description: dsc,
-      status: status,
-      duration: 9000,
-      isClosable: true,
-    });
-
   /**
    * data: googleLogin{ id, googleId, email, name }
    * onError: if useMutation returns an error, this is thrown, so makes the React server to shutdown
@@ -53,7 +34,6 @@ export default function Login(): ReactElement {
       }
     })
     console.log("[Successful request] Google login.");
-    customToast();
     // Login
     // const error = context.auth.login(loginRes?.data?.googleLogin as string)
     // if (!error) history.push("/");

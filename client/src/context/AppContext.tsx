@@ -1,23 +1,22 @@
 import React, {
   createContext,
   useContext,
-  useReducer,
   ReactNode,
   ReactElement,
   useMemo,
   useEffect,
 } from "react";
-import { appContextReducer, State, Action, IUserData } from "./reducer";
+import { State } from "./reducer";
 import { customUseGoogleLogout } from "../hooks";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useApolloClient } from "@apollo/client";
-import jwt from "jsonwebtoken";
+import { useRegisterMutation } from "../api/auth";
 export interface IAuthActions {
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
-type Dispatch = (action: Action) => void;
+// type Dispatch = (action: Action) => void;
 interface IAppContext {
   state: State;
   // dispatch: Dispatch;
@@ -33,51 +32,29 @@ export function AppContextProvider({
 }: {
   children: ReactNode;
 }): ReactElement {
-  const { user, loginWithRedirect, logout: Auth0Logout } = useAuth0();
-  // const initialState = {
-  //   userId: user?.sub || null,
-  //   userName: user?.given_name || null,
-  // };
+  const {
+    user,
+    loginWithRedirect,
+    logout: auth0Logout,
+    isAuthenticated,
+  } = useAuth0();
   // const [state, dispatch] = useReducer(appContextReducer, initialState);
 
   const apolloClient = useApolloClient();
+  const registerMutation = useRegisterMutation();
   const [error, { signOut: googleLogout }] = customUseGoogleLogout();
   if (error) return error;
 
-  /**
-   * Logs in with a token
-   * 1. Verifies and decodes token
-   * 2. Sets token to localStorage
-   * 3. Set context state with token payload data
-   */
   const login: IAuthActions["login"] = async () => {
-    /* jwt.verify(token, process.env.token || "SECRET", (err, payload) => {
-      if (err || !payload) return err
-      const userData: IUserData = {
-        userId: String(payload?.userId),
-        userName: payload?.userName
-      }
-
-      localStorage.setItem('userToken', token)
-      dispatch({ type: "LOGIN", data: userData });
-    }) */
-    console.log("Login")
-    loginWithRedirect();
-    // const userData: IUserData = {
-    //   userId: user?.sub as string,
-    //   userName: user?.given_name as string,
-    // };
-    // dispatch({ type: "LOGIN", data: userData });
+    await loginWithRedirect();
   };
 
   const logout = async () => {
     await apolloClient.clearStore();
     googleLogout?.();
-    Auth0Logout({
+    auth0Logout({
       returnTo: window.location.origin,
     });
-    // localStorage.removeItem('userToken')
-    // dispatch({ type: "LOGOUT" });
   };
 
   const auth: IAuthActions = {
@@ -86,13 +63,21 @@ export function AppContextProvider({
   };
 
   /**
-   * When app is first open, it will check the localStorage
-   * and login if needed
+   * At login, send an upsert to the database
    */
-  // useEffect(() => {
-  //   const token = localStorage.getItem('userToken')
-  //   if (token) login(token)
-  // }, [])
+  useEffect(() => {
+    if (user && isAuthenticated) {
+      registerMutation[0]({
+        variables: {
+          userContent: {
+            name: user.name as string,
+            oauthId: user.sub as string,
+            email: user.email as string,
+          },
+        },
+      });
+    }
+  }, [user?.name]);
 
   const contextValue = useMemo(() => {
     return {

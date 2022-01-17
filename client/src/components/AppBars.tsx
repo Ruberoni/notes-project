@@ -19,14 +19,14 @@ import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
-  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, user } = useAuth0();
   const context = useAppContext();
 
   // const isLoggedIn = Boolean(context.state.userId);
   const isLoggedIn = isAuthenticated;
 
   const LoggedOutWelcomeText = "Welcome, please login or register.";
-  const LoggedInWelcomeText = `Welcome ${context.state.userName}`;
+  const LoggedInWelcomeText = `Welcome ${user?.name || user?.email || ''}`;
 
   const LoggedOutButtons = (
     <>
