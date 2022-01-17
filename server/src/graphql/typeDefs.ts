@@ -109,6 +109,10 @@ export class UserContent implements Partial<User> {
   googleId?: string;
 
   @Field()
+  @MaxLength(100)
+  oauthId?: string;
+
+  @Field()
   @MaxLength(300)
   @IsEmail()
   email?: string;
