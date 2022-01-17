@@ -1,8 +1,9 @@
 import { AuthChecker, ResolverData } from "type-graphql";
-import jwt from "jsonwebtoken";
-import { getBearerValue } from "../utils";
-import { request } from "http";
 
+/**
+ * Performs the validation for the resolvers with the `@Authorized` decorator.\
+ * It could later work to authorize roles
+ */
 const authChecker: AuthChecker<{ request: any }> = async ({
   context,
 }: ResolverData<{ request: any }>) => {

@@ -52,10 +52,12 @@ export const initServer = async (): Promise<void> => {
   });
 
   await hapiServer.register(jwt);
+
+  /**
+   * Setup auth
+   */
   hapiServer.auth.scheme("basicSecret", basicSecretScheme);
-
   hapiServer.auth.strategy("jwt", "jwt", jwtStrategyOptions);
-
   hapiServer.auth.strategy("basicSecret", "basicSecret")
 
   hapiServer.auth.default("jwt");
@@ -64,6 +66,9 @@ export const initServer = async (): Promise<void> => {
     app: hapiServer,
   });
 
+  /**
+   * Setup routes
+   */
   hapiServer.route(controllers)
 
   await hapiServer.start();
