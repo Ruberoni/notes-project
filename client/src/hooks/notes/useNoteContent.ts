@@ -17,7 +17,7 @@ export interface useNoteContentProps {
 }
 export interface utils {
   handleCategoryRemove: (categoryId: string) => void;
-  handleBodyChange: (event: BaseSyntheticEvent) => void;
+  handleBodyChange: (getBodyOrEvent: (() => string) | BaseSyntheticEvent) => void
   handleTitleChange: (event: BaseSyntheticEvent) => void;
   handleDeleteNote: (event: BaseSyntheticEvent) => void;
 }
@@ -55,7 +55,7 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
 
   const noteBodyQuery = useNoteBodyQuery(currentNote?.id as string, {
     onCompleted: (data) => {
-      setBody(data.getNoteBody)
+      updateCurrentNote({...currentNote, body: data.getNoteBody || ' '} as INote)
     }
   })
 
@@ -84,9 +84,12 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
   }, [currentNote?.id]);
 
   const utils: utils = {
-    handleBodyChange: (event) => {
-      const body = event.target.value;
-      setBody(body);
+    handleBodyChange: (getBodyOrEvent) => {
+      if (typeof getBodyOrEvent == 'function') {
+        setBody(getBodyOrEvent());
+      } else {
+        setBody(getBodyOrEvent.target.value)
+      }
       updateNoteWrapper()
       
     },
@@ -129,5 +132,5 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
     },
   };
 
-  return [currentNote && { ...currentNote, body }, loading, utils];
+  return [currentNote, loading, utils];
 }

@@ -26,6 +26,15 @@ export default extendTheme({
         width: 0,
         height: 0,
       },
+      h1: {
+        fontSize: 32,
+      },
+      h2: {
+        fontSize: 24,
+      },
+      h3: {
+        fontSize: 18,
+      }
     },
   },
 });
