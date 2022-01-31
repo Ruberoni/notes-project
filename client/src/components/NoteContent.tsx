@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
+import MDEditor from "rich-markdown-editor";
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
@@ -51,6 +52,7 @@ export default function NoteContent(props: StackProps): ReactElement {
             as={ResizeTextarea}
             border="0px"
           />
+          {/* <MDEditor /> */}
           <Wrap w="inherit" pl="10px">
             {note.categories?.map((category) => (
               <RemovableCategoryTag
@@ -74,13 +76,23 @@ export default function NoteContent(props: StackProps): ReactElement {
           icon={<DeleteIcon />}
         />
       </HStack>
-      <Textarea
+      {/* <Textarea
         h="inherit"
         resize="none"
         value={note.body || ""}
         onChange={utils.handleBodyChange}
         focusBorderColor="none"
         border="0px"
+      /> */}
+      <MDEditor
+        style={
+          {
+            width: '100%',
+            wordBreak: 'break-all',
+            paddingRight: '26px',
+            paddingLeft: '26px',
+          }
+        }
       />
     </VStack>
   );
