@@ -79,6 +79,8 @@ export default function NoteContent(props: StackProps): ReactElement {
         id={note.id}
         value={note.body || ""}
         onChange={utils.handleBodyChange}
+        onSave={utils.handleSave}
+        onFocus={() => console.log('Focus the MD editor')}
         style={
           {
             width: '100%',
