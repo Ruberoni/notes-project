@@ -62,23 +62,6 @@ export function AppContextProvider({
     logout,
   };
 
-  /**
-   * At login, send an upsert to the database
-   */
-  /* useEffect(() => {
-    if (user && isAuthenticated) {
-      registerMutation[0]({
-        variables: {
-          userContent: {
-            name: user.name as string,
-            oauthId: user.sub as string,
-            email: user.email as string,
-          },
-        },
-      });
-    }
-  }, [user?.name]); */
-
   const contextValue = useMemo(() => {
     return {
       state: { userId: user?.sub || null, userName: user?.given_name || null },
@@ -88,6 +71,7 @@ export function AppContextProvider({
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 }
+
 /**
  * Use this hook to easily get the context anywhere.
  * Can not use this context outside AppContextProvider.

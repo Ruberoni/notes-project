@@ -31,19 +31,14 @@ export default function useNotesList(filter: string[]): [INote[], boolean] {
     } else {
       setFilteredNotesList(notesList)
     }
-  }, [filter])
+  }, [filter, notesList])
 
   const notesPreviewQuery = useNotesPreviewQuery(appContext.state.userId as string, {
     onCompleted: (data) => {
       setNotesList(data?.getUserNotesPreview || [])
-    }
+    },
+    skip: !appContext.state.userId
   })
-
-  useEffect(() => {
-    if (appContext.state.userId) {
-      notesPreviewQuery.refetch()
-    }
-  }, [appContext.state.userId]);
 
   // This executes a 2nd render
   useEffect(() => {

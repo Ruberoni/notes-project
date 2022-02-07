@@ -62,6 +62,7 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
       // one time by the server, as we only need one update by the server
       !currentNote?.body && updateCurrentNote({...currentNote, body: data.getNoteBody || ' '} as INote)
     },
+    skip: !currentNote
   })
   
   const [deleteCategoryNote] = useDeleteCategoryNoteMutation()
@@ -81,11 +82,6 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
   }
 
   useEffect(() => {
-    if (currentNote) {
-      noteBodyQuery.refetch({
-        noteId: currentNote?.id,
-      })
-    }
     return utils.handleSaveOnChange()
   }, [currentNote?.id]);
 

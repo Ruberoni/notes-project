@@ -90,12 +90,17 @@ export function NoteContextProvider({
 
   const userCategoriesQuery = useUserCategoriesQuery(
     appState.userId as string,
-    { skip: true }
+    {
+      skip: !appState.userId,
+      onCompleted: (data) => {
+        setUserCategories(data.getUserCategories);
+      }
+    }
   );
 
   function getUserCategories() {
+    if (!appState.userId) return
     userCategoriesQuery.refetch({ userId: appState.userId }).then((res) => {
-      console.log("[NoteContext] userCategoriesData.data:", res.data);
       setUserCategories(res.data.getUserCategories);
     });
   }
@@ -105,8 +110,6 @@ export function NoteContextProvider({
       setNotesList([]);
       setCurrentNote(undefined);
       setUserCategories([]);
-    } else {
-      getUserCategories();
     }
   }, [appState.userId]);
 

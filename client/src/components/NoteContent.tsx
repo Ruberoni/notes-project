@@ -27,7 +27,7 @@ export interface NoteContentProps extends StackProps {
 export default function NoteContent(props: StackProps): ReactElement {
   const [note, , utils] = useNoteContent();
 
-  if (!note)
+  if (!note || !utils)
     return (
       <Center h="inherit" w="100%">
         <Image src={typingImg} boxSize="290px" objectFit="cover" alt="Typing" />
