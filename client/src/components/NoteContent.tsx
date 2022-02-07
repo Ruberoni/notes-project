@@ -45,7 +45,7 @@ export default function NoteContent(props: StackProps): ReactElement {
 
   return (
     <VStack h="100%" w="100%" {...props}>
-      <HStack spacing="0px" align="normal" w="inherit">
+      <HStack spacing="0px" align="normal" w="inherit" pr={1}>
         <VStack w="inherit">
           <Textarea
             fontSize="2em"
@@ -82,6 +82,7 @@ export default function NoteContent(props: StackProps): ReactElement {
           aria-label="Delete note"
           colorScheme="red"
           icon={<DeleteIcon />}
+          top={1}
         />
       </HStack>
       <MDEditor
