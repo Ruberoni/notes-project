@@ -8,6 +8,7 @@ import {
   IconButton,
   Image,
   Center,
+  Spinner,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
@@ -25,7 +26,7 @@ export interface NoteContentProps extends StackProps {
 }
 
 export default function NoteContent(props: StackProps): ReactElement {
-  const [note, , utils] = useNoteContent();
+  const [note, loading, utils] = useNoteContent();
 
   if (!note || !utils)
     return (
@@ -34,9 +35,17 @@ export default function NoteContent(props: StackProps): ReactElement {
       </Center>
     );
 
+  if (loading) {
+    return (
+      <Center h="inherit" w="100%">
+        <Spinner />
+      </Center>
+    );
+  }
+
   return (
     <VStack h="100%" w="100%" {...props}>
-      <HStack spacing="0px" align="normal" w="inherit" >
+      <HStack spacing="0px" align="normal" w="inherit">
         <VStack w="inherit">
           <Textarea
             fontSize="2em"
@@ -80,16 +89,14 @@ export default function NoteContent(props: StackProps): ReactElement {
         value={note.body || ""}
         onChange={utils.handleBodyChange}
         onSave={utils.handleSave}
-        onFocus={() => console.log('Focus the MD editor')}
-        style={
-          {
-            width: '100%',
-            wordBreak: 'break-all',
-            paddingRight: '26px',
-            paddingLeft: '26px',
-            overflow: 'auto'
-          }
-        }
+        onFocus={() => console.log("Focus the MD editor")}
+        style={{
+          width: "100%",
+          wordBreak: "break-all",
+          paddingRight: "26px",
+          paddingLeft: "26px",
+          overflow: "auto",
+        }}
       />
     </VStack>
   );

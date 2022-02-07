@@ -17,7 +17,7 @@ export type ContextType = {
   userCategories: ICategory[];
   notesList: INote[];
   setCurrentNote: React.Dispatch<React.SetStateAction<INote | undefined>>;
-  changeCurrentNote: (to: INote | Node["id"]) => void;
+  changeCurrentNote: (to: Node["id"] | INote | ((prev?: INote) => INote)) => void;
   setNotesList: React.Dispatch<React.SetStateAction<INote[]>>;
   updateCurrentNote: (modifiedCurrentNote: INote) => boolean;
   setUserCategories: React.Dispatch<React.SetStateAction<ICategory[]>>;
@@ -68,20 +68,22 @@ export function NoteContextProvider({
 
   /**
    * Changes currentNote
-   * @param to It can be a `note id` or a `note`. It will change to `note.id`
+   * @param to It can be a `note id`, `note` or the callback of setState. It will change to `note.id`
    */
-  const changeCurrentNote = (to: INote | Node["id"]) => {
+  const changeCurrentNote = (to: Node["id"] | INote | ((prev?: INote) => INote)) => {
     let id = "";
-    let _to: INote | undefined;
+    let _to: ((prev?: INote) => INote) | INote | undefined;
     if (typeof to === "string") {
       _to = notesList?.find((note) => note.id == to);
       id = to;
-    } else {
+    } else if (typeof to !== 'function') {
       _to = notesList?.find((note) => note.id == to.id);
       id = to.id;
+    } else {
+      _to = to
     }
 
-    if (!_to) throw new Error(`Unable to change note. Invalid id: ${id}`);
+    if (!_to && typeof to !== 'function') throw new Error(`Unable to change note. Invalid id: ${id}`);
     setPrevNote(currentNote);
     setCurrentNote(_to);
   };

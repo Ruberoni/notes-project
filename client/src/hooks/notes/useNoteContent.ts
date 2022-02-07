@@ -53,8 +53,6 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
     }
   }, [savingTimer.isActive]);
 
-  const [loading, ] = useState(false);
-
   const noteBodyQuery = useNoteBodyQuery(currentNote?.id as string, {
     onCompleted: (data) => {
       setBody(data.getNoteBody)
@@ -167,5 +165,5 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
     }
   };
 
-  return [currentNote, loading, utils];
+  return [currentNote, noteBodyQuery.loading, utils];
 }
