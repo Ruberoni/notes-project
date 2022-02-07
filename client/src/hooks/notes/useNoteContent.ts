@@ -17,9 +17,11 @@ export interface useNoteContentProps {
 }
 export interface utils {
   handleCategoryRemove: (categoryId: string) => void;
-  handleBodyChange: (event: BaseSyntheticEvent) => void;
+  handleBodyChange: (getBodyOrEvent: (() => string) | BaseSyntheticEvent) => void
   handleTitleChange: (event: BaseSyntheticEvent) => void;
   handleDeleteNote: (event: BaseSyntheticEvent) => void;
+  handleSave: (arg0?: { done: boolean }) => void
+  handleSaveOnChange: () => void
 }
 
 /**
@@ -32,7 +34,7 @@ export interface utils {
  *
  */
 export default function useNoteContent(): [INote | undefined, boolean, utils] {
-  const { updateCurrentNote, currentNote, setNotesList, setCurrentNote } = useNoteContext();
+  const { updateCurrentNote, currentNote, setNotesList, setCurrentNote, prevNote } = useNoteContext();
   const [body, setBody] = useState("");
   const savingTimer = SavingTimer()
   
@@ -56,9 +58,12 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
   const noteBodyQuery = useNoteBodyQuery(currentNote?.id as string, {
     onCompleted: (data) => {
       setBody(data.getNoteBody)
-    }
+      // This conditional avoids the body of the MDEditor to be modified more than
+      // one time by the server, as we only need one update by the server
+      !currentNote?.body && updateCurrentNote({...currentNote, body: data.getNoteBody || ' '} as INote)
+    },
   })
-
+  
   const [deleteCategoryNote] = useDeleteCategoryNoteMutation()
   const [updateNote] = useUpdateNoteMutation();
   const [deleteNote] = useDeleteNoteMutation()
@@ -81,12 +86,16 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
         noteId: currentNote?.id,
       })
     }
+    return utils.handleSaveOnChange()
   }, [currentNote?.id]);
 
   const utils: utils = {
-    handleBodyChange: (event) => {
-      const body = event.target.value;
-      setBody(body);
+    handleBodyChange: (getBodyOrEvent) => {
+      if (typeof getBodyOrEvent == 'function') {
+        setBody(getBodyOrEvent());
+      } else {
+        setBody(getBodyOrEvent.target.value)
+      }
       updateNoteWrapper()
       
     },
@@ -127,7 +136,40 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
         variables: { id: currentNote?.id as string },
       })
     },
+
+    /**
+     * Immediately saves the current state of the MDEditor to the server and context
+     */
+    handleSave: () => {
+      if (!currentNote) return
+      // Update note in context
+      updateCurrentNote({...currentNote, body: body || ' '} as INote)
+      // Update note in server
+      updateNote({
+        variables: {
+          id: currentNote?.id as string,
+          content: { title: currentNote?.title as string, body },
+        },
+      })
+    },
+
+    /**
+     * Immediately saves the current state of the body of prevNote to the server and context\
+     * This works when changing from one note to other
+     */
+    handleSaveOnChange: () => {
+      if (!prevNote) return
+      // Update note in context
+      updateCurrentNote({...prevNote, body: body || ' '} as INote)
+      // Update note in server
+      updateNote({
+        variables: {
+          id: prevNote?.id as string,
+          content: { title: prevNote?.title as string, body },
+        },
+      })
+    }
   };
 
-  return [currentNote && { ...currentNote, body }, loading, utils];
+  return [currentNote, loading, utils];
 }

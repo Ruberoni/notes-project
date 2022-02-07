@@ -7,10 +7,11 @@ import {
   Textarea,
   IconButton,
   Image,
-  Center
+  Center,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
+import MDEditor from "rich-markdown-editor";
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
@@ -74,13 +75,21 @@ export default function NoteContent(props: StackProps): ReactElement {
           icon={<DeleteIcon />}
         />
       </HStack>
-      <Textarea
-        h="inherit"
-        resize="none"
+      <MDEditor
+        id={note.id}
         value={note.body || ""}
         onChange={utils.handleBodyChange}
-        focusBorderColor="none"
-        border="0px"
+        onSave={utils.handleSave}
+        onFocus={() => console.log('Focus the MD editor')}
+        style={
+          {
+            width: '100%',
+            wordBreak: 'break-all',
+            paddingRight: '26px',
+            paddingLeft: '26px',
+            overflow: 'auto'
+          }
+        }
       />
     </VStack>
   );
