@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Notes-taking app. A fast and open-source alternative!</b>
-  <img src="docs/webappscreenshot2.png"/> 
+  <img src="docs/webappscreenshot.png"/> 
 </p>
 
 # Contribution 🤝
