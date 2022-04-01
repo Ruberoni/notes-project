@@ -9,6 +9,7 @@ import {
   useUpdateNoteMutation,
   useDeleteNoteMutation
 } from "../../api/notes"; 
+import RichTextEditor from 'react-rte';
 
 export interface useNoteContentProps {
   title: NoteContentProps["title"];
@@ -17,7 +18,7 @@ export interface useNoteContentProps {
 }
 export interface utils {
   handleCategoryRemove: (categoryId: string) => void;
-  handleBodyChange: (getBodyOrEvent: (() => string) | BaseSyntheticEvent) => void
+  handleBodyChange: RichTextEditor['props']['onChange'];
   handleTitleChange: (event: BaseSyntheticEvent) => void;
   handleDeleteNote: (event: BaseSyntheticEvent) => void;
   handleSave: (arg0?: { done: boolean }) => void
@@ -35,7 +36,7 @@ export interface utils {
  */
 export default function useNoteContent(): [INote | undefined, boolean, utils] {
   const { updateCurrentNote, currentNote, setNotesList, setCurrentNote, prevNote } = useNoteContext();
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState(currentNote?.body || RichTextEditor.createEmptyValue());
   const savingTimer = SavingTimer()
   
   useEffect(() => {
@@ -55,10 +56,12 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
 
   const noteBodyQuery = useNoteBodyQuery(currentNote?.id as string, {
     onCompleted: (data) => {
-      setBody(data.getNoteBody)
-      // This conditional avoids the body of the MDEditor to be modified more than
-      // one time by the server, as we only need one update by the server
-      !currentNote?.body && updateCurrentNote({...currentNote, body: data.getNoteBody || ' '} as INote)
+      !currentNote?.body
+        ? (
+          updateCurrentNote({...currentNote, body: RichTextEditor.createValueFromString(data.getNoteBody, 'markdown')} as INote)
+            && setBody(RichTextEditor.createValueFromString(data.getNoteBody, 'markdown'))
+        )
+        : setBody(currentNote?.body)
     },
     skip: !currentNote
   })
@@ -72,24 +75,21 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
       updateNote({
         variables: {
           id: currentNote?.id as string,
-          content: { title: currentNote?.title as string, body },
+          content: { title: currentNote?.title as string, body: body.toString('markdown') },
         },
+        onCompleted: () => updateCurrentNote({...currentNote, body } as INote)
       })
     }
     savingTimer.setToExecute(_updateNote)
   }
 
   useEffect(() => {
-    return utils.handleSaveOnChange()
+    utils.handleSaveOnChange()
   }, [currentNote?.id]);
 
   const utils: utils = {
-    handleBodyChange: (getBodyOrEvent) => {
-      if (typeof getBodyOrEvent == 'function') {
-        setBody(getBodyOrEvent());
-      } else {
-        setBody(getBodyOrEvent.target.value)
-      }
+    handleBodyChange: (editorValue) => {
+      setBody(editorValue);
       updateNoteWrapper()
       
     },
@@ -137,12 +137,12 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
     handleSave: () => {
       if (!currentNote) return
       // Update note in context
-      updateCurrentNote({...currentNote, body: body || ' '} as INote)
+      updateCurrentNote({...currentNote, body } as INote)
       // Update note in server
       updateNote({
         variables: {
           id: currentNote?.id as string,
-          content: { title: currentNote?.title as string, body },
+          content: { title: currentNote?.title as string, body: body.toString('markdown') },
         },
       })
     },
@@ -154,16 +154,17 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
     handleSaveOnChange: () => {
       if (!prevNote) return
       // Update note in context
-      updateCurrentNote({...prevNote, body: body || ' '} as INote)
+      updateCurrentNote({...prevNote, body} as INote)
+      
       // Update note in server
       updateNote({
         variables: {
           id: prevNote?.id as string,
-          content: { title: prevNote?.title as string, body },
+          content: { title: prevNote?.title as string, body: body.toString('markdown') },
         },
       })
     }
   };
-
-  return [currentNote, noteBodyQuery.loading, utils];
+  
+  return [currentNote && {...currentNote, body}, noteBodyQuery.loading, utils];
 }

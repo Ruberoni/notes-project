@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
-import MDEditor from "rich-markdown-editor";
+import RichTextEditor from 'react-rte';
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
@@ -85,19 +85,10 @@ export default function NoteContent(props: StackProps): ReactElement {
           top={1}
         />
       </HStack>
-      <MDEditor
-        id={note.id}
-        value={note.body || ""}
+      <RichTextEditor
+        value={note.body || RichTextEditor.createEmptyValue()}
         onChange={utils.handleBodyChange}
-        onSave={utils.handleSave}
-        onFocus={() => console.log("Focus the MD editor")}
-        style={{
-          width: "100%",
-          wordBreak: "break-all",
-          paddingRight: "26px",
-          paddingLeft: "26px",
-          overflow: "auto",
-        }}
+        rootStyle={{overflow: 'auto', width: '100%', borderBottom: 0}}
       />
     </VStack>
   );
