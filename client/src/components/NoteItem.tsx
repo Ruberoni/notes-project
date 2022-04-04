@@ -8,14 +8,20 @@ import {
   Tooltip,
   CircularProgress,
   StackProps,
+  SkeletonText,
+  VStack,
+  LayoutProps,
+  SkeletonProps,
+  FlexProps,
 } from "@chakra-ui/react";
-import CategoryTag from "./CategoryTag";
+import CategoryTag, { CategoryTagSkeleton } from "./CategoryTag";
 import { useNoteItem } from "../hooks";
 import { INote } from "../types";
+import { categories } from "../utils/seed";
 
-export interface NoteItemProps extends Omit<INote, "body">, Omit<CenterProps, "id" | "title"> {
-
-}
+export interface NoteItemProps
+  extends Omit<INote, "body">,
+    Omit<CenterProps, "id" | "title"> {}
 
 /**
  * **Note item component.**
@@ -119,5 +125,42 @@ export function HScrollTest(props?: HScrollProps): JSX.Element {
       <CategoryTag label="Ocio" color="red" />
       <CategoryTag label="Casa" />
     </HScroll>
+  );
+}
+
+export interface NoteItemSkeletonProps extends FlexProps {
+  textWidth?: LayoutProps["w"];
+  categories?: SkeletonProps[];
+}
+
+export function NoteItemSkeleton({
+  textWidth,
+  categories,
+  ...flexProps
+}: NoteItemSkeletonProps): JSX.Element {
+  return (
+    <Flex h="122px" justify="center" direction="column" alignItems="center" {...flexProps}>
+      <VStack w="87%" align="flex-start">
+        <SkeletonText
+          noOfLines={1}
+          skeletonHeight="1.6rem"
+          w={textWidth || "90%"}
+        />
+        <HStack>
+          {categories ? (
+            categories.map((category, i) => (
+              <CategoryTagSkeleton key={i} {...category} />
+            ))
+          ) : (
+            <>
+              <CategoryTagSkeleton />
+              <CategoryTagSkeleton w="4.5rem" />
+              <CategoryTagSkeleton w="3.5rem" />
+              <CategoryTagSkeleton w="6rem" />
+            </>
+          )}
+        </HStack>
+      </VStack>
+    </Flex>
   );
 }

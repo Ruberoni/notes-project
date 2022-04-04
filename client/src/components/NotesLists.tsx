@@ -1,12 +1,12 @@
 import React from "react";
-import { Box, BoxProps } from "@chakra-ui/react";
-import NoteItem from "./NoteItem";
+import { Box, BoxProps, Skeleton, Stack } from "@chakra-ui/react";
+import NoteItem, { NoteItemSkeleton, NoteItemSkeletonProps } from "./NoteItem";
 import { INote } from "../types";
 import { useNotesList } from "../hooks";
 
 export interface NotesListProps extends Omit<BoxProps, "filter"> {
   notesList?: INote[];
-  filter: string[]
+  filter: string[];
 }
 
 /**
@@ -22,10 +22,11 @@ export interface NotesListProps extends Omit<BoxProps, "filter"> {
  * - Scrollable notes [X]
  */
 export default function NotesList(props: NotesListProps): JSX.Element {
-  const [notesList, ] = useNotesList(props.filter);
+  const [notesList, loading] = useNotesList(props.filter);
 
   return (
     <Box className="hideScrollBar" h="100%" w="inherit" {...props}>
+      {loading && <NotesListSkeleton />}
       {notesList.map((noteP) => (
         <NoteItem
           key={noteP.id}
@@ -35,5 +36,23 @@ export default function NotesList(props: NotesListProps): JSX.Element {
         />
       ))}
     </Box>
+  );
+}
+
+export interface NotesListSkeletonProps {
+  notes?: NoteItemSkeletonProps[]
+}
+
+export function NotesListSkeleton({ notes }: NotesListSkeletonProps): JSX.Element {
+  const length = [1, 2, 3, 4, 6, 7, 8]
+
+  return (
+    <>
+      {
+        notes
+          ? notes.map((note, i) => <NoteItemSkeleton key={i} {...note} />)
+          : length.map((note, i) => <NoteItemSkeleton key={i} /> )
+      }
+    </>
   );
 }

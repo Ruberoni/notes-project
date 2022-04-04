@@ -31,7 +31,7 @@ const onError = (err: ApolloError) => {
 export function useNotesPreviewQuery(
   userId: string,
   extraOptions?: QueryHookOptions
-): QueryResult {
+): QueryResult<{getUserNotesPreview: INote[]}> {
   return useQuery(GET_NOTES_PREVIEW, {
     variables: { userId },
     ...extraOptions,

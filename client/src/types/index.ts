@@ -1,3 +1,5 @@
+import { EditorValue } from "react-rte";
+
 export interface Node {
   id: string;
 }
@@ -15,7 +17,7 @@ export interface hasUser extends Node {
 
 export interface INote extends hasUser {
   title: string;
-  body?: string;
+  body?: EditorValue;
   categories: ICategory[];
 }
 

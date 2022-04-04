@@ -28,6 +28,7 @@ import { ICategory } from "../types";
 import { useNoteContext, useAppContext } from "../context";
 import { useAddCategoryNoteMutation } from "../api/notes";
 import { useDeleteCategoryMutation, useCreateCategoryMutation } from "../api/categories";
+import { useUserCategoriesQuery } from "../api/user";
 
 export interface CategoryListProps extends Omit<MenuProps, "children"> {
   categories?: ICategory[];
@@ -62,7 +63,7 @@ export default function CategoryList(props: CategoryListProps): ReactElement {
     return catList.some((cat1) => areSameCategories(cat, cat1));
   };
 
-  // userCategories less this notes categories
+  // userCategories less its notes categories
   const availableCategories = userCategories.filter(
     (cat) => !includesCategory(cat, currentNote?.categories)
   );
@@ -102,6 +103,7 @@ export function UserCategoryList(
 
   const { state } = useAppContext();
   const { userCategories, setUserCategories } = useNoteContext()
+  const userCategoriesQuery = useUserCategoriesQuery(state.userId as string, { skip: true })
 
   const [deleteCategory, ] = useDeleteCategoryMutation();
   
@@ -117,7 +119,14 @@ export function UserCategoryList(
   return (
     <Popover {...props}>
       <PopoverTrigger>
-        <Button disabled={Boolean(!state.userId)} colorScheme="blue" size="sm">Categories</Button>
+        <Button
+          colorScheme="blue"
+          size="sm"
+          disabled={!state.userId || userCategoriesQuery.loading}
+          isLoading={userCategoriesQuery.loading}
+        >
+          Categories
+        </Button>
       </PopoverTrigger>
       <PopoverContent w="auto">
         <PopoverBody>

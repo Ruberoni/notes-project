@@ -21,8 +21,8 @@ export interface NotesAccesibilityBarProps extends Omit<StackProps, "filter"> {
 
 export default function NotesAccesibilityBar({filter, setFilter, ...props}: NotesAccesibilityBarProps): JSX.Element {
   const appContext = useAppContext()
-  const { setNotesList, setCurrentNote, notesList } = useNoteContext();
-  const [createNote] = useCreateNoteMutation()
+  const { setNotesList, changeCurrentNote, notesList } = useNoteContext();
+  const [createNote, createNoteMutation] = useCreateNoteMutation()
 
   const onCreateNote = async () => {
     console.log("[NotesAccesibilityBar][onCreateNote]")
@@ -37,15 +37,18 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
       title: "",
       categories: [],
     };
-    setNotesList([...notesList, note]);
-    setCurrentNote(note);
+    changeCurrentNote(() => {
+      setNotesList([...notesList, note]);
+      return note
+    });
   };
 
   const rightIcon: IconButtonProps = {
     icon: <AddIcon />,
     "aria-label": "Create note",
     onClick: onCreateNote,
-    disabled: Boolean(!appContext.state.userId)
+    disabled: !appContext.state.userId || createNoteMutation.loading,
+    isLoading: createNoteMutation.loading
   };
   return (
     <AccesibilityBar rightIcon={rightIcon} {...props}>

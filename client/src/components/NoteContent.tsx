@@ -7,10 +7,12 @@ import {
   Textarea,
   IconButton,
   Image,
-  Center
+  Center,
+  Spinner,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
+import RichTextEditor from 'react-rte';
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
@@ -24,18 +26,26 @@ export interface NoteContentProps extends StackProps {
 }
 
 export default function NoteContent(props: StackProps): ReactElement {
-  const [note, , utils] = useNoteContent();
+  const [note, loading, utils] = useNoteContent();
 
-  if (!note)
+  if (!note || !utils)
     return (
       <Center h="inherit" w="100%">
         <Image src={typingImg} boxSize="290px" objectFit="cover" alt="Typing" />
       </Center>
     );
 
+  if (loading) {
+    return (
+      <Center h="inherit" w="100%">
+        <Spinner />
+      </Center>
+    );
+  }
+
   return (
     <VStack h="100%" w="100%" {...props}>
-      <HStack spacing="0px" align="normal" w="inherit" >
+      <HStack spacing="0px" align="normal" w="inherit" pr={1}>
         <VStack w="inherit">
           <Textarea
             fontSize="2em"
@@ -72,15 +82,13 @@ export default function NoteContent(props: StackProps): ReactElement {
           aria-label="Delete note"
           colorScheme="red"
           icon={<DeleteIcon />}
+          top={1}
         />
       </HStack>
-      <Textarea
-        h="inherit"
-        resize="none"
-        value={note.body || ""}
+      <RichTextEditor
+        value={note.body || RichTextEditor.createEmptyValue()}
         onChange={utils.handleBodyChange}
-        focusBorderColor="none"
-        border="0px"
+        rootStyle={{overflow: 'auto', width: '100%', borderBottom: 0}}
       />
     </VStack>
   );

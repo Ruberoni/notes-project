@@ -5,6 +5,7 @@ import {
   ApolloError,
   QueryResult,
 } from "@apollo/client";
+import { ICategory } from "../types";
 
 /**
  * Helpers
@@ -15,8 +16,8 @@ const onError = (err: ApolloError) => {
 
 export function useUserCategoriesQuery(
   userId: string,
-  extraOptions?: QueryHookOptions
-): QueryResult {
+  extraOptions?: QueryHookOptions<{getUserCategories: ICategory[]}, { userId: string }>
+): QueryResult<{getUserCategories: ICategory[]}, { userId: string }> {
   return useQuery(GET_USER_CATEGORIES, {
     variables: { userId },
     ...extraOptions,

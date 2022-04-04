@@ -6,6 +6,8 @@ import {
   TagRightIcon,
   TagCloseButton,
   TagCloseButtonProps,
+  Skeleton,
+  SkeletonProps,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
@@ -66,4 +68,8 @@ export function AddCategoryTag({onAdd, ...props}: AddCategoryTagProps): ReactEle
       {/* <IconButton aria-label="Search database" icon={<AddIcon />} /> */}
     </CategoryTag>
   );
+}
+
+export function CategoryTagSkeleton(skeletonProps: SkeletonProps): ReactElement {
+  return <Skeleton h="1.2rem" w="3rem" borderRadius={5} {...skeletonProps}/>
 }
