@@ -88,7 +88,17 @@ export default function NoteContent(props: StackProps): ReactElement {
       <RichTextEditor
         value={note.body || RichTextEditor.createEmptyValue()}
         onChange={utils.handleBodyChange}
-        rootStyle={{overflow: 'auto', width: '100%', borderBottom: 0}}
+        rootStyle={{
+          overflow: "auto",
+          width: "100%",
+          borderBottom: 0,
+          backgroundColor: "transparent",
+          borderWidth: 0
+        }}
+        toolbarStyle={{
+          borderWidth: 0,
+          color: 'black'
+        }}
       />
     </VStack>
   );
