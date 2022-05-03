@@ -12,12 +12,33 @@ import {
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
-import RichTextEditor from 'react-rte';
+import RichTextEditor, { ToolbarConfig } from "react-rte";
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
 import { INote } from "../types";
 import typingImg from "../assets/typing.jpg";
+import './NoteContent.css'
+
+const toolbarConfig: ToolbarConfig = {
+  // Optionally specify the groups to display (displayed in the order listed).
+  display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
+  INLINE_STYLE_BUTTONS: [
+    {label: 'Bold', style: 'BOLD', className: 'prueba'},
+    {label: 'Italic', style: 'ITALIC'},
+    {label: 'Underline', style: 'UNDERLINE'}
+  ],
+  BLOCK_TYPE_DROPDOWN: [
+    {label: 'Normal', style: 'unstyled'},
+    {label: 'Heading Large', style: 'header-one'},
+    {label: 'Heading Medium', style: 'header-two'},
+    {label: 'Heading Small', style: 'header-three'}
+  ],
+  BLOCK_TYPE_BUTTONS: [
+    {label: 'UL', style: 'unordered-list-item'},
+    {label: 'OL', style: 'ordered-list-item'}
+  ]
+}
 
 export interface NoteContentProps extends StackProps {
   body?: INote["body"];
@@ -99,6 +120,7 @@ export default function NoteContent(props: StackProps): ReactElement {
           borderWidth: 0,
           color: 'black'
         }}
+        toolbarConfig={toolbarConfig}
       />
     </VStack>
   );

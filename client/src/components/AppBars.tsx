@@ -53,7 +53,7 @@ export function TopBar(props: BoxProps): JSX.Element {
   );
 
   return (
-    <Box w="100%" h="26px" bg="#FFD66D" {...props}>
+    <Box w="100%" h="26px" bg="#FFD66D" color='black' {...props}>
       {currentBreakpoint !== "base" && (
         <Flex justify="center">
           <Text bg="" textAlign="center" size="lg">
