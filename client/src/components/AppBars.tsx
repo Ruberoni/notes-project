@@ -29,7 +29,7 @@ export function TopBar(props: BoxProps): JSX.Element {
       h="40px"
       bg="#FFD66D"
       borderBottom='1px solid #c0c0c0'
-      padding="0 2%"
+      padding="0 2vw"
       alignItems="center"
       justifyContent="space-between"
       {...props}
@@ -55,7 +55,7 @@ export function BottomBar(props: FlexProps): JSX.Element {
       h="2.5em"
       color="white"
       justify="space-between"
-      p="0 2%"
+      p="0 2vw"
       {...props}
     >
       <Flex alignItems="center" fontSize="0.8em">

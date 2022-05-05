@@ -48,7 +48,7 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
   };
 
   return (
-    <Flex h="56px" pl="6.5%" w="inherit" alignItems="center" borderBottom='1px solid #c0c0c0' {...props}>
+    <Flex h="56px" pl="6.5%" w="inherit" alignItems="center" borderBottom='1px solid #e5e5e5' {...props}>
       <CategoriesFilter
         filter={filter}
         setFilter={setFilter}
@@ -73,7 +73,7 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
         h="36px"
         invertColors
         marginLeft="auto"
-        mr='8px'
+        mr='10px'
         _hover={{
           backgroundColor: "#2B4D62",
         }}
