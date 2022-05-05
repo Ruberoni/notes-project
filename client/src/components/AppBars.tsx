@@ -10,6 +10,7 @@ import {
   Flex,
   FlexProps,
   ButtonProps,
+  ComponentWithAs,
 } from "@chakra-ui/react";
 import { Link as RLink,  } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
@@ -50,32 +51,62 @@ export function TopBar(props: BoxProps): JSX.Element {
 export function BottomBar(props: FlexProps): JSX.Element {
   return (
     <Flex
-      bg="#A8201A"
-      h="24px"
+      bg="#143A51"
+      h="2.5em"
       color="white"
       justify="space-between"
+      p="0 2%"
       {...props}
     >
-      <Flex w="-webkit-fill-available">
-        <Text bg="" alignSelf="center" textAlign="center" pl="2%">
-          Made by <Link href='https://github.com/Ruberoni/' isExternal>Ruben</Link> (c) 2021
+      <Flex alignItems="center" fontSize="0.8em">
+        <Text bg="" textAlign="center" >
+          Made by
+        </Text>
+        <TextButton
+          as={Link}
+          color="white"
+          p={0}
+          ml={1}
+          top='0.45px'
+          h="inherit"
+          fontWeight="normal"
+          href="https://github.com/Ruberoni/"
+          _hover={{ textDecoration: "none" }}
+          isExternal
+        >
+          Ruben
+        </TextButton>
+        <Text bg="" textAlign="center" >
+          (c) 2021
         </Text>
       </Flex>
-      <AboutModal mr="2%" modalBodyProps={{ fontSize: "lg" }} />
+      <AboutModal
+        triggerButton={
+          <TextButton h="inherit" fontWeight="normal" color="white">
+            About
+          </TextButton>
+        }
+      />
     </Flex>
   );
 }
 
-export const TextButton = ({ children, ...buttonProps }: ButtonProps) => (
+export const TextButton: ComponentWithAs<"button", ButtonProps> = ({
+  children,
+  ...buttonProps
+}: ButtonProps) => (
   <Button
     bg="trasparent"
     alignItems="flex-start"
     flexDirection="column"
     {...buttonProps}
+    fontSize={buttonProps.fontSize || 'inherit'}
     _hover={{
       "& > .textButtonLine": {
         width: "100%",
       },
+
+      ...buttonProps._hover,
     }}
   >
     {children}
