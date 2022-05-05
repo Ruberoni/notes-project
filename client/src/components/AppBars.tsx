@@ -9,7 +9,7 @@ import {
   useBreakpoint,
   Flex,
   FlexProps,
-  Spacer,
+  ButtonProps,
 } from "@chakra-ui/react";
 import { Link as RLink,  } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
@@ -19,60 +19,31 @@ import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
-  const { loginWithRedirect, isAuthenticated, user } = useAuth0();
+  const { loginWithRedirect, isAuthenticated } = useAuth0();
   const context = useAppContext();
 
-  // const isLoggedIn = Boolean(context.state.userId);
-  const isLoggedIn = isAuthenticated;
-
-  const LoggedOutWelcomeText = "Welcome, please login or register.";
-  const LoggedInWelcomeText = `Welcome ${user?.name || user?.email || ''}`;
-
-  const LoggedOutButtons = (
-    <>
-      <Button
-        // as={RLink}
-        // to="/login"
-        h="inherit"
-        onClick={loginWithRedirect}
-        mr="2"
-        fontWeight="bold"
-        _hover={{ textDecoration: "none" }}
-      >
-        LOGIN
-      </Button>
-    </>
-  );
-
-  const LoggedInButton = (
-    <>
-      <Button bg="trasparent" h="inherit" onClick={context.auth.logout}>
-        LOGOUT
-      </Button>
-    </>
-  );
-
   return (
-    <Box w="100%" h="26px" bg="#FFD66D" {...props}>
+    <Flex
+      w="100%"
+      h="40px"
+      bg="#FFD66D"
+      borderBottom='1px solid #c0c0c0'
+      padding="0 2%"
+      alignItems="center"
+      justifyContent="space-between"
+      {...props}
+    >
       {currentBreakpoint !== "base" && (
-        <Flex justify="center">
-          <Text bg="" textAlign="center" size="lg">
-            {isLoggedIn ? LoggedInWelcomeText : LoggedOutWelcomeText}
-          </Text> 
-        </Flex>
+        <Heading as={RLink} to="/" bg="" size="md">
+          Notes Project
+        </Heading>
       )}
-      <Flex h="inherit" position="absolute" left="0" top="0" right="0" bottom="0">
-        {currentBreakpoint !== "base" && (
-          <Heading as={RLink} to="/" bg="" size="md" pl="2%">
-            Notes Project
-          </Heading>
-        )}
-        <Spacer />
-        <Box textAlign="right" bg="" pr="2%" h={25}>
-          {isLoggedIn ? LoggedInButton : LoggedOutButtons}
-        </Box>
-      </Flex>
-    </Box>
+      {isAuthenticated ? (
+        <TextButton ml='auto' onClick={context.auth.logout}>LOGOUT</TextButton>
+      ) : (
+        <TextButton ml='auto' onClick={loginWithRedirect}>LOGIN</TextButton>
+      )}
+    </Flex>
   );
 }
 
@@ -94,3 +65,26 @@ export function BottomBar(props: FlexProps): JSX.Element {
     </Flex>
   );
 }
+
+export const TextButton = ({ children, ...buttonProps }: ButtonProps) => (
+  <Button
+    bg="trasparent"
+    alignItems="flex-start"
+    flexDirection="column"
+    {...buttonProps}
+    _hover={{
+      "& > .textButtonLine": {
+        width: "100%",
+      },
+    }}
+  >
+    {children}
+    <Box
+      className="textButtonLine"
+      bg={buttonProps.color || "black"}
+      h="1px"
+      w="0%"
+      transition="all 150ms ease-out"
+    />
+  </Button>
+);

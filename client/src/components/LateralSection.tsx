@@ -77,7 +77,7 @@ export default function LateralSection({
       )}
       {useBreakPointDrawer(
         "base",
-        <VStack h="100%" w="100%" {...props} {...onDrawerProps}>
+        <VStack h="100%" w="100%" spacing={0} {...props} {...onDrawerProps}>
           {children(filter, setFilter)}
         </VStack>
       )}
