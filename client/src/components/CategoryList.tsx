@@ -97,8 +97,12 @@ export function CategoryItem(props: CategoryTagProps): ReactElement {
   );
 }
 
+export interface UserCategoryListProps extends Omit<MenuProps, "children">{
+  triggerButton?: ReactElement;
+}
+
 export function UserCategoryList(
-  props: Omit<MenuProps, "children">
+  props: UserCategoryListProps
 ): ReactElement {
 
   const { state } = useAppContext();
@@ -119,14 +123,21 @@ export function UserCategoryList(
   return (
     <Popover {...props}>
       <PopoverTrigger>
-        <Button
-          colorScheme="blue"
-          size="sm"
-          disabled={!state.userId || userCategoriesQuery.loading}
-          isLoading={userCategoriesQuery.loading}
-        >
-          Categories
-        </Button>
+        {props.triggerButton ? (
+          React.cloneElement(props.triggerButton, {
+            disabled: !state.userId || userCategoriesQuery.loading,
+            isLoading: userCategoriesQuery.loading,
+          })
+        ) : (
+          <Button
+            colorScheme="blue"
+            size="sm"
+            disabled={!state.userId || userCategoriesQuery.loading}
+            isLoading={userCategoriesQuery.loading}
+          >
+            Categories
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent w="auto">
         <PopoverBody>
@@ -134,7 +145,7 @@ export function UserCategoryList(
             const onClick = () => {
               console.log("Category clicked with label:", cat.label);
             };
-            const _handleDeleteCategory = () => handleDeleteCategory(cat)
+            const _handleDeleteCategory = () => handleDeleteCategory(cat);
             return (
               <HStack key={cat.id} onClick={onClick}>
                 <CategoryTag mr="auto" {...cat} />
@@ -150,8 +161,7 @@ export function UserCategoryList(
         </PopoverBody>
         <CreateCategoryPopover
           trigger={
-            <PopoverFooter
-            >
+            <PopoverFooter>
               <Button colorScheme="green" w="100%" leftIcon={<AddIcon />}>
                 Create
               </Button>

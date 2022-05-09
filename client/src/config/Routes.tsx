@@ -29,7 +29,7 @@ export default function Routes(): ReactElement {
           <Test />
         </Route>
       </Switch>
-      <BottomBar h="4.2vh" />
+      <BottomBar />
     </>
   );
 }
