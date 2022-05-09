@@ -11,6 +11,7 @@ import {
   FlexProps,
   ButtonProps,
   ComponentWithAs,
+  useColorModeValue
 } from "@chakra-ui/react";
 import { Link as RLink,  } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
@@ -20,6 +21,8 @@ import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
+  const bg = useColorModeValue('#FFD66D', '#131720');
+  const borderColor = useColorModeValue('border.main', 'border.dark');
   const { loginWithRedirect, isAuthenticated } = useAuth0();
   const context = useAppContext();
 
@@ -27,8 +30,9 @@ export function TopBar(props: BoxProps): JSX.Element {
     <Flex
       w="100%"
       h="40px"
-      bg="#FFD66D"
-      borderBottom='1px solid #c0c0c0'
+      bg={bg}
+      borderBottom='1px solid'
+      borderColor={borderColor}
       padding="0 2vw"
       alignItems="center"
       justifyContent="space-between"
@@ -49,9 +53,11 @@ export function TopBar(props: BoxProps): JSX.Element {
 }
 
 export function BottomBar(props: FlexProps): JSX.Element {
+  const bg = useColorModeValue('#143A51', '#131720');
+
   return (
     <Flex
-      bg="#143A51"
+      bg={bg}
       h="2.5em"
       color="white"
       justify="space-between"
