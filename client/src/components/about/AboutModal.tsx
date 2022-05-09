@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -20,20 +20,21 @@ import { EmailIcon } from '@chakra-ui/icons'
 export interface AboutModalProps extends TextProps {
   modalContentProps?: ModalContentProps,
   modalBodyProps?: ModalBodyProps
+  triggerButton?: ReactElement
 }
 
-export default function AboutModal({ modalContentProps, modalBodyProps, ...buttonProps }: AboutModalProps): React.ReactElement {
+export default function AboutModal({ modalContentProps, modalBodyProps, triggerButton, ...buttonProps }: AboutModalProps): React.ReactElement {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
     <>
-      <Text as="button" onClick={onOpen} {...buttonProps}>About</Text>
+      {triggerButton ? React.cloneElement(triggerButton, { onClick: onOpen }) : <Text as="button" onClick={onOpen} {...buttonProps}>About</Text>}
       <Modal size="xl" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent {...modalContentProps}>
           <ModalHeader>About</ModalHeader>
           <ModalCloseButton />
-          <ModalBody {...modalBodyProps}>
+          <ModalBody fontSize="lg" {...modalBodyProps}>
             <Text mb="10px">This app was made for learning purposes by Rubén Paredes</Text>
             <Link href='mailto:ruben.pardes25@gmail.com' isExternal>
               <EmailIcon w={5} h={5} mr="12px"/>
