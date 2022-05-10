@@ -74,12 +74,9 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
       <Button
         w="36px"
         h="36px"
-        invertColors
+        isActive
         marginLeft="auto"
         mr='10px'
-        _hover={{
-          backgroundColor: "#2B4D62",
-        }}
         onClick={onCreateNote}
         disabled={!appContext.state.userId || createNoteMutation.loading}
         isLoading={createNoteMutation.loading}

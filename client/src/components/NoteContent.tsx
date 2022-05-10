@@ -52,7 +52,7 @@ export default function NoteContent(props: StackProps): ReactElement {
   if (!note || !utils)
     return (
       <Center h="inherit" w="100%">
-        <Heading color="gray" opacity={0.5} size="4xl" userSelect="none">
+        <Heading color="gray" opacity={0.2} size="4xl" userSelect="none">
           Notes Project
         </Heading>
       </Center>
