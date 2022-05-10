@@ -6,6 +6,9 @@ const config: ThemeConfig = {
 
 /**
  * Global styles
+ * 
+ * Issue related to charka ui color modes
+ * https://github.com/chakra-ui/chakra-ui/issues/1162
  */
 export default extendTheme({
   config,
@@ -20,18 +23,17 @@ export default extendTheme({
     },
   },
   colors: {
-    text: {
-      main: 'black',
-      dark: '#E7F3F8',
-    },
-    border: {
-      main: '#c0c0c0',
-      dark: '#142f42',
-      smooth: '#e5e5e5'
-    }
+    text: 'var(--text)',
+    primary: 'var(--primary)',
+    border: 'var(--border)'
   },
   styles: {
     global: ({ colorMode }) => ({
+      ':root': {
+        '--primary': colorMode === 'dark' ? '#131720' : '#FFD66D',
+        '--text': colorMode === 'dark' ? '#E7F3F8' : 'black',
+        '--border': colorMode === 'dark' ? '#142f42' : '#e5e5e5',
+      },
       // Styles to hide scrollbar
       ".hideScrollBar": {
         overflow: "auto",
@@ -52,9 +54,9 @@ export default extendTheme({
         fontSize: 18,
       },
       body: {
-        color: colorMode === 'dark' ? 'text.dark' : 'text.main',
+        color: 'text',
         bg: colorMode === 'dark' ? '#0b1924' : 'white',
-      }
+      },
       
     }),
   },

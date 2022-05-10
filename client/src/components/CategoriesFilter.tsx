@@ -40,7 +40,7 @@ export default function CategoriesFilter({
         w="100%"
         py="3px"
         px="7px"
-        bg={isChecked ? "#FFD66D" : "white"}
+        bg={isChecked ? "primary" : "transparent"}
         onClick={() => onChange(cat.id)}
       >
         <CategoryTag {...cat} />

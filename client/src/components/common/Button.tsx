@@ -18,7 +18,7 @@ const Button = (
   }: ButtonProps,
   ref: React.LegacyRef<HTMLButtonElement>
 ) => {
-  const color = useColorModeValue("#143A51", 'text.dark')
+  const color = useColorModeValue("#143A51", 'text')
 
   const defaultStyle: CSSObject = {
     bg: 'transparent',
@@ -28,7 +28,7 @@ const Button = (
 
   const activeStyles = {
     color: useColorModeValue("white", '#143A51'),
-    bg: useColorModeValue("#143A51", 'text.dark')
+    bg: useColorModeValue("#143A51", 'text')
   }
 
   return (

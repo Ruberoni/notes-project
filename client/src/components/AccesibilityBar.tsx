@@ -8,7 +8,6 @@ import {
   FlexProps,
   IconButtonProps,
   Icon,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useNoteContext, useAppContext } from "../context";
@@ -25,7 +24,6 @@ export interface NotesAccesibilityBarProps extends Omit<StackProps, "filter"> {
 }
 
 export default function NotesAccesibilityBar({filter, setFilter, ...props}: NotesAccesibilityBarProps): JSX.Element {
-  const borderColor = useColorModeValue('border.smooth', 'border.dark');
 
   const appContext = useAppContext()
   const { setNotesList, changeCurrentNote, notesList } = useNoteContext();
@@ -51,7 +49,7 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
   };
 
   return (
-    <Flex h="56px" pl="6.5%" w="inherit" alignItems="center" borderBottom='1px solid' borderColor={borderColor} {...props}>
+    <Flex h="56px" pl="6.5%" w="inherit" alignItems="center" borderBottom='1px solid' borderColor='border' {...props}>
       <CategoriesFilter
         filter={filter}
         setFilter={setFilter}

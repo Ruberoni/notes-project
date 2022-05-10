@@ -22,7 +22,7 @@ import AboutModal from "./about/AboutModal";
 export function TopBar(props: BoxProps): JSX.Element {
   const currentBreakpoint = useBreakpoint();
   const bg = useColorModeValue('#FFD66D', '#131720');
-  const borderColor = useColorModeValue('border.main', 'border.dark');
+  const borderColor = useColorModeValue('#c0c0c0', 'border');
   const { loginWithRedirect, isAuthenticated } = useAuth0();
   const context = useAppContext();
 
