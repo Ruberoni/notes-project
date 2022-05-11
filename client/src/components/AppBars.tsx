@@ -44,9 +44,9 @@ export function TopBar(props: BoxProps): JSX.Element {
         </Heading>
       )}
       {isAuthenticated ? (
-        <TextButton ml='auto' onClick={context.auth.logout}>LOGOUT</TextButton>
+        <TextButton ml='auto' color='text' onClick={context.auth.logout}>LOGOUT</TextButton>
       ) : (
-        <TextButton ml='auto' onClick={loginWithRedirect}>LOGIN</TextButton>
+        <TextButton ml='auto' color='text' onClick={loginWithRedirect}>LOGIN</TextButton>
       )}
     </Flex>
   );

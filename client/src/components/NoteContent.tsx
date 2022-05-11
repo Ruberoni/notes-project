@@ -8,36 +8,17 @@ import {
   Spinner,
   Heading,
   Flex,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
-import RichTextEditor, { ToolbarConfig } from "react-rte";
+import RichTextEditor, { StyleConfigList, ToolbarConfig } from "react-rte";
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
 import { INote } from "../types";
-import typingImg from "../assets/typing.jpg";
 import './NoteContent.css'
 
-const toolbarConfig: ToolbarConfig = {
-  // Optionally specify the groups to display (displayed in the order listed).
-  display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
-  INLINE_STYLE_BUTTONS: [
-    {label: 'Bold', style: 'BOLD', className: 'prueba'},
-    {label: 'Italic', style: 'ITALIC'},
-    {label: 'Underline', style: 'UNDERLINE'}
-  ],
-  BLOCK_TYPE_DROPDOWN: [
-    {label: 'Normal', style: 'unstyled'},
-    {label: 'Heading Large', style: 'header-one'},
-    {label: 'Heading Medium', style: 'header-two'},
-    {label: 'Heading Small', style: 'header-three'}
-  ],
-  BLOCK_TYPE_BUTTONS: [
-    {label: 'UL', style: 'unordered-list-item'},
-    {label: 'OL', style: 'ordered-list-item'}
-  ]
-}
 import Button from "./common/Button";
 
 export interface NoteContentProps extends StackProps {
@@ -48,6 +29,7 @@ export interface NoteContentProps extends StackProps {
 
 export default function NoteContent(props: StackProps): ReactElement {
   const [note, loading, utils] = useNoteContent();
+  const editorCodeStyleBackground = useColorModeValue('rgb(243, 243, 243)', 'black')
 
   if (!note || !utils)
     return (
@@ -114,19 +96,77 @@ export default function NoteContent(props: StackProps): ReactElement {
       <RichTextEditor
         value={note.body || RichTextEditor.createEmptyValue()}
         onChange={utils.handleBodyChange}
+        toolbarClassName="editorToolBar"
         rootStyle={{
           overflow: "auto",
           width: "100%",
           borderBottom: 0,
           backgroundColor: "transparent",
-          borderWidth: 0
+          borderWidth: 0,
         }}
         toolbarStyle={{
           borderWidth: 0,
-          color: 'black'
+          color: 'black',
         }}
         toolbarConfig={toolbarConfig}
+        customStyleMap={{
+          'CODE': {
+            background: editorCodeStyleBackground,
+            fontFamily: 'Inconsolata, Menlo, Consolas, monospace',
+            fontSize: '1em',
+            padding: '2px 6px'
+          }
+        }}
       />
     </VStack>
   );
 }
+
+const INLINE_STYLE_BUTTONS: StyleConfigList = [
+  { label: "Bold", style: "BOLD" },
+  { label: "Italic", style: "ITALIC" },
+  { label: "Strikethrough", style: "STRIKETHROUGH" },
+  { label: "Monospace", style: "CODE" },
+  { label: "Underline", style: "UNDERLINE" },
+];
+
+// const BLOCK_ALIGNMENT_BUTTONS: StyleConfigList = [
+//   { label: "Align Left", style: "ALIGN_LEFT" },
+//   { label: "Align Center", style: "ALIGN_CENTER" },
+//   { label: "Align Right", style: "ALIGN_RIGHT" },
+//   { label: "Align Justify", style: "ALIGN_JUSTIFY" },
+// ];
+
+const BLOCK_TYPE_DROPDOWN: StyleConfigList = [
+  { label: "Normal", style: "unstyled" },
+  { label: "Heading Large", style: "header-one" },
+  { label: "Heading Medium", style: "header-two" },
+  { label: "Heading Small", style: "header-three" },
+];
+const BLOCK_TYPE_BUTTONS: StyleConfigList = [
+  { label: "UL", style: "unordered-list-item" },
+  { label: "OL", style: "ordered-list-item" },
+  { label: "Blockquote", style: "blockquote" },
+];
+
+/**
+ * I actually copy pasted the code of the official repo.
+ * @link https://github.com/sstur/react-rte/blob/master/src/lib/EditorToolbarConfig.js
+ */
+ const toolbarConfig: ToolbarConfig = {
+  display: [
+    "INLINE_STYLE_BUTTONS",
+    // "BLOCK_ALIGNMENT_BUTTONS",
+    "BLOCK_TYPE_BUTTONS",
+    "LINK_BUTTONS",
+    "BLOCK_TYPE_DROPDOWN",
+    "HISTORY_BUTTONS",
+  ],
+  INLINE_STYLE_BUTTONS,
+  // BLOCK_ALIGNMENT_BUTTONS,
+  BLOCK_TYPE_DROPDOWN,
+  BLOCK_TYPE_BUTTONS,
+  extraProps: {
+    className: 'toolBarConfig'
+  }
+};

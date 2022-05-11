@@ -44,6 +44,12 @@ export default extendTheme({
         width: 0,
         height: 0,
       },
+      '.editorToolBar button[disabled]': {
+        background: 'gray'
+      },
+      '.toolBarConfig': {
+        background: 'linear-gradient(61deg, rgb(253, 253, 253) 0px, rgb(246, 247, 248))'
+      },
       h1: {
         fontSize: 32,
       },
