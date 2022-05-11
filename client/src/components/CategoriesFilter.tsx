@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import {
   Popover,
   PopoverTrigger,
@@ -15,10 +15,12 @@ import { useNoteContext } from "../context";
 
 export interface CategoriesFilterProps extends Omit<PopoverProps, "filter"> {
   filter: string[];
+  triggerButton?: ReactElement;
   setFilter: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export default function CategoriesFilter({
+  triggerButton,
   filter,
   setFilter,
   ...props
@@ -49,13 +51,15 @@ export default function CategoriesFilter({
   return (
     <Popover {...props}>
       <PopoverTrigger>
-        <Button
-          disabled={Boolean(!userCategories?.[0])}
-          colorScheme="blue"
-          size="sm"
-        >
-          Filter
-        </Button>
+        {triggerButton ? React.cloneElement(triggerButton, { disabled: Boolean(!userCategories?.[0]) }) : (
+          <Button
+            disabled={Boolean(!userCategories?.[0])}
+            colorScheme="blue"
+            size="sm"
+          >
+            Filter
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent w="auto">
         <PopoverBody p="2px 3px">

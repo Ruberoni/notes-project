@@ -2,13 +2,12 @@ import React, { ReactElement } from "react";
 import {
   VStack,
   StackProps,
-  HStack,
   Wrap,
   Textarea,
-  IconButton,
-  Image,
   Center,
   Spinner,
+  Heading,
+  Flex,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
@@ -17,7 +16,7 @@ import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
 import { INote } from "../types";
-import typingImg from "../assets/typing.jpg";
+import Button from "./common/Button";
 
 export interface NoteContentProps extends StackProps {
   body?: INote["body"];
@@ -31,7 +30,9 @@ export default function NoteContent(props: StackProps): ReactElement {
   if (!note || !utils)
     return (
       <Center h="inherit" w="100%">
-        <Image src={typingImg} boxSize="290px" objectFit="cover" alt="Typing" />
+        <Heading color="gray.300" size="4xl" userSelect="none">
+          Notes Project
+        </Heading>
       </Center>
     );
 
@@ -45,7 +46,7 @@ export default function NoteContent(props: StackProps): ReactElement {
 
   return (
     <VStack h="100%" w="100%" {...props}>
-      <HStack spacing="0px" align="normal" w="inherit" pr={1}>
+      <Flex align="normal" w="inherit">
         <VStack w="inherit">
           <Textarea
             fontSize="2em"
@@ -77,18 +78,31 @@ export default function NoteContent(props: StackProps): ReactElement {
             />
           </Wrap>
         </VStack>
-        <IconButton
+        <Button
+          w='30px'
+          h='30px'
+          alignSelf='center'
+          m='0 calc(2vw + 16px) 0 1%'
           onClick={utils.handleDeleteNote}
           aria-label="Delete note"
-          colorScheme="red"
-          icon={<DeleteIcon />}
-          top={1}
-        />
-      </HStack>
+          >
+          <DeleteIcon/>
+        </Button>
+      </Flex>
       <RichTextEditor
         value={note.body || RichTextEditor.createEmptyValue()}
         onChange={utils.handleBodyChange}
-        rootStyle={{overflow: 'auto', width: '100%', borderBottom: 0}}
+        rootStyle={{
+          overflow: "auto",
+          width: "100%",
+          borderBottom: 0,
+          backgroundColor: "transparent",
+          borderWidth: 0
+        }}
+        toolbarStyle={{
+          borderWidth: 0,
+          color: 'black'
+        }}
       />
     </VStack>
   );
