@@ -34,7 +34,13 @@ export default function NoteContent(props: StackProps): ReactElement {
   if (!note || !utils)
     return (
       <Center h="inherit" w="100%">
-        <Heading color="gray" opacity={0.2} size="4xl" userSelect="none">
+        <Heading
+          textAlign="center"
+          color="gray"
+          opacity={0.2}
+          size="4xl"
+          userSelect="none"
+        >
           Notes Project
         </Heading>
       </Center>
@@ -49,8 +55,8 @@ export default function NoteContent(props: StackProps): ReactElement {
   }
 
   return (
-    <VStack h="100%" w="100%" {...props}>
-      <Flex align="normal" w="inherit">
+    <VStack h="100%" w="100%" spacing={0} {...props}>
+      <Flex align="normal" w="inherit" pb={2}>
         <VStack w="inherit">
           <Textarea
             fontSize="2em"
@@ -98,11 +104,16 @@ export default function NoteContent(props: StackProps): ReactElement {
         onChange={utils.handleBodyChange}
         toolbarClassName="editorToolBar"
         rootStyle={{
-          overflow: "auto",
+          overflow: "hidden",
           width: "100%",
+          height: "100%",
           borderBottom: 0,
           backgroundColor: "transparent",
           borderWidth: 0,
+        }}
+        editorStyle={{
+          height: '98%',
+          overflow: 'auto'
         }}
         toolbarStyle={{
           borderWidth: 0,

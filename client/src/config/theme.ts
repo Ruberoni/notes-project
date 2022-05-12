@@ -12,6 +12,10 @@ const config: ThemeConfig = {
  */
 export default extendTheme({
   config,
+  breakpoints: {
+    base: '0em',
+    sm: '43em',
+  },
   fonts: {
     body: "Source Sans Pro",
   },
@@ -25,7 +29,8 @@ export default extendTheme({
   colors: {
     text: 'var(--text)',
     primary: 'var(--primary)',
-    border: 'var(--border)'
+    border: 'var(--border)',
+    topbar: 'var(--topbar-background)',
   },
   styles: {
     global: ({ colorMode }) => ({
@@ -33,6 +38,7 @@ export default extendTheme({
         '--primary': colorMode === 'dark' ? '#131720' : '#FFD66D',
         '--text': colorMode === 'dark' ? '#E7F3F8' : 'black',
         '--border': colorMode === 'dark' ? '#142f42' : '#e5e5e5',
+        '--topbar-background': colorMode === 'dark' ? '#131720' : '#FFD66D',
       },
       // Styles to hide scrollbar
       ".hideScrollBar": {
@@ -45,7 +51,7 @@ export default extendTheme({
         height: 0,
       },
       '.editorToolBar button[disabled]': {
-        background: 'gray'
+        background: colorMode === 'dark' ? 'gray' : '#bfbfbf'
       },
       '.toolBarConfig': {
         background: 'linear-gradient(61deg, rgb(253, 253, 253) 0px, rgb(246, 247, 248))'

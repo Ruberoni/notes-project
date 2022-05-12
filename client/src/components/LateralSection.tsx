@@ -66,10 +66,10 @@ export default function LateralSection({
           left="0"
           top="0"
           onClick={openDrawer}
-          h="26px"
-          w="26px"
+          h="39px"
+          w="40px"
           zIndex="1"
-          bg="orange.400"
+          bg="topbar"
           borderRadius={0}
         >
           open drawer
