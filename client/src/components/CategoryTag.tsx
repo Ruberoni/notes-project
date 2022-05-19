@@ -3,11 +3,11 @@ import {
   Tag,
   TagLabel,
   TagProps,
-  TagRightIcon,
   TagCloseButton,
   TagCloseButtonProps,
   Skeleton,
   SkeletonProps,
+  IconButton,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
@@ -59,17 +59,35 @@ export interface AddCategoryTagProps extends CategoryTagProps {
   onAdd?: () => void
 }
 
-export function AddCategoryTag({onAdd, ...props}: AddCategoryTagProps): ReactElement {
+export function AddCategoryTag(
+  { onAdd, ...props }: AddCategoryTagProps,
+  ref: React.LegacyRef<HTMLButtonElement>
+): ReactElement {
   return (
     <CategoryTag bg="red.200" label="Add" {...props}>
-      <button onClick={onAdd}>
-        <TagRightIcon as={AddIcon} />
-      </button>
-      {/* <IconButton aria-label="Search database" icon={<AddIcon />} /> */}
+      <IconButton
+        onClick={onAdd}
+        size={"xs"}
+        h="auto"
+        p="4px"
+        minW="unset"
+        borderRadius="50%"
+        ref={ref}
+        bg="none"
+        _hover={{ bg: "none" }}
+        aria-label="Add category"
+        verticalAlign="top"
+        marginStart="0.5rem"
+        icon={<AddIcon />}
+      />
     </CategoryTag>
   );
 }
 
-export function CategoryTagSkeleton(skeletonProps: SkeletonProps): ReactElement {
-  return <Skeleton h="1.2rem" w="3rem" borderRadius={5} {...skeletonProps}/>
+export const AddCategoryTagRef = React.forwardRef(AddCategoryTag);
+
+export function CategoryTagSkeleton(
+  skeletonProps: SkeletonProps
+): ReactElement {
+  return <Skeleton h="1.2rem" w="3rem" borderRadius={5} {...skeletonProps} />;
 }

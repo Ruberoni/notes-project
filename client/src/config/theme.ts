@@ -1,7 +1,7 @@
 import { extendTheme, ThemeConfig } from "@chakra-ui/react";
 
 const config: ThemeConfig = {
-  useSystemColorMode: true,
+  // useSystemColorMode: true,
 }
 
 /**
@@ -50,8 +50,13 @@ export default extendTheme({
         width: 0,
         height: 0,
       },
-      '.editorToolBar button[disabled]': {
-        background: colorMode === 'dark' ? 'gray' : '#bfbfbf'
+      '.editorToolBar': {
+        '& button[disabled]': {
+          background: colorMode === 'dark' ? 'gray' : '#bfbfbf',
+        },
+        '& div': {
+          zIndex: '1'
+        }
       },
       '.toolBarConfig': {
         background: 'linear-gradient(61deg, rgb(253, 253, 253) 0px, rgb(246, 247, 248))'

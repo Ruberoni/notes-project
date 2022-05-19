@@ -14,7 +14,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
 import RichTextEditor, { StyleConfigList, ToolbarConfig } from "react-rte";
 import CategoryList from "./CategoryList";
-import { RemovableCategoryTag, AddCategoryTag } from "./CategoryTag";
+import { RemovableCategoryTag, AddCategoryTagRef } from "./CategoryTag";
 import { useNoteContent } from "../hooks";
 import { INote } from "../types";
 import './NoteContent.css'
@@ -84,7 +84,7 @@ export default function NoteContent(props: StackProps): ReactElement {
             <CategoryList
               categories={note.categories || []}
               gutter={1}
-              buttonAs={<AddCategoryTag />}
+              triggerButton={<AddCategoryTagRef />}
             />
           </Wrap>
         </VStack>
