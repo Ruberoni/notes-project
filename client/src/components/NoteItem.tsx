@@ -13,6 +13,7 @@ import {
   LayoutProps,
   SkeletonProps,
   FlexProps,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import CategoryTag, { CategoryTagSkeleton } from "./CategoryTag";
 import { useNoteItem } from "../hooks";
@@ -57,9 +58,12 @@ export default function NoteItem({
       isIndeterminate
     />
   );
-
+  
   const noteTitle = title || "Note title";
-  const bg = isOpen ? "#FFE6B6" : "transparent";
+
+  const selectedBg = useColorModeValue('#FFE6B6', '#486478');
+
+  const bg = isOpen ? selectedBg : "transparent";
 
   return (
     <Center

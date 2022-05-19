@@ -1,12 +1,7 @@
 import React, { ReactElement, useState } from "react";
 import {
-  Menu,
-  MenuProps,
-  MenuButton,
-  MenuList,
   MenuItem,
   Button,
-  Link,
   IconButton,
   Popover,
   PopoverTrigger,
@@ -21,6 +16,7 @@ import {
   FormLabel,
   FormControl,
   Select,
+  PopoverProps,
 } from "@chakra-ui/react";
 import { DeleteIcon, AddIcon, CheckIcon } from "@chakra-ui/icons";
 import CategoryTag, { CategoryTagProps } from "./CategoryTag";
@@ -30,15 +26,15 @@ import { useAddCategoryNoteMutation } from "../api/notes";
 import { useDeleteCategoryMutation, useCreateCategoryMutation } from "../api/categories";
 import { useUserCategoriesQuery } from "../api/user";
 
-export interface CategoryListProps extends Omit<MenuProps, "children"> {
+export interface CategoryListProps extends Omit<PopoverProps, "children"> {
   categories?: ICategory[];
-  buttonAs?: ReactElement; 
+  triggerButton?: ReactElement; 
 }
 
 export default function CategoryList(props: CategoryListProps): ReactElement {
   const { currentNote, updateCurrentNote, userCategories } = useNoteContext();
   if (!currentNote) return <></>;
-  const [addCategoryNote] = useAddCategoryNoteMutation()
+  const [addCategoryNote] = useAddCategoryNoteMutation();
 
   const handleAddCategoryNote = (cat: ICategory) => {
     addCategoryNote({
@@ -46,7 +42,7 @@ export default function CategoryList(props: CategoryListProps): ReactElement {
         categoryId: cat.id,
         noteId: currentNote.id,
       },
-    })
+    });
 
     updateCurrentNote({
       ...currentNote,
@@ -69,23 +65,39 @@ export default function CategoryList(props: CategoryListProps): ReactElement {
   );
 
   return (
-    <Menu {...props}>
-      <MenuButton as={Link} h="3">
-        {props.buttonAs}
-      </MenuButton>
-      <MenuList>
-        {availableCategories.map((cat) => {
-          const onClick = () => {
-            handleAddCategoryNote(cat);
-          };
-          return (
-            <MenuItem key={cat.id} onClick={onClick}>
-              <CategoryTag {...cat} />
-            </MenuItem>
-          );
-        })}
-      </MenuList>
-    </Menu>
+    <Popover {...props}>
+      <PopoverTrigger>
+        {props.triggerButton || <Button>Add</Button>}
+      </PopoverTrigger>
+      <PopoverContent w="auto">
+        <PopoverBody
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          w="fit-content"
+          sx={{ gap: 2 }}
+          p={0}
+        >
+          {availableCategories.map((cat) => {
+            const onClick = () => {
+              handleAddCategoryNote(cat);
+            };
+            return (
+              <Button
+                bg="none"
+                p="5px 13px"
+                w="100%"
+                h="auto"
+                key={cat.id}
+                onClick={onClick}
+              >
+                <CategoryTag w="fit-content" {...cat} />
+              </Button>
+            );
+          })}
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -97,7 +109,7 @@ export function CategoryItem(props: CategoryTagProps): ReactElement {
   );
 }
 
-export interface UserCategoryListProps extends Omit<MenuProps, "children">{
+export interface UserCategoryListProps extends Omit<PopoverProps, "children">{
   triggerButton?: ReactElement;
 }
 

@@ -24,6 +24,7 @@ export interface NotesAccesibilityBarProps extends Omit<StackProps, "filter"> {
 }
 
 export default function NotesAccesibilityBar({filter, setFilter, ...props}: NotesAccesibilityBarProps): JSX.Element {
+
   const appContext = useAppContext()
   const { setNotesList, changeCurrentNote, notesList } = useNoteContext();
   const [createNote, createNoteMutation] = useCreateNoteMutation()
@@ -48,7 +49,7 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
   };
 
   return (
-    <Flex h="56px" pl="6.5%" w="inherit" alignItems="center" borderBottom='1px solid #e5e5e5' {...props}>
+    <Flex h="56px" pl="6.5%" w="inherit" alignItems="center" borderBottom='1px solid' borderColor='border' {...props}>
       <CategoriesFilter
         filter={filter}
         setFilter={setFilter}
@@ -71,12 +72,9 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
       <Button
         w="36px"
         h="36px"
-        invertColors
+        isActive
         marginLeft="auto"
         mr='10px'
-        _hover={{
-          backgroundColor: "#2B4D62",
-        }}
         onClick={onCreateNote}
         disabled={!appContext.state.userId || createNoteMutation.loading}
         isLoading={createNoteMutation.loading}

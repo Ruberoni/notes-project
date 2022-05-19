@@ -2,54 +2,52 @@ import React from "react";
 import {
   Button as ChakraButton,
   ButtonProps as ChakraButtonProps,
+  CSSObject,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 export interface ButtonProps extends ChakraButtonProps {
-  primaryColor?: string;
-  secondaryColor?: string;
   isActive?: boolean;
-  invertColors?: boolean;
 }
 
 const Button = (
   {
     children,
-    primaryColor = "#143A51",
-    secondaryColor = "white",
-    invertColors,
     isActive,
     ...buttonProps
   }: ButtonProps,
   ref: React.LegacyRef<HTMLButtonElement>
 ) => {
-  if (invertColors) {
-    const tempColor = primaryColor;
-    primaryColor = secondaryColor;
-    secondaryColor = tempColor;
+  const color = useColorModeValue("#143A51", 'text')
+
+  const defaultStyle: CSSObject = {
+    bg: 'transparent',
+    color,
+    borderColor: color
+  }
+
+  const activeStyles = {
+    color: useColorModeValue("white", '#143A51'),
+    bg: useColorModeValue("#143A51", 'text')
   }
 
   return (
     <ChakraButton
       ref={ref}
-      bg={isActive ? primaryColor : secondaryColor}
-      borderRadius="50%"
       h="auto"
       p="5px"
       m={0}
-      minW={buttonProps.w || 'unset'}
-      color={isActive ? secondaryColor : primaryColor}
-      borderColor={primaryColor}
+      borderRadius="50%"
       borderWidth={1}
       fontSize="sm"
-      _hover={{
-        borderColor: "#2B4D62",
-        color: "#2B4D62",
-      }}
-      _active={{
-        backgroundColor: primaryColor,
-        color: secondaryColor,
-      }}
       {...buttonProps}
+      minW={buttonProps.w || 'unset'}
+      _hover={{
+        opacity: 0.8,
+        ...buttonProps._hover
+      }}
+      _active={{...(isActive ? defaultStyle : activeStyles), ...buttonProps._active}}
+      sx={{...defaultStyle, ...(isActive && activeStyles), ...buttonProps.sx}}
     >
       {children}
     </ChakraButton>
@@ -57,3 +55,4 @@ const Button = (
 };
 
 export default React.forwardRef(Button);
+
