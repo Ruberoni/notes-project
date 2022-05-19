@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { ChakraProvider, Box } from "@chakra-ui/react";
+import { ChakraProvider, Box, ColorModeScript } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
 import "@fontsource/source-sans-pro";
 
@@ -15,21 +15,24 @@ import {
 import { AppContextProvider } from "./context";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <BrowserRouter>
-        <Auth0ProviderWithHistory>
-          <ApolloProvider>
-            <AppContextProvider>
-              <Box display="flex" h="100vh" flexDirection="column">
-                <Routes />
-              </Box>
-            </AppContextProvider>
-          </ApolloProvider>
-        </Auth0ProviderWithHistory>
-      </BrowserRouter>
-    </ChakraProvider>
-  </React.StrictMode>,
+  <>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <React.StrictMode>
+      <ChakraProvider theme={theme}>
+        <BrowserRouter>
+          <Auth0ProviderWithHistory>
+            <ApolloProvider>
+              <AppContextProvider>
+                <Box display="flex" h="100vh" flexDirection="column">
+                  <Routes />
+                </Box>
+              </AppContextProvider>
+            </ApolloProvider>
+          </Auth0ProviderWithHistory>
+        </BrowserRouter>
+      </ChakraProvider>
+    </React.StrictMode>
+  </>,
   document.getElementById("root")
 );
 
