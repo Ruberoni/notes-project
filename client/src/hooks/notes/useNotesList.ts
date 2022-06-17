@@ -10,9 +10,9 @@ export interface useNotesListProps {
 /**
  * Handles fetching the notes.
  */
-export default function useNotesList(filter: string[]): [INote[], boolean] {
+export default function useNotesList(filter: string[]): [INote[], INote | undefined, boolean] {
   const appContext = useAppContext();
-  const { setNotesList, notesList } = useNoteContext();
+  const { setNotesList, notesList, currentNote } = useNoteContext();
   const [loading, setLoading] = useState(false);
 
   const includesCategory = (cat: ICategory, idsList: string[]) => {
@@ -45,5 +45,5 @@ export default function useNotesList(filter: string[]): [INote[], boolean] {
     setLoading(notesPreviewQuery.loading);
   }, [notesPreviewQuery.loading]);
 
-  return [filteredNotesList, loading];
+  return [filteredNotesList, currentNote, loading];
 }

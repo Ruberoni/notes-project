@@ -22,7 +22,9 @@ import { categories } from "../utils/seed";
 
 export interface NoteItemProps
   extends Omit<INote, "body">,
-    Omit<CenterProps, "id" | "title"> {}
+    Omit<CenterProps, "id" | "title"> {
+      isOpen?: boolean;
+    }
 
 /**
  * **Note item component.**
@@ -45,7 +47,7 @@ export default function NoteItem({
   categories,
   ...props
 }: NoteItemProps): JSX.Element {
-  const [isOpen, onClick] = useNoteItem(id);
+  const [onClick] = useNoteItem(id);
 
   const LoadingComp = (
     <CircularProgress
@@ -63,7 +65,7 @@ export default function NoteItem({
 
   const selectedBg = useColorModeValue('#FFE6B6', '#486478');
 
-  const bg = isOpen ? selectedBg : "transparent";
+  const bg = props.isOpen ? selectedBg : "transparent";
 
   return (
     <Center

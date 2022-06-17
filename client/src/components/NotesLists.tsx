@@ -22,13 +22,14 @@ export interface NotesListProps extends Omit<BoxProps, "filter"> {
  * - Scrollable notes [X]
  */
 export default function NotesList(props: NotesListProps): JSX.Element {
-  const [notesList, loading] = useNotesList(props.filter);
+  const [notesList, currentNote, loading] = useNotesList(props.filter);
 
   return (
     <Box className="hideScrollBar" h="100%" w="inherit" {...props}>
       {loading && <NotesListSkeleton />}
       {notesList.map((noteP) => (
         <NoteItem
+          isOpen={currentNote?.id === noteP.id}
           key={noteP.id}
           id={noteP.id}
           title={noteP.title}
