@@ -9,7 +9,7 @@ const register: ServerRoute = {
   },
   handler: (request) => {
     const db = new NotesProjectDataSource()
-    console.log("auth.controller.ts ~ request.payload", request.payload)
+    console.log("auth.controller.ts ~ request.payload", request.payload);
     return db.register(request.payload as UserContent)
   },
 }
