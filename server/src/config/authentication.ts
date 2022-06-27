@@ -1,7 +1,7 @@
 import jwksRsa from "jwks-rsa";
 import { ServerAuthScheme, Lifecycle, Request, ResponseToolkit } from "@hapi/hapi";
 import { getBearerValue } from "../utils";
-import { Boom } from "@hapi/boom";
+import Boom from "@hapi/boom";
 import { Options as hapiJwtOptions } from "hapi-auth-jwt2";
 
 export const jwtStrategyOptions: hapiJwtOptions = {
@@ -41,7 +41,7 @@ export const basicSecretScheme: ServerAuthScheme = () => {
   const authenticate = (request: Request, h: ResponseToolkit): Lifecycle.ReturnValue => {
     const authHeader = request.headers.authorization;
     const bearerValue = getBearerValue(authHeader);
-    if (bearerValue !== process.env.BASIC_SECRET) throw new Boom("There was an error anthenticating");
+    if (bearerValue !== process.env.BASIC_SECRET) throw Boom.unauthorized();
     return h.authenticated({
       credentials: {},
     });

@@ -25,6 +25,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@hapi/boom": "^10.0.0",
     "@hapi/hapi": "^20.1.5",
     "@types/sinon": "^10.0.2",
     "apollo-datasource": "^3.0.3",
