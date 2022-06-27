@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNoteContext, useAppContext } from "../../context";
 import { INote, ICategory } from "../../types";
 import { useNotesPreviewQuery } from "../../api/notes"
+import { AnyPointerEvent } from "framer-motion/types/gestures/PanSession";
 
 export interface useNotesListProps {
   filter: string[]
@@ -10,9 +11,9 @@ export interface useNotesListProps {
 /**
  * Handles fetching the notes.
  */
-export default function useNotesList(filter: string[]): [INote[], INote | undefined, boolean] {
+export default function useNotesList(filter: string[]): [INote[], INote | undefined, boolean, any] {
   const appContext = useAppContext();
-  const { setNotesList, notesList, currentNote } = useNoteContext();
+  const { setNotesList, notesList, currentNote, changeCurrentNote } = useNoteContext();
   const [loading, setLoading] = useState(false);
 
   const includesCategory = (cat: ICategory, idsList: string[]) => {
@@ -45,5 +46,5 @@ export default function useNotesList(filter: string[]): [INote[], INote | undefi
     setLoading(notesPreviewQuery.loading);
   }, [notesPreviewQuery.loading]);
 
-  return [filteredNotesList, currentNote, loading];
+  return [filteredNotesList, currentNote, loading, changeCurrentNote];
 }
