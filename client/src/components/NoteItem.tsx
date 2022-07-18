@@ -72,7 +72,7 @@ export default React.memo(
     const bg = props.isOpen ? selectedBg : "transparent";
   
     React.useEffect(() => {
-      console.log('[Hook][useNoteItem] Render!')
+      // console.log('[NoteItem] Render!')
     })
   
     return (

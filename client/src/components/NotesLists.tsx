@@ -30,7 +30,7 @@ export default function NotesList(props: NotesListProps): JSX.Element {
       {loading && <NotesListSkeleton />}
       {notesList.map((noteP) => {
         const onClick = (event: React.MouseEvent | React.KeyboardEvent) => {
-          console.log("[Hook][useNoteItem][onClick] Changing to note:", noteP.id);
+          // console.log("[Hook][useNoteItem][onClick] Changing to note:", noteP.id);
           if ("key" in event && event.key !== "Enter") return
           
           changeCurrentNote(notesList?.find((note) => note.id == noteP.id) as INote);

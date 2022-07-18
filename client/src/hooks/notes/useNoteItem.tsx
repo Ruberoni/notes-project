@@ -20,7 +20,7 @@ export default function useNoteItem(id: string): any {
   };
   
   useEffect(() => {
-    console.log('[Hook][useNoteItem] Render!')
+    // console.log('[Hook][useNoteItem] Render!')
   })
 
   // useEffect(() => {
