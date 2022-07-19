@@ -16,13 +16,14 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import CategoryTag, { CategoryTagSkeleton } from "./CategoryTag";
-import { useNoteItem } from "../hooks";
 import { INote } from "../types";
-import { categories } from "../utils/seed";
 
 export interface NoteItemProps
   extends Omit<INote, "body">,
-    Omit<CenterProps, "id" | "title"> {}
+    Omit<CenterProps, "id" | "title"> {
+      isOpen?: boolean;
+      onClick?: (arg: React.MouseEvent | React.KeyboardEvent) => void;
+    }
 
 /**
  * **Note item component.**
@@ -39,65 +40,69 @@ export interface NoteItemProps
  * - The categories are shortened according to the width.
  * - The categories are scrollable.
  */
-export default function NoteItem({
-  id,
-  title,
-  categories,
-  ...props
-}: NoteItemProps): JSX.Element {
-  const [isOpen, onClick] = useNoteItem(id);
+export default React.memo(
 
-  const LoadingComp = (
-    <CircularProgress
-      position="absolute"
-      top="0"
-      right="0"
-      color="gray.900"
-      thickness="2"
-      size="3"
-      isIndeterminate
-    />
-  );
+  function NoteItem({
+    id,
+    title,
+    categories,
+    onClick,
+    ...props
+  }: NoteItemProps): JSX.Element {
   
-  const noteTitle = title || "Note title";
-
-  const selectedBg = useColorModeValue('#FFE6B6', '#486478');
-
-  const bg = isOpen ? selectedBg : "transparent";
-
-  return (
-    <Center
-      tabIndex={0}
-      bg={bg}
-      h="122px"
-      _hover={{ cursor: "pointer" }}
-      onClick={onClick}
-      onKeyDown={onClick}
-      {...props}
-    >
-      <Flex
-        w="87%"
-        h="75%"
-        justify="center"
-        direction="column"
-        position="relative"
+    const LoadingComp = (
+      <CircularProgress
+        position="absolute"
+        top="0"
+        right="0"
+        color="gray.900"
+        thickness="2"
+        size="3"
+        isIndeterminate
+      />
+    );
+    
+    const noteTitle = title || "Note title";
+  
+    const selectedBg = useColorModeValue('#FFE6B6', '#486478');
+  
+    const bg = props.isOpen ? selectedBg : "transparent";
+  
+  
+    return (
+      <Center
+        tabIndex={0}
+        bg={bg}
+        h="122px"
+        _hover={{ cursor: "pointer" }}
+        onClick={onClick}
+        onKeyDown={onClick}
+        {...props}
       >
-        {/* {isLoading && LoadingComp} */}
-
-        <Tooltip label={noteTitle} openDelay={500} gutter={0}>
-          <Text fontSize="2xl" isTruncated>
-            {noteTitle}
-          </Text>
-        </Tooltip>
-        <HScroll>
-          {categories?.map((category) => (
-            <CategoryTag key={category.id} {...category} />
-          ))}
-        </HScroll>
-      </Flex>
-    </Center>
-  );
-}
+        <Flex
+          w="87%"
+          h="75%"
+          justify="center"
+          direction="column"
+          position="relative"
+        >
+          {/* {isLoading && LoadingComp} */}
+  
+          <Tooltip label={noteTitle} openDelay={500} gutter={0}>
+            <Text fontSize="2xl" isTruncated>
+              {noteTitle}
+            </Text>
+          </Tooltip>
+          <HScroll>
+            {categories?.map((category) => (
+              <CategoryTag key={category.id} {...category} />
+            ))}
+          </HScroll>
+        </Flex>
+      </Center>
+    );
+  }
+)
 
 export interface HScrollProps extends StackProps {
   children?: JSX.Element | JSX.Element[];

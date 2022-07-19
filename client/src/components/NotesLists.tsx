@@ -22,19 +22,29 @@ export interface NotesListProps extends Omit<BoxProps, "filter"> {
  * - Scrollable notes [X]
  */
 export default function NotesList(props: NotesListProps): JSX.Element {
-  const [notesList, loading] = useNotesList(props.filter);
+  const [notesList, currentNote, loading, changeCurrentNote] = useNotesList(props.filter);
 
+  
   return (
     <Box className="hideScrollBar" h="100%" w="inherit" {...props}>
       {loading && <NotesListSkeleton />}
-      {notesList.map((noteP) => (
-        <NoteItem
+      {notesList.map((noteP) => {
+        const onClick = (event: React.MouseEvent | React.KeyboardEvent) => {
+          // console.log("[Hook][useNoteItem][onClick] Changing to note:", noteP.id);
+          if ("key" in event && event.key !== "Enter") return
+          
+          changeCurrentNote(notesList?.find((note) => note.id == noteP.id) as INote);
+        };
+
+        return <NoteItem
+          isOpen={currentNote?.id === noteP.id}
           key={noteP.id}
           id={noteP.id}
           title={noteP.title}
           categories={noteP.categories}
+          onClick={onClick}
         />
-      ))}
+      })}
     </Box>
   );
 }

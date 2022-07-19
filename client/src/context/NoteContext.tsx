@@ -22,6 +22,7 @@ export type ContextType = {
   updateCurrentNote: (modifiedCurrentNote: INote) => boolean;
   setUserCategories: React.Dispatch<React.SetStateAction<ICategory[]>>;
   getUserCategories: () => void;
+  deleteCurrentNote: () => void;
 };
 const Context = createContext<ContextType | undefined>(undefined);
 
@@ -37,6 +38,12 @@ export function NoteContextProvider({
   const [currentNote, setCurrentNote] = useState<INote>();
   const [prevNote, setPrevNote] = useState<INote>();
   const [userCategories, setUserCategories] = useState<ICategory[]>([]);
+
+  const deleteCurrentNote = () => {
+    setNotesList(notesList => notesList.filter(note => note.id !== currentNote?.id))
+    setCurrentNote(undefined)
+    setPrevNote(undefined)
+  }
 
   /**
    * @todo
@@ -126,6 +133,7 @@ export function NoteContextProvider({
     updateCurrentNote,
     setUserCategories,
     getUserCategories,
+    deleteCurrentNote
   };
 
   const contextValue = useMemo(() => {
