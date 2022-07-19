@@ -27,7 +27,7 @@ export interface NoteContentProps extends StackProps {
   categories?: INote["categories"];
 }
 
-export default function NoteContent(props: StackProps): ReactElement {
+function NoteContent(props: StackProps): ReactElement {
   const [note, loading, utils] = useNoteContent();
   const editorCodeStyleBackground = useColorModeValue('rgb(243, 243, 243)', 'black')
 
@@ -56,49 +56,11 @@ export default function NoteContent(props: StackProps): ReactElement {
 
   return (
     <VStack h="100%" w="100%" spacing={0} {...props}>
-      <Flex align="normal" w="inherit" pb={2}>
-        <VStack w="inherit">
-          <Textarea
-            fontSize="2em"
-            fontWeight="bold"
-            p="0 10px"
-            minH="unset"
-            overflow="hidden"
-            w="100%"
-            resize="none"
-            minRows={1}
-            value={note.title}
-            onChange={utils.handleTitleChange}
-            as={ResizeTextarea}
-            border="0px"
-          />
-          <Wrap w="inherit" pl="10px">
-            {note.categories?.map((category) => (
-              <RemovableCategoryTag
-                key={category.id}
-                onRemove={utils.handleCategoryRemove}
-                {...category}
-              />
-            ))}
-
-            <CategoryList
-              categories={note.categories || []}
-              gutter={1}
-              triggerButton={<AddCategoryTagRef />}
-            />
-          </Wrap>
-        </VStack>
-        <Button
-          w='30px'
-          h='30px'
-          alignSelf='center'
-          m='0 calc(2vw + 16px) 0 1%'
-          onClick={utils.handleDeleteNote}
-          aria-label="Delete note"
-          >
-          <DeleteIcon/>
-        </Button>
-      </Flex>
+      <NoteContentHeader
+        noteTitle={note.title}
+        noteCategories={note.categories}
+        utils={utils}
+      />
       <RichTextEditor
         value={note.body || RichTextEditor.createEmptyValue()}
         onChange={utils.handleBodyChange}
@@ -132,6 +94,8 @@ export default function NoteContent(props: StackProps): ReactElement {
     </VStack>
   );
 }
+
+export default React.memo(NoteContent)
 
 const INLINE_STYLE_BUTTONS: StyleConfigList = [
   { label: "Bold", style: "BOLD" },
@@ -181,3 +145,55 @@ const BLOCK_TYPE_BUTTONS: StyleConfigList = [
     className: 'toolBarConfig'
   }
 };
+
+interface NoteContentHeader {
+  noteTitle: INote['title'];
+  noteCategories: INote['categories'];
+  utils: any;
+}
+
+const NoteContentHeader = React.memo<NoteContentHeader>(function NCH({noteTitle, noteCategories, utils}: NoteContentHeader) {
+  return <Flex align="normal" w="inherit" pb={2}>
+    <VStack w="inherit">
+      <Textarea
+        fontSize="2em"
+        fontWeight="bold"
+        p="0 10px"
+        minH="unset"
+        overflow="hidden"
+        w="100%"
+        resize="none"
+        minRows={1}
+        value={noteTitle}
+        onChange={utils.handleTitleChange}
+        as={ResizeTextarea}
+        border="0px" />
+      <Wrap w="inherit" pl="10px">
+        {noteCategories?.map((category) => (
+          <RemovableCategoryTag
+            key={category.id}
+            onRemove={utils.handleCategoryRemove}
+            {...category} />
+        ))}
+
+        <CategoryList
+          categories={noteCategories || []}
+          gutter={1}
+          triggerButton={<AddCategoryTagRef />} />
+      </Wrap>
+    </VStack>
+    <Button
+      w='30px'
+      h='30px'
+      alignSelf='center'
+      m='0 calc(2vw + 16px) 0 1%'
+      onClick={utils.handleDeleteNote}
+      aria-label="Delete note"
+    >
+      <DeleteIcon />
+    </Button>
+  </Flex>;
+}, (prev, next) => {
+  return prev.noteTitle === next.noteTitle && JSON.stringify(prev.noteCategories) === JSON.stringify(next.noteCategories)
+})
+
