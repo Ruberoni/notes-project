@@ -35,7 +35,12 @@ export interface utils {
  *
  */
 export default function useNoteContent(): [INote | undefined, boolean, utils] {
-  const { updateCurrentNote, currentNote, setNotesList, setCurrentNote, prevNote } = useNoteContext();
+  const {
+    updateCurrentNote,
+    currentNote,
+    prevNote,
+    deleteCurrentNote,
+  } = useNoteContext();
   const [body, setBody] = useState(currentNote?.body || RichTextEditor.createEmptyValue());
   const savingTimer = SavingTimer()
   
@@ -56,14 +61,18 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
 
   const noteBodyQuery = useNoteBodyQuery(currentNote?.id as string, {
     onCompleted: (data) => {
-      !currentNote?.body
-        ? (
-          updateCurrentNote({...currentNote, body: RichTextEditor.createValueFromString(data.getNoteBody, 'markdown')} as INote)
-            && setBody(RichTextEditor.createValueFromString(data.getNoteBody, 'markdown'))
-        )
-        : setBody(currentNote?.body)
+      if (!currentNote?.body) {
+        updateCurrentNote({
+          ...currentNote,
+          body: RichTextEditor.createValueFromString(data.getNoteBody, 'markdown')
+        } as INote)
+        setBody(RichTextEditor.createValueFromString(data.getNoteBody, 'markdown'))
+      } else {
+        setBody(currentNote?.body)
+      }
     },
-    skip: !currentNote
+    skip: !currentNote,
+    
   })
   
   const [deleteCategoryNote] = useDeleteCategoryNoteMutation()
@@ -84,8 +93,12 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
   }
 
   useEffect(() => {
+    if (currentNote?.body) {
+      setBody(currentNote?.body)
+    }
     utils.handleSaveOnChange()
   }, [currentNote?.id]);
+
 
   const utils: utils = {
     handleBodyChange: (editorValue) => {
@@ -124,8 +137,7 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
     },
 
     handleDeleteNote: () => {
-      setNotesList(notesList => notesList.filter(note => note.id !== currentNote?.id))
-      setCurrentNote(undefined)
+      deleteCurrentNote()
       deleteNote({
         variables: { id: currentNote?.id as string },
       })

@@ -16,9 +16,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import CategoryTag, { CategoryTagSkeleton } from "./CategoryTag";
-import { useNoteItem } from "../hooks";
 import { INote } from "../types";
-import { categories } from "../utils/seed";
 
 export interface NoteItemProps
   extends Omit<INote, "body">,
@@ -51,7 +49,6 @@ export default React.memo(
     onClick,
     ...props
   }: NoteItemProps): JSX.Element {
-    // const [onClick] = useNoteItem(id);
   
     const LoadingComp = (
       <CircularProgress
@@ -71,9 +68,6 @@ export default React.memo(
   
     const bg = props.isOpen ? selectedBg : "transparent";
   
-    React.useEffect(() => {
-      // console.log('[NoteItem] Render!')
-    })
   
     return (
       <Center
