@@ -15,7 +15,7 @@ import ResizeTextarea from "react-textarea-autosize";
 import RichTextEditor, { StyleConfigList, ToolbarConfig } from "react-rte";
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTagRef } from "./CategoryTag";
-import { useNoteContent } from "../hooks";
+import { useNoteContent, INoteContentUtils } from "../hooks";
 import { INote } from "../types";
 import './NoteContent.css'
 
@@ -28,10 +28,14 @@ export interface NoteContentProps extends StackProps {
 }
 
 function NoteContent(props: StackProps): ReactElement {
-  const [note, loading, utils] = useNoteContent();
+  const [
+    note,
+    loading,
+    { content: contentUtils, header: headerUtils }
+  ] = useNoteContent()
   const editorCodeStyleBackground = useColorModeValue('rgb(243, 243, 243)', 'black')
 
-  if (!note || !utils)
+  if (!note)
     return (
       <Center h="inherit" w="100%">
         <Heading
@@ -59,11 +63,11 @@ function NoteContent(props: StackProps): ReactElement {
       <NoteContentHeader
         noteTitle={note.title}
         noteCategories={note.categories}
-        utils={utils}
+        utils={headerUtils}
       />
       <RichTextEditor
         value={note.body || RichTextEditor.createEmptyValue()}
-        onChange={utils.handleBodyChange}
+        onChange={contentUtils.handleBodyChange}
         toolbarClassName="editorToolBar"
         rootStyle={{
           overflow: "hidden",
@@ -149,10 +153,10 @@ const BLOCK_TYPE_BUTTONS: StyleConfigList = [
 interface NoteContentHeader {
   noteTitle: INote['title'];
   noteCategories: INote['categories'];
-  utils: any;
+  utils: INoteContentUtils['header'];
 }
 
-const NoteContentHeader = React.memo<NoteContentHeader>(function NCH({noteTitle, noteCategories, utils}: NoteContentHeader) {
+const NoteContentHeader = ({noteTitle, noteCategories, utils}: NoteContentHeader) => {
   return <Flex align="normal" w="inherit" pb={2}>
     <VStack w="inherit">
       <Textarea
@@ -168,19 +172,7 @@ const NoteContentHeader = React.memo<NoteContentHeader>(function NCH({noteTitle,
         onChange={utils.handleTitleChange}
         as={ResizeTextarea}
         border="0px" />
-      <Wrap w="inherit" pl="10px">
-        {noteCategories?.map((category) => (
-          <RemovableCategoryTag
-            key={category.id}
-            onRemove={utils.handleCategoryRemove}
-            {...category} />
-        ))}
-
-        <CategoryList
-          categories={noteCategories || []}
-          gutter={1}
-          triggerButton={<AddCategoryTagRef />} />
-      </Wrap>
+      <NoteContentCategoriesMemo categories={noteCategories} onCategoryRemove={utils.handleCategoryRemove} />
     </VStack>
     <Button
       w='30px'
@@ -192,8 +184,35 @@ const NoteContentHeader = React.memo<NoteContentHeader>(function NCH({noteTitle,
     >
       <DeleteIcon />
     </Button>
-  </Flex>;
-}, (prev, next) => {
-  return prev.noteTitle === next.noteTitle && JSON.stringify(prev.noteCategories) === JSON.stringify(next.noteCategories)
-})
+  </Flex>
+}
 
+interface NoteContentCategoriesProps {
+  categories?: INote['categories'];
+  onCategoryRemove?: INoteContentUtils['header']['handleCategoryRemove']
+}
+
+const NoteContentCategories = ({
+  categories,
+  onCategoryRemove,
+}: NoteContentCategoriesProps) => {
+  return (
+    <Wrap w="inherit" pl="10px">
+      {categories?.map((category) => (
+        <RemovableCategoryTag
+          key={category.id}
+          onRemove={onCategoryRemove}
+          {...category}
+        />
+      ))}
+
+      <CategoryList
+        categories={categories || []}
+        gutter={1}
+        triggerButton={<AddCategoryTagRef />}
+      />
+    </Wrap>
+  );
+};
+
+const NoteContentCategoriesMemo = React.memo(NoteContentCategories)
