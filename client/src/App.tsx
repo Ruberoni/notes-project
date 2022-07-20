@@ -2,7 +2,7 @@ import React from "react";
 import NotesList from "./components/NotesLists";
 import LateralSection from "./components/LateralSection";
 import NoteContent from "./components/NoteContent";
-import AccesibilityBar from "./components/AccesibilityBar";
+import { NotesAccesibilityBarMemo } from "./components/AccesibilityBar";
 import { HStack } from "@chakra-ui/react";
 import { NoteContextProvider } from "./context";
 
@@ -17,7 +17,7 @@ function App(): JSX.Element {
         >
           {(filter, setFilter) => (
             <>
-              <AccesibilityBar filter={filter} setFilter={setFilter} />
+              <NotesAccesibilityBarMemo filter={filter} setFilter={setFilter} />
               <NotesList filter={filter} />
             </>
           )}
