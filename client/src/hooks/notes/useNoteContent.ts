@@ -154,7 +154,7 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
       },
   
       handleCategoryRemove: useCallback((id) => {
-        if (!currentNote) return;
+        if (!currentNote?.id) return;
         // fetch
         deleteCategoryNote({
           variables: {
@@ -167,10 +167,9 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
         );
         // update context
         updateCurrentNote({
-          ...currentNote,
           categories: categoriesModified,
         });
-      }, [currentNote, deleteCategoryNote, updateCurrentNote]),
+      }, [currentNote?.id, currentNote?.categories, deleteCategoryNote, updateCurrentNote]),
   
       handleDeleteNote: useCallback(() => {
         deleteCurrentNote()

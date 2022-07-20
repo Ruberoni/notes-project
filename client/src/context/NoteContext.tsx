@@ -6,6 +6,7 @@ import React, {
   ReactElement,
   useMemo,
   useEffect,
+  useCallback,
 } from "react";
 import { INote, ICategory, Node } from "../types";
 import { useAppContext } from "./AppContext";
@@ -19,7 +20,7 @@ export type ContextType = {
   setCurrentNote: React.Dispatch<React.SetStateAction<INote | undefined>>;
   changeCurrentNote: (to: Node["id"] | INote | ((prev?: INote) => INote)) => void;
   setNotesList: React.Dispatch<React.SetStateAction<INote[]>>;
-  updateCurrentNote: (modifiedCurrentNote: INote) => boolean;
+  updateCurrentNote: (modifiedCurrentNote: Partial<INote>) => boolean;
   setUserCategories: React.Dispatch<React.SetStateAction<ICategory[]>>;
   getUserCategories: () => void;
   deleteCurrentNote: () => void;
@@ -49,17 +50,20 @@ export function NoteContextProvider({
    * @todo
    * - Change name to updateNotesList or related
    */
-  const updateCurrentNote = (modifiedNote: INote): boolean => {
+  const updateCurrentNote: ContextType['updateCurrentNote'] = useCallback((modifiedNote): boolean => {
     let found = false;
-    const notesListModified = notesList.map((note) => {
+    setNotesList((_notesList) => _notesList.map((note) => {
       if (note.id === modifiedNote.id) {
         found = true;
         if (note.id === currentNote?.id) {
           // If theres the case that the note to modify is the current note
           // update current note also
-          setCurrentNote({
-            ...currentNote,
+          setCurrentNote((_currentNote) => {
+            if (!_currentNote) return undefined
+            return {
+            ..._currentNote,
             ...modifiedNote,
+            }
           });
         }
         return {
@@ -68,16 +72,15 @@ export function NoteContextProvider({
         };
       }
       return note;
-    });
-    setNotesList(notesListModified);
+    }));
     return found;
-  };
+  }, [currentNote?.id]);
 
   /**
    * Changes currentNote
    * @param to It can be a `note id`, `note` or the callback of setState. It will change to `note.id`
    */
-  const changeCurrentNote = (to: Node["id"] | INote | ((prev?: INote) => INote)) => {
+  const changeCurrentNote = useCallback((to: Node["id"] | INote | ((prev?: INote) => INote)) => {
     let id = "";
     let _to: ((prev?: INote) => INote) | INote | undefined;
     if (typeof to === "string") {
@@ -93,7 +96,7 @@ export function NoteContextProvider({
     if (!_to && typeof to !== 'function') throw new Error(`Unable to change note. Invalid id: ${id}`);
     setPrevNote(currentNote);
     setCurrentNote(_to);
-  };
+  }, [currentNote, notesList]);
 
   const { state: appState } = useAppContext();
 
@@ -126,19 +129,28 @@ export function NoteContextProvider({
     currentNote,
     prevNote,
     notesList,
-    userCategories,
-    setNotesList,
     setCurrentNote,
-    changeCurrentNote,
-    updateCurrentNote,
-    setUserCategories,
     getUserCategories,
     deleteCurrentNote
   };
 
   const contextValue = useMemo(() => {
-    return state;
-  }, [state]);
+    return {
+      ...state,
+      updateCurrentNote,
+      setUserCategories,
+      userCategories,
+      changeCurrentNote,
+      setNotesList
+    };
+  }, [
+    state,
+    updateCurrentNote,
+    setUserCategories,
+    userCategories,
+    changeCurrentNote,
+    setNotesList
+  ]);
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 }
