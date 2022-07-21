@@ -18,7 +18,7 @@ export type ContextType = {
   userCategories: ICategory[];
   notesList: INote[];
   setCurrentNote: React.Dispatch<React.SetStateAction<INote | undefined>>;
-  changeCurrentNote: (to: Node["id"] | INote | ((prev?: INote) => INote)) => void;
+  changeCurrentNote: (to: INote | ((prev?: INote) => INote)) => void;
   setNotesList: React.Dispatch<React.SetStateAction<INote[]>>;
   updateCurrentNote: (modifiedCurrentNote: Partial<INote>) => boolean;
   setUserCategories: React.Dispatch<React.SetStateAction<ICategory[]>>;
@@ -84,23 +84,23 @@ export function NoteContextProvider({
    * Changes currentNote
    * @param to It can be a `note id`, `note` or the callback of setState. It will change to `note.id`
    */
-  const changeCurrentNote = useCallback((to: Node["id"] | INote | ((prev?: INote) => INote)) => {
-    let id = "";
-    let _to: ((prev?: INote) => INote) | INote | undefined;
-    if (typeof to === "string") {
-      _to = notesList?.find((note) => note.id == to);
-      id = to;
-    } else if (typeof to !== 'function') {
-      _to = notesList?.find((note) => note.id == to.id);
-      id = to.id;
-    } else {
-      _to = to
-    }
+  const changeCurrentNote = useCallback((to: INote | ((prev?: INote) => INote)) => {
+    // let id = "";
+    // let _to: ((prev?: INote) => INote) | INote | undefined;
+    // if (typeof to === "string") {
+    //   _to = notesList?.find((note) => note.id == to);
+    //   // id = to;
+    // } else if (typeof to !== 'function') {
+    //   _to = notesList?.find((note) => note.id == to.id);
+    //   // id = to.id;
+    // } else {
+    //   _to = to
+    // } 
 
-    if (!_to && typeof to !== 'function') throw new Error(`Unable to change note. Invalid id: ${id}`);
+    //if (!_to && typeof to !== 'function') throw new Error(`Unable to change note. Invalid id: ${id}`);
     setPrevNote(currentNote);
-    setCurrentNote(_to);
-  }, [currentNote, notesList]);
+    setCurrentNote(to);
+  }, [currentNote]);
 
   const { state: appState } = useAppContext();
 

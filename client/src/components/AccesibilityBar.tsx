@@ -42,10 +42,8 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
       title: "",
       categories: [],
     };
-    changeCurrentNote(() => {
-      setNotesList((notesList) => [...notesList, note]);
-      return note
-    });
+    setNotesList((notesList) => [...notesList, note]);
+    changeCurrentNote(note);
   };
 
   return (
