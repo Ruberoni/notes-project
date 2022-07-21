@@ -52,8 +52,12 @@ export function NoteContextProvider({
    */
   const updateCurrentNote: ContextType['updateCurrentNote'] = useCallback((modifiedNote): boolean => {
     let found = false;
+    if (!modifiedNote.id) {
+      // Is assumed that you want to update the current note
+      modifiedNote.id = currentNote?.id
+    }
     setNotesList((_notesList) => _notesList.map((note) => {
-      if (note.id === modifiedNote.id) {
+      if (note.id === modifiedNote?.id) {
         found = true;
         if (note.id === currentNote?.id) {
           // If theres the case that the note to modify is the current note

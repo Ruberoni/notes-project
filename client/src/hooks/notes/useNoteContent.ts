@@ -132,7 +132,7 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
       handleSave: () => {
         if (!currentNote) return
         // Update note in context
-        updateCurrentNote({...currentNote, body } as INote)
+        updateCurrentNote({ body } as INote)
         // Update note in server
         updateNote({
           variables: {
@@ -147,7 +147,6 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
         if (!currentNote) return;
         const title = event.target.value;
         updateCurrentNote({
-          ...currentNote,
           title,
         });
         updateNoteWrapper()
