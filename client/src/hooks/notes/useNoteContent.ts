@@ -1,4 +1,4 @@
-import { useEffect, useState, BaseSyntheticEvent, useCallback } from "react";
+import { useEffect, useState, BaseSyntheticEvent, useCallback, useMemo } from "react";
 import { useNoteContext } from "../../context";
 import { INote } from "../../types";
 import { NoteContentProps } from "../../components/NoteContent";
@@ -31,11 +31,9 @@ export interface INoteContentUtils {
 /**
  * Handles retrieving the note body correctly and caching it (caching not implemented)
  * @logic
- * When noteContext.currentNote does change, this hook will try to
- * get the noteBody df noteContext.currentNote.
- * Actually noteContext.currentNote changes when a NoteItem is clicked
- * @see useNoteItem component
- *
+ * @bug rapidly changing notes, sometimes sets the incorrect note body to a note
+ * an idea to fix it is when the useNoteBodyQuery is called, the note body data is saved only in the context
+ * then this hooks will handle getting that note body from the context
  */
 export default function useNoteContent(): [INote | undefined, boolean, INoteContentUtils] {
   const {
@@ -43,10 +41,12 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
     currentNote,
     prevNote,
     deleteCurrentNote,
+    notesList
   } = useNoteContext();
-  const [body, setBody] = useState(currentNote?.body || RichTextEditor.createEmptyValue());
+  const currentNoteData = useMemo(() => notesList.find(note => note.id === currentNote?.id), [currentNote?.id, notesList])
+  const [body, setBody] = useState(currentNoteData?.body || RichTextEditor.createEmptyValue());
   const savingTimer = SavingTimer()
-  
+
   useEffect(() => {
     const handlerBeforeUnload = (event: BeforeUnloadEvent) => {    
       if (savingTimer.isActive) {
@@ -64,14 +64,14 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
 
   const noteBodyQuery = useNoteBodyQuery(currentNote?.id as string, {
     onCompleted: (data) => {
-      if (!currentNote?.body) {
+      if (!currentNoteData?.body) {
         updateCurrentNote({
-          ...currentNote,
+          // ...currentNote,
           body: RichTextEditor.createValueFromString(data.getNoteBody, 'markdown')
         } as INote)
         setBody(RichTextEditor.createValueFromString(data.getNoteBody, 'markdown'))
       } else {
-        setBody(currentNote?.body)
+        setBody(currentNoteData?.body)
       }
     },
     skip: !currentNote,
@@ -87,38 +87,53 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
       updateNote({
         variables: {
           id: currentNote?.id as string,
-          content: { title: currentNote?.title as string, body: body.toString('markdown') },
+          content: { title: currentNoteData?.title as string, body: body.toString('markdown') },
         },
-        onCompleted: () => updateCurrentNote({...currentNote, body } as INote)
+        onCompleted: () => updateCurrentNote({...currentNoteData, body } as INote)
       })
     }
     savingTimer.setToExecute(_updateNote)
   }
 
-  useEffect(() => {
-    if (currentNote?.body) {
-      setBody(currentNote?.body)
-    }
-    handleSaveOnChange()
-  }, [currentNote?.id]);
-
   /**
    * Immediately saves the current state of the body of prevNote to the server and context\
    * This works when changing from one note to other
+   * Consideraciones:
+   * - Tengo que ejecutar esto cuando cambio de nota
+   * - Esta funcion tiene que tener siempre el body actualizado
+   * - No tengo que ejecutarla cada vez que cambio el body 
+   * Tal vez un useEffect  no es lugar donde ejecutarlo
    */
-  const handleSaveOnChange = () => {
-    if (!prevNote) return
-    // Update note in context
-    updateCurrentNote({...prevNote, body} as INote)
-    
-    // Update note in server
+  const handleSaveOnChange = useCallback(() => {
+    console.log("[handleSaveOnChange]")
+    if (!currentNoteData) return; // Update note in context
+
+    updateCurrentNote({ ...currentNoteData, body } as INote); // Update note in server
+
     updateNote({
       variables: {
-        id: prevNote?.id as string,
-        content: { title: prevNote?.title as string, body: body.toString('markdown') },
+        id: currentNoteData?.id as string,
+        content: {
+          title: currentNoteData?.title as string,
+          body: body.toString("markdown"),
+        },
       },
-    })
-  }
+    });
+  }, [body, currentNoteData, updateCurrentNote, updateNote]);
+
+  useEffect(() => {
+    console.log('useEffect')
+    if (currentNoteData?.body) {
+      console.log('useEffect dentro')
+      setBody(currentNoteData?.body)
+    }
+    // return handleSaveOnChange
+  }, [currentNote?.id]);
+
+  useEffect(() => { 
+    return handleSaveOnChange
+  }, [currentNote?.id, handleSaveOnChange])
+  
   const utils: INoteContentUtils = {
     content: {
       handleBodyChange: (editorValue) => {
@@ -137,7 +152,7 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
         updateNote({
           variables: {
             id: currentNote?.id as string,
-            content: { title: currentNote?.title as string, body: body.toString('markdown') },
+            content: { title: currentNoteData?.title as string, body: body.toString('markdown') },
           },
         })
       },
@@ -168,7 +183,7 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
         updateCurrentNote({
           categories: categoriesModified,
         });
-      }, [currentNote?.id, currentNote?.categories, deleteCategoryNote, updateCurrentNote]),
+      }, [currentNote?.id, currentNoteData?.categories, deleteCategoryNote, updateCurrentNote]),
   
       handleDeleteNote: useCallback(() => {
         deleteCurrentNote()
@@ -179,5 +194,5 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
     }
   };
   
-  return [currentNote && {...currentNote, body}, noteBodyQuery.loading, utils];
+  return [currentNoteData && {...currentNoteData, body}, noteBodyQuery.loading, utils];
 }
