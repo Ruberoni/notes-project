@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { INote, ICategory, Node } from "../types";
+import { INote, ICategory } from "../types";
 import { useAppContext } from "./AppContext";
 import { useUserCategoriesQuery } from "../api/user";
 
@@ -57,19 +57,8 @@ export function NoteContextProvider({
       modifiedNote.id = currentNote?.id
     }
     setNotesList((_notesList) => _notesList.map((note) => {
-      if (note.id === modifiedNote?.id) {
+      if (note.id === modifiedNote.id) {
         found = true;
-        if (note.id === currentNote?.id) {
-          // If theres the case that the note to modify is the current note
-          // update current note also
-          setCurrentNote((_currentNote) => {
-            if (!_currentNote) return undefined
-            return {
-            ..._currentNote,
-            ...modifiedNote,
-            }
-          });
-        }
         return {
           ...note,
           ...modifiedNote,
