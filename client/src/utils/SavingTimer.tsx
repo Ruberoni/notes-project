@@ -8,6 +8,7 @@ export interface ISavingTimer {
   setTime: (newTime: number) => void;
   isActive: boolean;
   currentCount: number;
+  finishPending: () => void;
 }
 
 /**
@@ -47,19 +48,23 @@ export default function SavingTimer(_initialTime = 4): ISavingTimer {
   const handleCount = () => {
     setCurrentCount(current => (current - 1))
   }
+
+  const execute = () => {
+    setIsActive(false)
+    toExecute.func?.()
+    intervalId && clearInterval(intervalId)
+    setIntervalId(undefined)
+    setCurrentCount(initialTime)
+  }
+
+  const finishPending = () => {
+    execute()
+  }
   
   React.useEffect(() => {
     // console.log("[SavingTimer] intervalId:", intervalId)
     if (currentCount === 0) {
-      // console.log("[SavingTimer] Executing 'toExecute'")
-      setIsActive(false)
-      // execute function
-      toExecute.func?.()
-      // clear interval
-      intervalId && clearInterval(intervalId)
-      setIntervalId(undefined)
-      // reset current count
-      setCurrentCount(initialTime)
+      execute()
     }
   }, [currentCount])
 
@@ -71,7 +76,7 @@ export default function SavingTimer(_initialTime = 4): ISavingTimer {
     }
   }, [toExecute])
 
-  return { setToExecute, setTime, isActive, currentCount };
+  return { setToExecute, setTime, isActive, currentCount, finishPending };
 }
 
 /**

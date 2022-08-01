@@ -10,6 +10,7 @@ import {
   useDeleteNoteMutation
 } from "../../api/notes"; 
 import RichTextEditor from 'react-rte';
+import useNotesSavingInterval from "../useNotesSavingInterval";
 
 export interface useNoteContentProps {
   title: NoteContentProps["title"];
@@ -46,6 +47,7 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
   const currentNoteData = useMemo(() => notesList.find(note => note.id === currentNote?.id), [currentNote?.id, notesList])
   const [body, setBody] = useState(currentNoteData?.body || RichTextEditor.createEmptyValue());
   const savingTimer = SavingTimer()
+  // const savingTimer = useNotesSavingInterval()
 
   useEffect(() => {
     const handlerBeforeUnload = (event: BeforeUnloadEvent) => {    
@@ -82,20 +84,27 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
   const [updateNote] = useUpdateNoteMutation();
   const [deleteNote] = useDeleteNoteMutation()
 
-  const updateNoteWrapper = () => {
-    const _updateNote = () => {
-      updateNote({
+  const updateNoteWrapper = (note?: INote) => {
+    if (!note || note.body?.toString('markdown') === currentNoteData?.body?.toString('markdown')) return
+    console.log('[updateNoteWrapper]')
+    const _updateNote = async () => {
+      console.log('[updateNoteWrapper] body:', note.body?.toString('markdown'))
+      // console.log('[updateNoteWrapper] body:', body.toString('markdown'))
+      // console.log('[updateNoteWrapper] currentNoteData?.title:', currentNoteData?.title)
+      await updateNote({
         variables: {
-          id: currentNote?.id as string,
-          content: { title: currentNoteData?.title as string, body: body.toString('markdown') },
+          id: note?.id as string,
+          content: { title: note.title, body: note.body?.toString('markdown') as string },
         },
-        onCompleted: () => updateCurrentNote({...currentNoteData, body } as INote)
       })
+      // console.log("COOOMPLETED")
+      updateCurrentNote(note)
     }
     savingTimer.setToExecute(_updateNote)
   }
 
   /**
+   * IS NOT BEING USED because of the bugs
    * Immediately saves the current state of the body of prevNote to the server and context\
    * This works when changing from one note to other
    * Consideraciones:
@@ -104,22 +113,22 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
    * - No tengo que ejecutarla cada vez que cambio el body 
    * Tal vez un useEffect  no es lugar donde ejecutarlo
    */
-  const handleSaveOnChange = useCallback(() => {
-    console.log("[handleSaveOnChange]")
-    if (!currentNoteData) return; // Update note in context
+  // const handleSaveOnChange = useCallback(() => {
+  //   console.log("[handleSaveOnChange]")
+  //   if (!currentNoteData) return; // Update note in context
 
-    updateCurrentNote({ ...currentNoteData, body } as INote); // Update note in server
+  //   updateCurrentNote({ ...currentNoteData, body } as INote); // Update note in server
 
-    updateNote({
-      variables: {
-        id: currentNoteData?.id as string,
-        content: {
-          title: currentNoteData?.title as string,
-          body: body.toString("markdown"),
-        },
-      },
-    });
-  }, [body, currentNoteData, updateCurrentNote, updateNote]);
+  //   updateNote({
+  //     variables: {
+  //       id: currentNoteData?.id as string,
+  //       content: {
+  //         title: currentNoteData?.title as string,
+  //         body: body.toString("markdown"),
+  //       },
+  //     },
+  //   });
+  // }, [body, currentNoteData, updateCurrentNote, updateNote]);
 
   useEffect(() => {
     console.log('useEffect')
@@ -127,18 +136,19 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
       console.log('useEffect dentro')
       setBody(currentNoteData?.body)
     }
-    // return handleSaveOnChange
+    return () => savingTimer.finishPending()
   }, [currentNote?.id]);
 
-  useEffect(() => { 
-    return handleSaveOnChange
-  }, [currentNote?.id, handleSaveOnChange])
+  // useEffect(() => { 
+  //   return handleSaveOnChange
+  // }, [currentNote?.id, handleSaveOnChange])
   
   const utils: INoteContentUtils = {
     content: {
       handleBodyChange: (editorValue) => {
+        console.log('[handleBodyChange] editorValue:', editorValue.toString('markdown'))
         setBody(editorValue);
-        updateNoteWrapper()
+        updateNoteWrapper(currentNoteData && {...currentNoteData, body: editorValue})
       },
       /**
        * IS NOT BEING USED!!
@@ -164,7 +174,7 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
         updateCurrentNote({
           title,
         });
-        updateNoteWrapper()
+        updateNoteWrapper(currentNoteData && {...currentNoteData, body})
       },
   
       handleCategoryRemove: useCallback((id) => {

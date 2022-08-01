@@ -9,17 +9,51 @@ import {
   Heading,
   Flex,
   useColorModeValue,
+  Input,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
 import RichTextEditor, { StyleConfigList, ToolbarConfig } from "react-rte";
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTagRef } from "./CategoryTag";
-import { useNoteContent, INoteContentUtils } from "../hooks";
+import { useNoteContent, INoteContentUtils, useInterval } from "../hooks";
 import { INote } from "../types";
 import './NoteContent.css'
 
 import Button from "./common/Button";
+
+const UseIntervalTest1 = () => {
+  const [text, setText] = React.useState('Hello')
+  const [delay, setDelay] = React.useState(5000)
+  const updateText: React.InputHTMLAttributes<HTMLInputElement>['onChange'] = (e) => {
+    const val = e.target.value
+    // console.log("val", val)
+    setText(val)
+  }
+
+  const updateDelay: React.InputHTMLAttributes<HTMLInputElement>['onChange'] = (e) => {
+    const val = e.target.value
+    console.log("val", val)
+    setDelay(val as unknown as number)
+  }
+
+  const intervalCb = React.useCallback(() => {
+    console.log('[from useInterval] text:', text, 'text2:', delay)
+    // console.log('[from useInterval] ', text2)
+  }, [text])
+
+  useInterval(intervalCb, delay)
+
+  // const promptIntervalWithNewText = () => {
+
+  // }
+
+  return <div>
+    <Input value={text} onChange={updateText} />
+    <Input type='number' value={delay} onChange={updateDelay} />
+    {/* <button value="Change text" onClick={promptIntervalWithNewText} /> */}
+  </div>
+}
 
 export interface NoteContentProps extends StackProps {
   body?: INote["body"];
@@ -38,6 +72,7 @@ function NoteContent(props: StackProps): ReactElement {
   if (!note)
     return (
       <Center h="inherit" w="100%">
+        <UseIntervalTest1 />
         <Heading
           textAlign="center"
           color="gray"
