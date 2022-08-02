@@ -1,4 +1,4 @@
-import { useEffect, useState, BaseSyntheticEvent, useCallback, useMemo } from "react";
+import { useEffect, useState, BaseSyntheticEvent, useCallback } from "react";
 import { useNoteContext } from "../../context";
 import { INote } from "../../types";
 import { NoteContentProps } from "../../components/NoteContent";
@@ -38,9 +38,9 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
     updateCurrentNote,
     currentNote,
     deleteCurrentNote,
-    notesList
+    currentNoteData
   } = useNoteContext();
-  const currentNoteData = useMemo(() => notesList.find(note => note.id === currentNote?.id), [currentNote?.id, notesList])
+  // const currentNoteData = useMemo(() => notesList.find(note => note.id === currentNote?.id), [currentNote?.id, notesList])
   const [body, setBody] = useState(currentNoteData?.body || RichTextEditor.createEmptyValue());
   const savingTimer = SavingTimer()
   const previousNoteId = usePrevious(currentNote?.id, undefined)
@@ -80,14 +80,14 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
   const [deleteNote] = useDeleteNoteMutation()
 
   const updateNoteWrapper = (note: INote) => {
-    const _updateNote = async () => {
-      await updateNote({
+    const _updateNote = () => {
+      updateCurrentNote(note)
+      updateNote({
         variables: {
           id: note?.id as string,
           content: { title: note.title, body: note.body?.toString('markdown') as string },
         },
       })
-      updateCurrentNote(note)
     }
     savingTimer.setToExecute(_updateNote)
   }

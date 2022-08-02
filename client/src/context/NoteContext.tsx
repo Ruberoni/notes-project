@@ -14,6 +14,7 @@ import { useUserCategoriesQuery } from "../api/user";
 
 export type ContextType = {
   currentNote?: INote;
+  currentNoteData?: INote;
   prevNote?: INote;
   userCategories: ICategory[];
   notesList: INote[];
@@ -39,6 +40,8 @@ export function NoteContextProvider({
   const [currentNote, setCurrentNote] = useState<INote>();
   const [prevNote, setPrevNote] = useState<INote>();
   const [userCategories, setUserCategories] = useState<ICategory[]>([]);
+
+  const currentNoteData = useMemo(() => notesList.find(note => note.id === currentNote?.id), [currentNote?.id, notesList])
 
   const deleteCurrentNote = () => {
     setNotesList(notesList => notesList.filter(note => note.id !== currentNote?.id))
@@ -134,7 +137,8 @@ export function NoteContextProvider({
       setUserCategories,
       userCategories,
       changeCurrentNote,
-      setNotesList
+      setNotesList,
+      currentNoteData
     };
   }, [
     state,
@@ -142,7 +146,8 @@ export function NoteContextProvider({
     setUserCategories,
     userCategories,
     changeCurrentNote,
-    setNotesList
+    setNotesList,
+    currentNoteData
   ]);
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

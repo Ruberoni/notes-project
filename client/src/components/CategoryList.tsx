@@ -32,22 +32,22 @@ export interface CategoryListProps extends Omit<PopoverProps, "children"> {
 }
 
 export default function CategoryList(props: CategoryListProps): ReactElement {
-  const { currentNote, updateCurrentNote, userCategories } = useNoteContext();
-  if (!currentNote) return <></>;
+  const { currentNoteData, updateCurrentNote, userCategories } = useNoteContext();
+  if (!currentNoteData) return <></>;
   const [addCategoryNote] = useAddCategoryNoteMutation();
 
   const handleAddCategoryNote = useCallback((cat: ICategory) => {
     addCategoryNote({
       variables: {
         categoryId: cat.id,
-        noteId: currentNote.id,
+        noteId: currentNoteData.id,
       },
     });
 
     updateCurrentNote({
-      categories: [...currentNote.categories, cat],
+      categories: [...currentNoteData.categories, cat],
     });
-  }, [addCategoryNote, currentNote.categories, currentNote.id, updateCurrentNote]);
+  }, [addCategoryNote, currentNoteData.categories, currentNoteData.id, updateCurrentNote]);
 
   const areSameCategories = (cat1: ICategory, cat2: ICategory) => {
     if (cat1.id === cat2.id) return true;
@@ -60,8 +60,8 @@ export default function CategoryList(props: CategoryListProps): ReactElement {
 
   // userCategories less its notes categories
   const availableCategories = useMemo(() => userCategories.filter(
-    (cat) => !includesCategory(cat, currentNote?.categories)
-  ), [currentNote?.categories, userCategories]);
+    (cat) => !includesCategory(cat, currentNoteData?.categories)
+  ), [currentNoteData?.categories, userCategories]);
 
   return (
     <Popover {...props}>
