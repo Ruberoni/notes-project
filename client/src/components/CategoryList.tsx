@@ -221,42 +221,7 @@ export function CreateCategoryPopover({
 }: {
   trigger: React.ReactNode;
 }): ReactElement {
-  
-  const [formValues, setFormValues] = useState({
-    label: "",
-    color: "",
-  });
 
-  const handleValueChange = useCallback((event: React.BaseSyntheticEvent) => {
-    setFormValues({ ...formValues, [event?.target.name]: event?.target.value });
-  }, [formValues]);
-
-  const { state } = useAppContext();
-  const { getUserCategories } = useNoteContext()
-  const [createCategory] = useCreateCategoryMutation({
-    onCompleted: () => {
-      getUserCategories()
-    }
-  });
-
-  const handleSubmit = useCallback(() => {
-    createCategory({
-      variables: {
-        userId: state.userId as string,
-        content: formValues,
-      },
-    })
-  }, [createCategory, formValues, state.userId]);
-
-  return (
-    <Popover>
-      <PopoverTrigger>{trigger}</PopoverTrigger>
-      <CreateCategoryPopoverContentMemo onValueChange={handleValueChange} onSubmit={handleSubmit} />
-    </Popover>
-  );
-}
-
-const CreateCategoryPopoverContent = ({ onValueChange, onSumbit }: any) => {
   const colorOptions = [
     { value: "RED", name: "Red" },
     { value: "BLUE", name: "Blue" },
@@ -268,13 +233,42 @@ const CreateCategoryPopoverContent = ({ onValueChange, onSumbit }: any) => {
     { value: "DARKBLUE", name: "Darkblue" },
     { value: "DARKRED", name: "Darkred" },
   ];
+  
+  const [formValues, setFormValues] = useState({
+    label: "",
+    color: "",
+  });
+
+  const handleValueChange = (event: React.BaseSyntheticEvent) => {
+    setFormValues({ ...formValues, [event?.target.name]: event?.target.value });
+  };
+
+  const { state } = useAppContext();
+  const { getUserCategories } = useNoteContext()
+  const [createCategory, { loading }] = useCreateCategoryMutation({
+    onCompleted: () => {
+      getUserCategories()
+    }
+  });
+
+  const handleSubmit = () => {
+    createCategory({
+      variables: {
+        userId: state.userId as string,
+        content: formValues,
+      },
+    })
+  }
+
   return (
-    <PopoverContent w="auto">
-        <PopoverHeader>Create a category</PopoverHeader>
+    <Popover>
+      <PopoverTrigger>{trigger}</PopoverTrigger>
+      <PopoverContent w="auto">
+      <PopoverHeader>Create a category</PopoverHeader>
         <PopoverBody>
           <PopoverCloseButton />
           <VStack>
-            <FormControl onChange={onValueChange} id="label">
+            <FormControl onChange={handleValueChange} id="label">
               <FormLabel>Label:</FormLabel>
               <Input name="label" type="text" />
             </FormControl>
@@ -282,7 +276,7 @@ const CreateCategoryPopoverContent = ({ onValueChange, onSumbit }: any) => {
               name="color"
               mt=""
               placeholder="Color"
-              onChange={onValueChange}
+              onChange={handleValueChange}
             >
               {colorOptions.map((color) => (
                 <option key={color.value} value={color.value}>
@@ -294,16 +288,16 @@ const CreateCategoryPopoverContent = ({ onValueChange, onSumbit }: any) => {
         </PopoverBody>
         <PopoverFooter>
           <IconButton
-            onClick={onSumbit}
+            onClick={handleSubmit}
             aria-label="Submit"
             variant="solid"
             colorScheme="green"
             icon={<CheckIcon />}
             w="100%"
+            isLoading={loading}
           />
         </PopoverFooter>
       </PopoverContent>
-  )
+    </Popover>
+  );
 }
-
-const CreateCategoryPopoverContentMemo = memo(CreateCategoryPopoverContent)
