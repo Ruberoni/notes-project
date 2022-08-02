@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { INote, ICategory, Node } from "../types";
+import { INote, ICategory } from "../types";
 import { useAppContext } from "./AppContext";
 import { useUserCategoriesQuery } from "../api/user";
 
@@ -24,7 +24,6 @@ export type ContextType = {
   setUserCategories: React.Dispatch<React.SetStateAction<ICategory[]>>;
   getUserCategories: () => void;
   deleteCurrentNote: () => void;
-  unstableUpdateNotesList?: (modifiedCurrentNote: Partial<INote>) => boolean;
 };
 const Context = createContext<ContextType | undefined>(undefined);
 
@@ -53,8 +52,6 @@ export function NoteContextProvider({
    */
   const updateCurrentNote: ContextType['updateCurrentNote'] = useCallback((modifiedNote): boolean => {
     let found = false;
-    console.log('[updateCurrentNote] modifiedNote.id:', modifiedNote.id)
-    console.log('[updateCurrentNote] currentNote.id:', currentNote?.id)
     if (!modifiedNote.id) {
       // Is assumed that you want to update the current note
       modifiedNote.id = currentNote?.id
@@ -62,17 +59,6 @@ export function NoteContextProvider({
     setNotesList((_notesList) => _notesList.map((note) => {
       if (note.id === modifiedNote.id) {
         found = true;
-        // if (note.id === currentNote?.id) {
-        //   // If theres the case that the note to modify is the current note
-        //   // update current note also
-        //   setCurrentNote((_currentNote) => {
-        //     if (!_currentNote) return undefined
-        //     return {
-        //     ..._currentNote,
-        //     ...modifiedNote,
-        //     }
-        //   });
-        // }
         return {
           ...note,
           ...modifiedNote,
@@ -82,36 +68,6 @@ export function NoteContextProvider({
     }));
     return found;
   }, [currentNote?.id]);
-
-  // const unstableUpdateNotesList: ContextType['unstableUpdateNotesList'] = useCallback((modifiedNote) => {
-  //   let found = false;
-  //   if (!modifiedNote.id) {
-  //     // Is assumed that you want to update the current note
-  //     modifiedNote.id = currentNote?.id
-  //   }
-  //   setNotesList((_notesList) => _notesList.map((note) => {
-  //     if (note.id === modifiedNote?.id) {
-  //       found = true;
-  //       if (note.id === currentNote?.id) {
-  //         // If theres the case that the note to modify is the current note
-  //         // update current note also
-  //         setCurrentNote((_currentNote) => {
-  //           if (!_currentNote) return undefined
-  //           return {
-  //           ..._currentNote,
-  //           ...modifiedNote,
-  //           }
-  //         });
-  //       }
-  //       return {
-  //         ...note,
-  //         ...modifiedNote,
-  //       };
-  //     }
-  //     return note;
-  //   }));
-  //   return found;
-  // }, [currentNote?.id])
 
   /**
    * Changes currentNote

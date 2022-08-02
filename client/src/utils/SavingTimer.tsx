@@ -40,7 +40,6 @@ export default function SavingTimer(_initialTime = 4): ISavingTimer {
   }
 
   const startTimer = () => {
-    // console.log("[SavingTimer][startTimer] starting timer")
     const _intervalID = setInterval(handleCount, 1000)
     setIntervalId(_intervalID)
   }
@@ -58,19 +57,19 @@ export default function SavingTimer(_initialTime = 4): ISavingTimer {
   }
 
   const finishPending = () => {
-    execute()
+    if (isActive) {
+      execute()
+    }
   }
   
   React.useEffect(() => {
-    // console.log("[SavingTimer] intervalId:", intervalId)
-    if (currentCount === 0) {
+    if (currentCount === 0 && isActive) {
       execute()
     }
   }, [currentCount])
 
   React.useEffect(() => {
-    // console.log("[SavingTimer] Changing 'toExecute'")
-    if(!intervalId) {
+    if(!intervalId && toExecute.func) {
       startTimer()
       setIsActive(true)
     }

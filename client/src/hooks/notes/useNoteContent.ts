@@ -10,7 +10,7 @@ import {
   useDeleteNoteMutation
 } from "../../api/notes"; 
 import RichTextEditor from 'react-rte';
-import useNotesSavingInterval from "../useNotesSavingInterval";
+import usePrevious from "../usePrevious";
 
 export interface useNoteContentProps {
   title: NoteContentProps["title"];
@@ -40,14 +40,13 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
   const {
     updateCurrentNote,
     currentNote,
-    prevNote,
     deleteCurrentNote,
     notesList
   } = useNoteContext();
   const currentNoteData = useMemo(() => notesList.find(note => note.id === currentNote?.id), [currentNote?.id, notesList])
   const [body, setBody] = useState(currentNoteData?.body || RichTextEditor.createEmptyValue());
   const savingTimer = SavingTimer()
-  // const savingTimer = useNotesSavingInterval()
+  const previousNoteId = usePrevious(currentNote?.id, undefined)
 
   useEffect(() => {
     const handlerBeforeUnload = (event: BeforeUnloadEvent) => {    
@@ -84,71 +83,38 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
   const [updateNote] = useUpdateNoteMutation();
   const [deleteNote] = useDeleteNoteMutation()
 
-  const updateNoteWrapper = (note?: INote) => {
-    if (!note || note.body?.toString('markdown') === currentNoteData?.body?.toString('markdown')) return
-    console.log('[updateNoteWrapper]')
+  const updateNoteWrapper = (note: INote) => {
     const _updateNote = async () => {
-      console.log('[updateNoteWrapper] body:', note.body?.toString('markdown'))
-      // console.log('[updateNoteWrapper] body:', body.toString('markdown'))
-      // console.log('[updateNoteWrapper] currentNoteData?.title:', currentNoteData?.title)
       await updateNote({
         variables: {
           id: note?.id as string,
           content: { title: note.title, body: note.body?.toString('markdown') as string },
         },
       })
-      // console.log("COOOMPLETED")
       updateCurrentNote(note)
     }
     savingTimer.setToExecute(_updateNote)
   }
 
-  /**
-   * IS NOT BEING USED because of the bugs
-   * Immediately saves the current state of the body of prevNote to the server and context\
-   * This works when changing from one note to other
-   * Consideraciones:
-   * - Tengo que ejecutar esto cuando cambio de nota
-   * - Esta funcion tiene que tener siempre el body actualizado
-   * - No tengo que ejecutarla cada vez que cambio el body 
-   * Tal vez un useEffect  no es lugar donde ejecutarlo
-   */
-  // const handleSaveOnChange = useCallback(() => {
-  //   console.log("[handleSaveOnChange]")
-  //   if (!currentNoteData) return; // Update note in context
-
-  //   updateCurrentNote({ ...currentNoteData, body } as INote); // Update note in server
-
-  //   updateNote({
-  //     variables: {
-  //       id: currentNoteData?.id as string,
-  //       content: {
-  //         title: currentNoteData?.title as string,
-  //         body: body.toString("markdown"),
-  //       },
-  //     },
-  //   });
-  // }, [body, currentNoteData, updateCurrentNote, updateNote]);
-
   useEffect(() => {
-    console.log('useEffect')
     if (currentNoteData?.body) {
-      console.log('useEffect dentro')
       setBody(currentNoteData?.body)
     }
-    return () => savingTimer.finishPending()
   }, [currentNote?.id]);
 
-  // useEffect(() => { 
-  //   return handleSaveOnChange
-  // }, [currentNote?.id, handleSaveOnChange])
+  useEffect(() => {
+    if (currentNote?.id !== previousNoteId && savingTimer.isActive) {
+      savingTimer.finishPending()
+    }
+  }, [currentNote?.id, savingTimer])
   
   const utils: INoteContentUtils = {
     content: {
       handleBodyChange: (editorValue) => {
-        console.log('[handleBodyChange] editorValue:', editorValue.toString('markdown'))
         setBody(editorValue);
-        updateNoteWrapper(currentNoteData && {...currentNoteData, body: editorValue})
+        if (currentNoteData && editorValue.toString('markdown') !== currentNoteData?.body?.toString('markdown')) {
+          updateNoteWrapper(currentNoteData && {...currentNoteData, body: editorValue})
+        }
       },
       /**
        * IS NOT BEING USED!!
@@ -174,7 +140,9 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
         updateCurrentNote({
           title,
         });
-        updateNoteWrapper(currentNoteData && {...currentNoteData, body})
+        if (currentNoteData) {
+          updateNoteWrapper({...currentNoteData, title})
+        }
       },
   
       handleCategoryRemove: useCallback((id) => {
