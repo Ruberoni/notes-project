@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   IconButton,
   HStack,
@@ -12,7 +12,7 @@ import {
 import { AddIcon } from "@chakra-ui/icons";
 import { useNoteContext, useAppContext } from "../context";
 import { INote } from "../types";
-import { UserCategoryList } from './CategoryList'
+import { UserCategoryListMemo } from './CategoryList'
 import CategoriesFilter from "./CategoriesFilter";
 import { useCreateNoteMutation } from "../api/notes";
 import Button from "./common/Button";
@@ -26,7 +26,7 @@ export interface NotesAccesibilityBarProps extends Omit<StackProps, "filter"> {
 export default function NotesAccesibilityBar({filter, setFilter, ...props}: NotesAccesibilityBarProps): JSX.Element {
 
   const appContext = useAppContext()
-  const { setNotesList, changeCurrentNote, notesList } = useNoteContext();
+  const { setNotesList, changeCurrentNote} = useNoteContext();
   const [createNote, createNoteMutation] = useCreateNoteMutation()
 
   const onCreateNote = async () => {
@@ -42,10 +42,8 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
       title: "",
       categories: [],
     };
-    changeCurrentNote(() => {
-      setNotesList([...notesList, note]);
-      return note
-    });
+    setNotesList((notesList) => [...notesList, note]);
+    changeCurrentNote(note);
   };
 
   return (
@@ -60,14 +58,9 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
           </Button>
         }
       />
-      <UserCategoryList
+      <UserCategoryListMemo
         enabled={false}
-        triggerButton={
-          <Button marginLeft="4%" borderRadius={5} h="30px">
-            {" "}
-            Categories <Icon as={MdKeyboardArrowDown} w="17px" h="17px" />
-          </Button>
-        }
+        triggerButton={userCategoriesListButton}
       />
       <Button
         w="36px"
@@ -84,6 +77,15 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
     </Flex>
   );
 }
+
+const userCategoriesListButton = (
+  <Button marginLeft="4%" borderRadius={5} h="30px">
+    {" "}
+    Categories <Icon as={MdKeyboardArrowDown} w="17px" h="17px" />
+  </Button>
+);
+
+export const NotesAccesibilityBarMemo = memo(NotesAccesibilityBar)
 
 export interface AccesibilityBarProps extends StackProps {
   leftIcon?: IconButtonProps;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   Text,
   Center,
@@ -20,7 +20,7 @@ import { INote } from "../types";
 
 export interface NoteItemProps
   extends Omit<INote, "body">,
-    Omit<CenterProps, "id" | "title"> {
+    Omit<CenterProps, "id" | "title" | "onClick"> {
       isOpen?: boolean;
       onClick?: (arg: React.MouseEvent | React.KeyboardEvent) => void;
     }
@@ -40,16 +40,13 @@ export interface NoteItemProps
  * - The categories are shortened according to the width.
  * - The categories are scrollable.
  */
-export default React.memo(
-
-  function NoteItem({
+const NoteItem = ({
     id,
     title,
     categories,
     onClick,
     ...props
-  }: NoteItemProps): JSX.Element {
-  
+}: NoteItemProps): JSX.Element => {
     const LoadingComp = (
       <CircularProgress
         position="absolute"
@@ -64,7 +61,7 @@ export default React.memo(
     
     const noteTitle = title || "Note title";
   
-    const selectedBg = useColorModeValue('#FFE6B6', '#486478');
+  const selectedBg = useColorModeValue("#FFE6B6", "#486478");
   
     const bg = props.isOpen ? selectedBg : "transparent";
   
@@ -93,16 +90,31 @@ export default React.memo(
               {noteTitle}
             </Text>
           </Tooltip>
-          <HScroll>
-            {categories?.map((category) => (
-              <CategoryTag key={category.id} {...category} />
-            ))}
-          </HScroll>
+          <NoteItemCategoriesMemo categories={categories} />
         </Flex>
       </Center>
     );
-  }
-)
+};
+
+export default NoteItem
+
+export const NoteItemMemo = memo(NoteItem)
+
+const NoteItemCategories = ({
+  categories,
+}: {
+  categories: INote["categories"];
+}) => {
+  return (
+    <HScroll>
+      {categories?.map((category) => (
+        <CategoryTag key={category.id} {...category} />
+      ))}
+    </HScroll>
+  );
+};
+
+const NoteItemCategoriesMemo = memo(NoteItemCategories)
 
 export interface HScrollProps extends StackProps {
   children?: JSX.Element | JSX.Element[];

@@ -1,4 +1,4 @@
-import { useEffect, useState, BaseSyntheticEvent } from "react";
+import { useEffect, useState, BaseSyntheticEvent, useCallback } from "react";
 import { useNoteContext } from "../../context";
 import { INote } from "../../types";
 import { NoteContentProps } from "../../components/NoteContent";
@@ -10,40 +10,41 @@ import {
   useDeleteNoteMutation
 } from "../../api/notes"; 
 import RichTextEditor from 'react-rte';
+import usePrevious from "../usePrevious";
 
 export interface useNoteContentProps {
   title: NoteContentProps["title"];
   body: NoteContentProps["body"];
   categories: NoteContentProps["categories"];
 }
-export interface utils {
-  handleCategoryRemove: (categoryId: string) => void;
-  handleBodyChange: RichTextEditor['props']['onChange'];
-  handleTitleChange: (event: BaseSyntheticEvent) => void;
-  handleDeleteNote: (event: BaseSyntheticEvent) => void;
-  handleSave: (arg0?: { done: boolean }) => void
-  handleSaveOnChange: () => void
+export interface INoteContentUtils {
+  content: {
+    handleBodyChange: RichTextEditor['props']['onChange'];
+    handleSave: (arg0?: { done: boolean }) => void
+  };
+  header: {
+    handleCategoryRemove: (categoryId: string) => void;
+    handleTitleChange: (event: BaseSyntheticEvent) => void;
+    handleDeleteNote: (event: BaseSyntheticEvent) => void;
+  }
 }
 
 /**
  * Handles retrieving the note body correctly and caching it (caching not implemented)
  * @logic
- * When noteContext.currentNote does change, this hook will try to
- * get the noteBody df noteContext.currentNote.
- * Actually noteContext.currentNote changes when a NoteItem is clicked
- * @see useNoteItem component
- *
  */
-export default function useNoteContent(): [INote | undefined, boolean, utils] {
+export default function useNoteContent(): [INote | undefined, boolean, INoteContentUtils] {
   const {
     updateCurrentNote,
     currentNote,
-    prevNote,
     deleteCurrentNote,
+    currentNoteData
   } = useNoteContext();
-  const [body, setBody] = useState(currentNote?.body || RichTextEditor.createEmptyValue());
+  // const currentNoteData = useMemo(() => notesList.find(note => note.id === currentNote?.id), [currentNote?.id, notesList])
+  const [body, setBody] = useState(currentNoteData?.body || RichTextEditor.createEmptyValue());
   const savingTimer = SavingTimer()
-  
+  const previousNoteId = usePrevious(currentNote?.id, undefined)
+
   useEffect(() => {
     const handlerBeforeUnload = (event: BeforeUnloadEvent) => {    
       if (savingTimer.isActive) {
@@ -61,14 +62,13 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
 
   const noteBodyQuery = useNoteBodyQuery(currentNote?.id as string, {
     onCompleted: (data) => {
-      if (!currentNote?.body) {
+      if (!currentNoteData?.body) {
         updateCurrentNote({
-          ...currentNote,
           body: RichTextEditor.createValueFromString(data.getNoteBody, 'markdown')
         } as INote)
         setBody(RichTextEditor.createValueFromString(data.getNoteBody, 'markdown'))
       } else {
-        setBody(currentNote?.body)
+        setBody(currentNoteData?.body)
       }
     },
     skip: !currentNote,
@@ -79,104 +79,94 @@ export default function useNoteContent(): [INote | undefined, boolean, utils] {
   const [updateNote] = useUpdateNoteMutation();
   const [deleteNote] = useDeleteNoteMutation()
 
-  const updateNoteWrapper = () => {
+  const updateNoteWrapper = (note: INote) => {
     const _updateNote = () => {
+      updateCurrentNote(note)
       updateNote({
         variables: {
-          id: currentNote?.id as string,
-          content: { title: currentNote?.title as string, body: body.toString('markdown') },
+          id: note?.id as string,
+          content: { title: note.title, body: note.body?.toString('markdown') as string },
         },
-        onCompleted: () => updateCurrentNote({...currentNote, body } as INote)
       })
     }
     savingTimer.setToExecute(_updateNote)
   }
 
   useEffect(() => {
-    if (currentNote?.body) {
-      setBody(currentNote?.body)
+    if (currentNoteData?.body) {
+      setBody(currentNoteData?.body)
     }
-    utils.handleSaveOnChange()
   }, [currentNote?.id]);
 
-
-  const utils: utils = {
-    handleBodyChange: (editorValue) => {
-      setBody(editorValue);
-      updateNoteWrapper()
-      
+  useEffect(() => {
+    if (currentNote?.id !== previousNoteId && savingTimer.isActive) {
+      savingTimer.finishPending()
+    }
+  }, [currentNote?.id, savingTimer])
+  
+  const utils: INoteContentUtils = {
+    content: {
+      handleBodyChange: (editorValue) => {
+        setBody(editorValue);
+        if (currentNoteData && editorValue.toString('markdown') !== currentNoteData?.body?.toString('markdown')) {
+          updateNoteWrapper(currentNoteData && {...currentNoteData, body: editorValue})
+        }
+      },
+      /**
+       * IS NOT BEING USED!!
+       * Immediately saves the current state of the MDEditor to the server and context
+       */
+      handleSave: () => {
+        if (!currentNote) return
+        // Update note in context
+        updateCurrentNote({ body } as INote)
+        // Update note in server
+        updateNote({
+          variables: {
+            id: currentNote?.id as string,
+            content: { title: currentNoteData?.title as string, body: body.toString('markdown') },
+          },
+        })
+      },
     },
-
-    handleTitleChange: (event) => {
-      if (!currentNote) return;
-      const title = event.target.value;
-      updateCurrentNote({
-        ...currentNote,
-        title,
-      });
-      updateNoteWrapper()
-    },
-
-    handleCategoryRemove: (id) => {
-      if (!currentNote) return;
-      // fetch
-      deleteCategoryNote({
-        variables: {
-          categoryId: id,
-          noteId: currentNote.id,
-        },
-      });
-      const categoriesModified = currentNote.categories.filter(
-        (cat) => cat.id !== id
-      );
-      // update context
-      updateCurrentNote({
-        ...currentNote,
-        categories: categoriesModified,
-      });
-    },
-
-    handleDeleteNote: () => {
-      deleteCurrentNote()
-      deleteNote({
-        variables: { id: currentNote?.id as string },
-      })
-    },
-
-    /**
-     * Immediately saves the current state of the MDEditor to the server and context
-     */
-    handleSave: () => {
-      if (!currentNote) return
-      // Update note in context
-      updateCurrentNote({...currentNote, body } as INote)
-      // Update note in server
-      updateNote({
-        variables: {
-          id: currentNote?.id as string,
-          content: { title: currentNote?.title as string, body: body.toString('markdown') },
-        },
-      })
-    },
-
-    /**
-     * Immediately saves the current state of the body of prevNote to the server and context\
-     * This works when changing from one note to other
-     */
-    handleSaveOnChange: () => {
-      if (!prevNote) return
-      // Update note in context
-      updateCurrentNote({...prevNote, body} as INote)
-      
-      // Update note in server
-      updateNote({
-        variables: {
-          id: prevNote?.id as string,
-          content: { title: prevNote?.title as string, body: body.toString('markdown') },
-        },
-      })
+    header: {
+      handleTitleChange: (event) => {
+        if (!currentNote) return;
+        const title = event.target.value;
+        updateCurrentNote({
+          title,
+        });
+        if (currentNoteData) {
+          updateNoteWrapper({...currentNoteData, body, title})
+        }
+      },
+  
+      handleCategoryRemove: useCallback((id) => {
+        if (!currentNote?.id) return;
+        // fetch
+        deleteCategoryNote({
+          variables: {
+            categoryId: id,
+            noteId: currentNote.id,
+          },
+        });
+        const categoriesModified = currentNote.categories.filter(
+          (cat) => cat.id !== id
+        );
+        // update context
+        updateCurrentNote({
+          categories: categoriesModified,
+        });
+      }, [currentNote?.id, currentNoteData?.categories, deleteCategoryNote, updateCurrentNote]),
+  
+      handleDeleteNote: useCallback(() => {
+        deleteCurrentNote()
+        deleteNote({
+          variables: { id: currentNote?.id as string },
+        })
+      }, [currentNote?.id, deleteCurrentNote, deleteNote]),
     }
   };
   
-  return [currentNote && {...currentNote, body}, noteBodyQuery.loading, utils];
+  return [currentNoteData && {...currentNoteData, body}, noteBodyQuery.loading, utils];
 }

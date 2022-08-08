@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { memo, ReactElement, useCallback, useMemo, useState } from "react";
 import {
   MenuItem,
   Button,
@@ -32,23 +32,22 @@ export interface CategoryListProps extends Omit<PopoverProps, "children"> {
 }
 
 export default function CategoryList(props: CategoryListProps): ReactElement {
-  const { currentNote, updateCurrentNote, userCategories } = useNoteContext();
-  if (!currentNote) return <></>;
+  const { currentNoteData, updateCurrentNote, userCategories } = useNoteContext();
+  if (!currentNoteData) return <></>;
   const [addCategoryNote] = useAddCategoryNoteMutation();
 
-  const handleAddCategoryNote = (cat: ICategory) => {
+  const handleAddCategoryNote = useCallback((cat: ICategory) => {
     addCategoryNote({
       variables: {
         categoryId: cat.id,
-        noteId: currentNote.id,
+        noteId: currentNoteData.id,
       },
     });
 
     updateCurrentNote({
-      ...currentNote,
-      categories: [...currentNote.categories, cat],
+      categories: [...currentNoteData.categories, cat],
     });
-  };
+  }, [addCategoryNote, currentNoteData.categories, currentNoteData.id, updateCurrentNote]);
 
   const areSameCategories = (cat1: ICategory, cat2: ICategory) => {
     if (cat1.id === cat2.id) return true;
@@ -60,9 +59,9 @@ export default function CategoryList(props: CategoryListProps): ReactElement {
   };
 
   // userCategories less its notes categories
-  const availableCategories = userCategories.filter(
-    (cat) => !includesCategory(cat, currentNote?.categories)
-  );
+  const availableCategories = useMemo(() => userCategories.filter(
+    (cat) => !includesCategory(cat, currentNoteData?.categories)
+  ), [currentNoteData?.categories, userCategories]);
 
   return (
     <Popover {...props}>
@@ -78,28 +77,41 @@ export default function CategoryList(props: CategoryListProps): ReactElement {
           sx={{ gap: 2 }}
           p={0}
         >
-          {availableCategories.map((cat) => {
-            const onClick = () => {
-              handleAddCategoryNote(cat);
-            };
-            return (
-              <Button
-                bg="none"
-                p="5px 13px"
-                w="100%"
-                h="auto"
-                key={cat.id}
-                onClick={onClick}
-              >
-                <CategoryTag w="fit-content" {...cat} />
-              </Button>
-            );
-          })}
+          <CategoryListBodyMemo
+            categories={availableCategories}
+            onAddCategoryNote={handleAddCategoryNote}
+          />
         </PopoverBody>
       </PopoverContent>
     </Popover>
   );
 }
+
+const CategoryListBody = ({ categories, onAddCategoryNote }: {categories: ICategory[], onAddCategoryNote: (cat: ICategory) => void}) => {
+  return (
+    <>
+      {categories.map((cat) => {
+        const onClick = () => {
+          onAddCategoryNote(cat);
+        };
+        return (
+          <Button
+            bg="none"
+            p="5px 13px"
+            w="100%"
+            h="auto"
+            key={cat.id}
+            onClick={onClick}
+          >
+            <CategoryTag w="fit-content" {...cat} />
+          </Button>
+        );
+      })}
+    </>
+  );
+};
+
+const CategoryListBodyMemo = memo(CategoryListBody)
 
 export function CategoryItem(props: CategoryTagProps): ReactElement {
   return (
@@ -121,16 +133,16 @@ export function UserCategoryList(
   const { userCategories, setUserCategories } = useNoteContext()
   const userCategoriesQuery = useUserCategoriesQuery(state.userId as string, { skip: true })
 
-  const [deleteCategory, ] = useDeleteCategoryMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
   
-  const handleDeleteCategory = (cat: ICategory) => {
+  const handleDeleteCategory = useCallback((cat: ICategory) => {
     setUserCategories(prev => prev.filter(_cat => cat.id !== _cat.id))
     deleteCategory({
       variables: {
         id: cat.id,
       },
     })
-  };
+  }, [deleteCategory, setUserCategories]);
 
   return (
     <Popover {...props}>
@@ -153,23 +165,10 @@ export function UserCategoryList(
       </PopoverTrigger>
       <PopoverContent w="auto">
         <PopoverBody>
-          {userCategories.map((cat) => {
-            const onClick = () => {
-              console.log("Category clicked with label:", cat.label);
-            };
-            const _handleDeleteCategory = () => handleDeleteCategory(cat);
-            return (
-              <HStack key={cat.id} onClick={onClick}>
-                <CategoryTag mr="auto" {...cat} />
-                <IconButton
-                  onClick={_handleDeleteCategory}
-                  aria-label="Delete category"
-                  variant="unstyled"
-                  icon={<DeleteIcon />}
-                />
-              </HStack>
-            );
-          })}
+          <UserCategoriesListBodyMemo
+            categories={userCategories}
+            onDeleteCategory={handleDeleteCategory}
+          />
         </PopoverBody>
         <CreateCategoryPopover
           trigger={
@@ -185,11 +184,44 @@ export function UserCategoryList(
   );
 }
 
+const UserCategoriesListBody = ({
+  categories,
+  onDeleteCategory,
+}: {
+  categories: ICategory[];
+  onDeleteCategory: (cat: ICategory) => void;
+}) => {
+
+  return (
+    <>
+      {categories.map((cat) => {
+        const _handleDeleteCategory = () => onDeleteCategory(cat);
+        return (
+          <HStack key={cat.id}>
+            <CategoryTag mr="auto" {...cat} />
+            <IconButton
+              onClick={_handleDeleteCategory}
+              aria-label="Delete category"
+              variant="unstyled"
+              icon={<DeleteIcon />}
+            />
+          </HStack>
+        );
+      })}
+    </>
+  );
+};
+
+const UserCategoriesListBodyMemo = memo(UserCategoriesListBody)
+
+export const UserCategoryListMemo = memo(UserCategoryList)
+
 export function CreateCategoryPopover({
   trigger,
 }: {
   trigger: React.ReactNode;
 }): ReactElement {
+
   const colorOptions = [
     { value: "RED", name: "Red" },
     { value: "BLUE", name: "Blue" },
@@ -201,39 +233,38 @@ export function CreateCategoryPopover({
     { value: "DARKBLUE", name: "Darkblue" },
     { value: "DARKRED", name: "Darkred" },
   ];
+  
   const [formValues, setFormValues] = useState({
     label: "",
     color: "",
   });
 
   const handleValueChange = (event: React.BaseSyntheticEvent) => {
-    console.log("[Popover][CreateCategoryPopover] formValues:", formValues);
     setFormValues({ ...formValues, [event?.target.name]: event?.target.value });
   };
 
   const { state } = useAppContext();
   const { getUserCategories } = useNoteContext()
-  const [createCategory] = useCreateCategoryMutation({
+  const [createCategory, { loading }] = useCreateCategoryMutation({
     onCompleted: () => {
       getUserCategories()
     }
   });
 
   const handleSubmit = () => {
-    console.log("[Popover][CreateCategoryPopover] Creating category");
     createCategory({
       variables: {
         userId: state.userId as string,
         content: formValues,
       },
     })
-  };
+  }
 
   return (
     <Popover>
       <PopoverTrigger>{trigger}</PopoverTrigger>
       <PopoverContent w="auto">
-        <PopoverHeader>Create a category</PopoverHeader>
+      <PopoverHeader>Create a category</PopoverHeader>
         <PopoverBody>
           <PopoverCloseButton />
           <VStack>
@@ -263,6 +294,7 @@ export function CreateCategoryPopover({
             colorScheme="green"
             icon={<CheckIcon />}
             w="100%"
+            isLoading={loading}
           />
         </PopoverFooter>
       </PopoverContent>
