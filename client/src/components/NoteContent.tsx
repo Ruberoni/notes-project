@@ -9,6 +9,7 @@ import {
   Heading,
   Flex,
   useColorModeValue,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
@@ -34,6 +35,7 @@ function NoteContent(props: StackProps): ReactElement {
     { content: contentUtils, header: headerUtils }
   ] = useNoteContent()
   const editorCodeStyleBackground = useColorModeValue('rgb(243, 243, 243)', 'black')
+  const [hasToolbarResized] = useMediaQuery('(max-width: 780px) and (min-width: 686px), (max-width: 545px)')
 
   if (!note)
     return (
@@ -78,7 +80,7 @@ function NoteContent(props: StackProps): ReactElement {
           borderWidth: 0,
         }}
         editorStyle={{
-          height: '98%',
+          height: hasToolbarResized ? '96%' : '98%',
           overflow: 'auto'
         }}
         toolbarStyle={{
