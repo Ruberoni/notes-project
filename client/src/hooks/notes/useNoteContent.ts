@@ -137,7 +137,7 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
           title,
         });
         if (currentNoteData) {
-          updateNoteWrapper({...currentNoteData, title})
+          updateNoteWrapper({...currentNoteData, body, title})
         }
       },
   
