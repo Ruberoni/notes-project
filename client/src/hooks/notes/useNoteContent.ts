@@ -71,7 +71,7 @@ export default function useNoteContent(): [INote | undefined, boolean, INoteCont
         setBody(currentNoteData?.body)
       }
     },
-    skip: !currentNote,
+    skip: !currentNote || !!currentNoteData?.body,
     
   })
   

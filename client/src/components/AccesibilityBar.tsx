@@ -19,6 +19,7 @@ import Button from "./common/Button";
 import { FaFilter } from 'react-icons/fa'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { useLateralSectionContext } from "./LateralSection";
+import RichTextEditor from "react-rte";
 
 export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
 
@@ -39,6 +40,7 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
       id: res?.data?.createNote.id as string,
       title: "",
       categories: [],
+      body: RichTextEditor.createEmptyValue()
     };
     setNotesList((notesList) => [...notesList, note]);
     changeCurrentNote(note);

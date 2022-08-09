@@ -38,7 +38,8 @@ export default function useNotesList(filter: string[]): [INote[], INote | undefi
     onCompleted: (data) => {
       setNotesList(data?.getUserNotesPreview || [])
     },
-    skip: !appContext.state.userId
+    skip: !appContext.state.userId || !!notesList[0],
+    fetchPolicy: "network-only"
   })
 
   // This executes a 2nd render
