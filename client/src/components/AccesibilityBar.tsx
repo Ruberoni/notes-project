@@ -18,19 +18,17 @@ import { useCreateNoteMutation } from "../api/notes";
 import Button from "./common/Button";
 import { FaFilter } from 'react-icons/fa'
 import { MdKeyboardArrowDown } from 'react-icons/md'
-export interface NotesAccesibilityBarProps extends Omit<StackProps, "filter"> {
-  filter: string[]
-  setFilter: React.Dispatch<React.SetStateAction<string[]>>
-}
+import { useLateralSectionContext } from "./LateralSection";
 
-export default function NotesAccesibilityBar({filter, setFilter, ...props}: NotesAccesibilityBarProps): JSX.Element {
+export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
 
   const appContext = useAppContext()
+  const { filter, setFilter, setDrawerOpen } = useLateralSectionContext()
+
   const { setNotesList, changeCurrentNote} = useNoteContext();
   const [createNote, createNoteMutation] = useCreateNoteMutation()
 
   const onCreateNote = async () => {
-    console.log("[NotesAccesibilityBar][onCreateNote]")
     const res = await createNote({
       variables: {
         userId: appContext.state.userId as string,
@@ -44,6 +42,7 @@ export default function NotesAccesibilityBar({filter, setFilter, ...props}: Note
     };
     setNotesList((notesList) => [...notesList, note]);
     changeCurrentNote(note);
+    setDrawerOpen(false)
   };
 
   return (

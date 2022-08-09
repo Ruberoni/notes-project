@@ -13,14 +13,10 @@ function App(): JSX.Element {
         <LateralSection
           maxWidth="30%"
           borderRight="1px solid"
-          borderColor='border'
+          borderColor="border"
         >
-          {(filter, setFilter) => (
-            <>
-              <NotesAccesibilityBarMemo filter={filter} setFilter={setFilter} />
-              <NotesList filter={filter} />
-            </>
-          )}
+          <NotesAccesibilityBarMemo />
+          <NotesList />
         </LateralSection>
         <NoteContent />
       </NoteContextProvider>

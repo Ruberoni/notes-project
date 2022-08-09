@@ -1,13 +1,9 @@
 import React from "react";
-import { Box, BoxProps, Skeleton, Stack } from "@chakra-ui/react";
+import { Box, BoxProps } from "@chakra-ui/react";
 import NoteItem, { NoteItemSkeleton, NoteItemSkeletonProps } from "./NoteItem";
 import { INote } from "../types";
 import { useNotesList } from "../hooks";
-
-export interface NotesListProps extends Omit<BoxProps, "filter"> {
-  notesList?: INote[];
-  filter: string[];
-}
+import { useLateralSectionContext } from "./LateralSection";
 
 /**
  * **Notes List component.**
@@ -21,8 +17,10 @@ export interface NotesListProps extends Omit<BoxProps, "filter"> {
  * @todo
  * - Scrollable notes [X]
  */
-export default function NotesList(props: NotesListProps): JSX.Element {
-  const [notesList, currentNote, loading, changeCurrentNote] = useNotesList(props.filter);
+export default function NotesList(props: BoxProps): JSX.Element {
+  const { filter } = useLateralSectionContext()
+
+  const [notesList, currentNote, loading, changeCurrentNote] = useNotesList(filter);
 
   
   return (

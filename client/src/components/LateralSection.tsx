@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, ReactNode } from "react";
+import React, { useState, ReactNode, createContext, useContext, useMemo } from "react";
 import {
   VStack,
   Drawer,
@@ -11,8 +11,16 @@ import {
 import { HamburgerIcon } from "@chakra-ui/icons";
 
 export interface ILateralSection extends StackProps{
-  children(filter: string[], setFilter: React.Dispatch<React.SetStateAction<string[]>>): ReactElement
+  children: ReactNode
 }
+
+export interface ILateralSectionContext {
+  filter: string[]
+  setFilter: React.Dispatch<React.SetStateAction<string[]>>
+  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Context = createContext<ILateralSectionContext | undefined>(undefined);
 
 /**
  * Lateral section
@@ -56,8 +64,20 @@ export default function LateralSection({
     return component;
   }
 
+  const contextValue = useMemo(() => {
+    return {
+      filter,
+      setFilter,
+      setDrawerOpen
+    }
+  }, [
+    filter,
+    setFilter,
+    setDrawerOpen
+  ])
+
   return (
-    <>
+    <Context.Provider value={contextValue}>
       {currentBreakpoint === "base" && (
         <IconButton
           aria-label="Open notes"
@@ -78,9 +98,16 @@ export default function LateralSection({
       {useBreakPointDrawer(
         "base",
         <VStack h="100%" w="100%" spacing={0} {...props} {...onDrawerProps}>
-          {children(filter, setFilter)}
+          {children}
         </VStack>
       )}
-    </>
+    </Context.Provider>
   );
+}
+
+export const useLateralSectionContext = (): ILateralSectionContext => {
+  const context = useContext(Context);
+  if (context === undefined)
+    throw new Error("Cannot use useLateralSectionContext outside LateralSection.");
+  return context;
 }
