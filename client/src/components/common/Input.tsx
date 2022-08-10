@@ -24,24 +24,27 @@ const SearchInput = ({value, onChangeText, disabled, ...props}: SearchInputProps
 
   const isActive = Boolean(value)
   const borderColor = useColorModeValue("#143A51", "text");
+  const searchIconActiveBackground = useColorModeValue("#143A51", "white");
+  const searchIconActiveColor = useColorModeValue("white", "#143A51");
   
   const disabledStyles: CSSObject = {
     cursor: "not-allowed",
     opacity: 0.4
   }
 
-
   return (
-    <InputGroup border={borderColor} _hover={{ opacity: isActive ? 0.9 : 0.8 }} {...props}>
+    <InputGroup borderColor={borderColor} _hover={{ opacity: isActive ? 0.9 : 0.8 }} {...props}>
       <InputLeftAddon
         h="30px"
         w="30px"
         p='0'
         justifyContent="center"
-        bg={isActive ? '#143A51' : "transparent"}
+        bg={isActive ? searchIconActiveBackground : "transparent"}
         sx={disabled ? disabledStyles : undefined}
+        transition='all 0.1s linear'
+        borderColor={borderColor}
       >
-        <SearchIcon color={isActive ? 'white' : borderColor} w="13px"  />
+        <SearchIcon color={isActive ? searchIconActiveColor : borderColor} w="13px"  />
       </InputLeftAddon>
       <ChakraInput
         disabled={disabled}

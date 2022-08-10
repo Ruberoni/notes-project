@@ -42,10 +42,11 @@ const Button = (
       fontSize="sm"
       {...buttonProps}
       minW={buttonProps.w || 'unset'}
-      _hover={{
+      _hover={!buttonProps.disabled
+        ? {
         opacity: 0.8,
         ...buttonProps._hover
-      }}
+      } : undefined}
       _active={{...(isActive ? defaultStyle : activeStyles), ...buttonProps._active}}
       sx={{...defaultStyle, ...(isActive && activeStyles), ...buttonProps.sx}}
     >
