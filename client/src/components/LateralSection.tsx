@@ -3,12 +3,12 @@ import {
   VStack,
   Drawer,
   DrawerContent,
-  useBreakpoint,
   DrawerOverlay,
   StackProps,
   IconButton,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import { useAppContext } from "../context";
 
 export interface ILateralSection extends StackProps{
   children: ReactNode
@@ -18,6 +18,8 @@ export interface ILateralSectionContext {
   filter: string[]
   setFilter: React.Dispatch<React.SetStateAction<string[]>>
   setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  searchQuery: string
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Context = createContext<ILateralSectionContext | undefined>(undefined);
@@ -32,9 +34,11 @@ export default function LateralSection({
   children,
   ...props
 }: ILateralSection): JSX.Element {
+  const { state: { isMobile } } = useAppContext()
   const [filter, setFilter] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
-  const currentBreakpoint = useBreakpoint();
+
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   function closeDrawer() {
     setDrawerOpen(false);
@@ -43,42 +47,40 @@ export default function LateralSection({
     setDrawerOpen(true);
   }
   const onDrawerProps =
-    currentBreakpoint === "base" ? { w: "100%", maxWidth: "100%" } : {};
+    isMobile ? { w: "100%", maxWidth: "100%" } : {};
 
-  /**
-   * Wraps inside a Chakra UI Drawer a components when the windows size get to a breakpoint
-   * @param _breakpoint Breakpoint when the component is wrapped
-   * @param component Component to be wrapped inside a drawer
-   * @returns The component or the wrapped component.
-   */
-  function useBreakPointDrawer(breakpoint: string, component: ReactNode) {
-    if (currentBreakpoint === breakpoint) {
+  const getLateralSection = (children: ReactNode) => {
+    if (isMobile) {
       return (
         <Drawer isOpen={isDrawerOpen} onClose={closeDrawer} placement="left">
           <DrawerOverlay>
-            <DrawerContent h="100vh">{component}</DrawerContent>
+            <DrawerContent h="100vh">{children}</DrawerContent>
           </DrawerOverlay>
         </Drawer>
       );
     }
-    return component;
+    return children;
   }
 
   const contextValue = useMemo(() => {
     return {
       filter,
       setFilter,
-      setDrawerOpen
+      setDrawerOpen,
+      searchQuery,
+      setSearchQuery
     }
   }, [
     filter,
     setFilter,
-    setDrawerOpen
+    setDrawerOpen,
+    searchQuery,
+      setSearchQuery
   ])
 
   return (
     <Context.Provider value={contextValue}>
-      {currentBreakpoint === "base" && (
+      {isMobile && (
         <IconButton
           aria-label="Open notes"
           icon={<HamburgerIcon />}
@@ -95,8 +97,7 @@ export default function LateralSection({
           open drawer
         </IconButton>
       )}
-      {useBreakPointDrawer(
-        "base",
+      {getLateralSection(
         <VStack h="100%" w="100%" spacing={0} {...props} {...onDrawerProps}>
           {children}
         </VStack>

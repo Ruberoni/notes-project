@@ -25,10 +25,9 @@ import SearchInput from "./common/Input";
 export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
 
   const appContext = useAppContext()
-  const { filter, setFilter, setDrawerOpen } = useLateralSectionContext()
+  const { filter, setFilter, setDrawerOpen, searchQuery, setSearchQuery } = useLateralSectionContext()
 
-  const [searchInputValue, setSearchInputValue] = React.useState('')
-  const handleSearchInputChange = (v: string) => setSearchInputValue(v)
+  const handleSearchInputChange = (v: string) => setSearchQuery(v)
 
   const { setNotesList, changeCurrentNote} = useNoteContext();
   const [createNote, createNoteMutation] = useCreateNoteMutation()
@@ -68,7 +67,7 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
         triggerButton={userCategoriesListButton}
       />
       <SearchInput
-        value={searchInputValue}
+        value={searchQuery}
         onChangeText={handleSearchInputChange}
         maxW="200px"
         marginLeft="4%"

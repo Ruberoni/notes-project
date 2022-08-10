@@ -4,6 +4,7 @@ export type Action = { type: "LOGIN"; data: IUserData } | { type: "LOGOUT" };
 export interface State {
   userId: string | null;
   userName: string | null;
+  isMobile: boolean
 };
 
 export function appContextReducer(state: State, action: Action): State {

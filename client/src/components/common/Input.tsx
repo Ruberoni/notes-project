@@ -58,20 +58,24 @@ const SearchInput = ({value, onChangeText, disabled, ...props}: SearchInputProps
         placeholder="Search notes by title"
         fontSize='14px'
       />
-      <InputRightElement h="100%" w='23px'>
-        <Button
-          disabled={disabled}
-          onClick={clearInput}
-          bg="transparent"
-          h="10px"
-          w="10px"
-          borderRadius='50%'
-          p='0'
-          minW="0"
-        >
-          <CloseIcon color={borderColor} w="7px" />
-        </Button>
-      </InputRightElement>
+      {
+        isActive && (
+          <InputRightElement h="100%" w='23px'>
+            <Button
+              disabled={disabled}
+              onClick={clearInput}
+              bg="transparent"
+              h="10px"
+              w="10px"
+              borderRadius='50%'
+              p='0'
+              minW="0"
+            >
+              <CloseIcon color={borderColor} w="7px" />
+            </Button>
+        </InputRightElement>
+        )
+      }
     </InputGroup>
   );
 };
