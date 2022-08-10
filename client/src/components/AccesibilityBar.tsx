@@ -20,11 +20,14 @@ import { FaFilter } from 'react-icons/fa'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { useLateralSectionContext } from "./LateralSection";
 import RichTextEditor from "react-rte";
+import SearchInput from "./common/Input";
 
 export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
 
   const appContext = useAppContext()
-  const { filter, setFilter, setDrawerOpen } = useLateralSectionContext()
+  const { filter, setFilter, setDrawerOpen, searchQuery, setSearchQuery } = useLateralSectionContext()
+
+  const handleSearchInputChange = (v: string) => setSearchQuery(v)
 
   const { setNotesList, changeCurrentNote} = useNoteContext();
   const [createNote, createNoteMutation] = useCreateNoteMutation()
@@ -62,6 +65,14 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
       <UserCategoryListMemo
         enabled={false}
         triggerButton={userCategoriesListButton}
+      />
+      <SearchInput
+        value={searchQuery}
+        onChangeText={handleSearchInputChange}
+        maxW="200px"
+        marginLeft="4%"
+        mr="10px"
+        disabled={!appContext.state.userId}
       />
       <Button
         w="36px"

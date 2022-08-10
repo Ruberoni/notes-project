@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
-import { useNoteContext, useAppContext } from "../../context";
+import { useNoteContext, useAppContext, INoteContextType } from "../../context";
 import { INote, ICategory } from "../../types";
 import { useNotesPreviewQuery } from "../../api/notes"
-import { AnyPointerEvent } from "framer-motion/types/gestures/PanSession";
-
-export interface useNotesListProps {
-  filter: string[]
-}
+import { useLateralSectionContext } from "../../components/LateralSection";
 
 /**
  * Handles fetching the notes.
  */
-export default function useNotesList(filter: string[]): [INote[], INote | undefined, boolean, any] {
+export default function useNotesList(): [INote[], INote | undefined, boolean, INoteContextType['changeCurrentNote']] {
   const appContext = useAppContext();
   const { setNotesList, notesList, currentNote, changeCurrentNote } = useNoteContext();
-  const [loading, setLoading] = useState(false);
+  const { filter, searchQuery } = useLateralSectionContext()
+  const [loading, setLoading] = useState(false)
 
   const includesCategory = (cat: ICategory, idsList: string[]) => {
     return idsList.indexOf(cat.id) !== -1;
@@ -26,13 +23,16 @@ export default function useNotesList(filter: string[]): [INote[], INote | undefi
   }, [notesList])
 
   useEffect(() => {
-    if (filter[0]) {
-      const _filteredNotesList = notesList.filter(note => note.categories.some(cat => includesCategory(cat, filter)))
-      setFilteredNotesList(_filteredNotesList)
-    } else {
-      setFilteredNotesList(notesList)
+    let filteredNotesList = notesList
+    if (searchQuery) {
+      const searchQueries = searchQuery.trim().toLocaleLowerCase().split(" ")
+      filteredNotesList = notesList.filter(note => searchQueries.some(query => note.title.toLocaleLowerCase().includes(query)))
     }
-  }, [filter, notesList])
+    if (filter[0]) {
+      filteredNotesList = filteredNotesList.filter(note => note.categories.some(cat => includesCategory(cat, filter)))
+    } 
+    setFilteredNotesList(filteredNotesList)
+  }, [filter, notesList, searchQuery])
 
   const notesPreviewQuery = useNotesPreviewQuery(appContext.state.userId as string, {
     onCompleted: (data) => {

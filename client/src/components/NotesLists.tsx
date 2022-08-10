@@ -3,7 +3,6 @@ import { Box, BoxProps } from "@chakra-ui/react";
 import NoteItem, { NoteItemSkeleton, NoteItemSkeletonProps } from "./NoteItem";
 import { INote } from "../types";
 import { useNotesList } from "../hooks";
-import { useLateralSectionContext } from "./LateralSection";
 
 /**
  * **Notes List component.**
@@ -18,11 +17,8 @@ import { useLateralSectionContext } from "./LateralSection";
  * - Scrollable notes [X]
  */
 export default function NotesList(props: BoxProps): JSX.Element {
-  const { filter } = useLateralSectionContext()
+  const [notesList, currentNote, loading, changeCurrentNote] = useNotesList();
 
-  const [notesList, currentNote, loading, changeCurrentNote] = useNotesList(filter);
-
-  
   return (
     <Box className="hideScrollBar" h="100%" w="inherit" {...props}>
       {loading && <NotesListSkeleton />}

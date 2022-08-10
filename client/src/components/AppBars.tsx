@@ -6,7 +6,6 @@ import {
   Button,
   Heading,
   Link,
-  useBreakpoint,
   Flex,
   FlexProps,
   ButtonProps,
@@ -20,7 +19,6 @@ import { useAppContext } from "../context";
 import AboutModal from "./about/AboutModal";
 
 export function TopBar(props: BoxProps): JSX.Element {
-  const currentBreakpoint = useBreakpoint();
   const bg = useColorModeValue('#FFD66D', '#131720');
   const borderColor = useColorModeValue('#c0c0c0', 'border');
   const { loginWithRedirect, isAuthenticated } = useAuth0();
@@ -38,7 +36,7 @@ export function TopBar(props: BoxProps): JSX.Element {
       justifyContent="space-between"
       {...props}
     >
-      {currentBreakpoint !== "base" && (
+      {!context.state.isMobile && (
         <Heading as={RLink} to="/" bg="" size="md">
           Notes Project
         </Heading>
