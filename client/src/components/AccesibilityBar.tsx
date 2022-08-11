@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useRef } from "react";
 import {
   IconButton,
   HStack,
@@ -21,11 +21,14 @@ import { MdKeyboardArrowDown } from 'react-icons/md'
 import { useLateralSectionContext } from "./LateralSection";
 import RichTextEditor from "react-rte";
 import SearchInput from "./common/Input";
+import { SHORTCUTS, useAppShortcuts } from "../hooks";
 
 export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
 
   const appContext = useAppContext()
   const { filter, setFilter, setDrawerOpen, searchQuery, setSearchQuery } = useLateralSectionContext()
+
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   const handleSearchInputChange = (v: string) => setSearchQuery(v)
 
@@ -50,6 +53,17 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
     setDrawerOpen(false)
   };
 
+  useAppShortcuts(SHORTCUTS.CREATE_NOTE, () => {
+    onCreateNote()
+  },
+  {
+    enabled: Boolean(appContext.state.userId) && !createNoteMutation.loading,
+    preventDefault: true,
+  },
+  [onCreateNote])
+
+  useAppShortcuts(SHORTCUTS.FOCUS_SEARCH, () => searchInputRef.current?.focus(), { preventDefault: true })
+
   return (
     <Flex h="56px" pl="6.5%" w="inherit" alignItems="center" borderBottom='1px solid' borderColor='border' {...props}>
       <CategoriesFilter
@@ -67,6 +81,7 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
         triggerButton={userCategoriesListButton}
       />
       <SearchInput
+        ref={searchInputRef}
         value={searchQuery}
         onChangeText={handleSearchInputChange}
         maxW="200px"

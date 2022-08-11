@@ -18,7 +18,7 @@ export interface SearchInputProps extends InputGroupProps {
   disabled?: boolean
 }
 
-const SearchInput = ({value, onChangeText, disabled, ...props}: SearchInputProps): ReactElement => {
+const SearchInput = ({value, onChangeText, disabled, ...props}: SearchInputProps, ref: React.LegacyRef<HTMLInputElement>): ReactElement => {
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (event) => onChangeText?.(event.target.value)
   const clearInput = () => onChangeText?.('')
 
@@ -47,6 +47,7 @@ const SearchInput = ({value, onChangeText, disabled, ...props}: SearchInputProps
         <SearchIcon color={isActive ? searchIconActiveColor : borderColor} w="13px"  />
       </InputLeftAddon>
       <ChakraInput
+        ref={ref}
         disabled={disabled}
         value={value}
         onChange={handleInputChange}
@@ -80,4 +81,6 @@ const SearchInput = ({value, onChangeText, disabled, ...props}: SearchInputProps
   );
 };
 
-export default SearchInput;
+const SearchInputRef = React.forwardRef(SearchInput)
+
+export default SearchInputRef;
