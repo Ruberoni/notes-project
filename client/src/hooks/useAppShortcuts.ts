@@ -5,6 +5,8 @@ export const SHORTCUTS = {
   CREATE_NOTE: "ctrl+shift+c",
   FOCUS_SEARCH: "ctrl+k",
   FOCUS_NOTE_EDITOR: "ctrl+shift+e",
+  DELETE_NOTE: "ctrl+shift+d",
+  ADD_CATEGORY_NOTE: "ctrl+alt+c",
 } as const;
 
 type useHotKeysParameters = Parameters<typeof useHotkeys>

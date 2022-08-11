@@ -10,13 +10,14 @@ import {
   Flex,
   useColorModeValue,
   useMediaQuery,
+  Tooltip,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import ResizeTextarea from "react-textarea-autosize";
 import RichTextEditor, { StyleConfigList, ToolbarConfig } from "react-rte";
 import CategoryList from "./CategoryList";
 import { RemovableCategoryTag, AddCategoryTagRef } from "./CategoryTag";
-import { useNoteContent, INoteContentUtils } from "../hooks";
+import { useNoteContent, INoteContentUtils, useAppShortcuts, SHORTCUTS } from "../hooks";
 import { INote } from "../types";
 import './NoteContent.css'
 
@@ -36,6 +37,17 @@ function NoteContent(props: StackProps): ReactElement {
   ] = useNoteContent()
   const editorCodeStyleBackground = useColorModeValue('rgb(243, 243, 243)', 'black')
   const [hasToolbarResized] = useMediaQuery('(max-width: 780px) and (min-width: 686px), (max-width: 545px)')
+
+  useAppShortcuts(SHORTCUTS.DELETE_NOTE, () => {
+    if (window.confirm("Do you really want to delete the note?")) {
+      headerUtils.handleDeleteNote()
+    }
+  },
+  {
+    enabled: Boolean(note),
+    preventDefault: true,
+  },
+  [note?.id])
 
   if (!note)
     return (
@@ -176,18 +188,24 @@ const NoteContentHeader = ({noteTitle, noteCategories, utils}: NoteContentHeader
         border="0px" />
       <NoteContentCategoriesMemo categories={noteCategories} onCategoryRemove={utils.handleCategoryRemove} />
     </VStack>
-    <Button
-      w='30px'
-      h='30px'
-      alignSelf='center'
-      m='0 calc(2vw + 16px) 0 1%'
-      onClick={utils.handleDeleteNote}
-      aria-label="Delete note"
-    >
-      <DeleteIcon />
-    </Button>
+    <Tooltip label={SHORTCUTS.DELETE_NOTE}>
+      <Button
+        w='30px'
+        h='30px'
+        alignSelf='center'
+        m='0 calc(2vw + 16px) 0 1%'
+        onClick={utils.handleDeleteNote}
+        aria-label="Delete note"
+      >
+        <DeleteIcon />
+      </Button>
+    </Tooltip>
   </Flex>
 }
+
+const NoteCategoriesPopoverTrigger = React.forwardRef<HTMLButtonElement>(function NoteCategoriesPopoverTrigger(props, ref) {
+  return <Tooltip label={SHORTCUTS.ADD_CATEGORY_NOTE}><AddCategoryTagRef {...props} ref={ref}/></Tooltip>
+})
 
 interface NoteContentCategoriesProps {
   categories?: INote['categories'];
@@ -198,6 +216,7 @@ const NoteContentCategories = ({
   categories,
   onCategoryRemove,
 }: NoteContentCategoriesProps) => {
+
   return (
     <Wrap w="inherit" pl="10px">
       {categories?.map((category) => (
@@ -211,7 +230,7 @@ const NoteContentCategories = ({
       <CategoryList
         categories={categories || []}
         gutter={1}
-        triggerButton={<AddCategoryTagRef />}
+        TriggerButton={<NoteCategoriesPopoverTrigger />}
       />
     </Wrap>
   );

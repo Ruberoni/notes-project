@@ -8,6 +8,7 @@ import {
   FlexProps,
   IconButtonProps,
   Icon,
+  Tooltip,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useNoteContext, useAppContext } from "../context";
@@ -80,27 +81,31 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
         enabled={false}
         triggerButton={userCategoriesListButton}
       />
-      <SearchInput
-        ref={searchInputRef}
-        value={searchQuery}
-        onChangeText={handleSearchInputChange}
-        maxW="200px"
-        marginLeft="4%"
-        mr="10px"
-        disabled={!appContext.state.userId}
-      />
-      <Button
-        w="36px"
-        h="36px"
-        isActive
-        marginLeft="auto"
-        mr='10px'
-        onClick={onCreateNote}
-        disabled={!appContext.state.userId || createNoteMutation.loading}
-        isLoading={createNoteMutation.loading}
-      >
-        <AddIcon />
-      </Button>
+      <Tooltip label={SHORTCUTS.FOCUS_SEARCH}>
+        <SearchInput
+          ref={searchInputRef}
+          value={searchQuery}
+          onChangeText={handleSearchInputChange}
+          maxW="200px"
+          marginLeft="4%"
+          mr="10px"
+          disabled={!appContext.state.userId}
+        />
+      </Tooltip>
+      <Tooltip label={SHORTCUTS.CREATE_NOTE}>
+        <Button
+          w="36px"
+          h="36px"
+          isActive
+          marginLeft="auto"
+          mr='10px'
+          onClick={onCreateNote}
+          disabled={!appContext.state.userId || createNoteMutation.loading}
+          isLoading={createNoteMutation.loading}
+          >
+          <AddIcon />
+        </Button>
+      </Tooltip>
     </Flex>
   );
 }
