@@ -17,6 +17,7 @@ import {
   FormControl,
   Select,
   PopoverProps,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { DeleteIcon, AddIcon, CheckIcon } from "@chakra-ui/icons";
 import CategoryTag, { CategoryTagProps } from "./CategoryTag";
@@ -25,15 +26,19 @@ import { useNoteContext, useAppContext } from "../context";
 import { useAddCategoryNoteMutation } from "../api/notes";
 import { useDeleteCategoryMutation, useCreateCategoryMutation } from "../api/categories";
 import { useUserCategoriesQuery } from "../api/user";
+import { useAppShortcuts, SHORTCUTS } from '../hooks'
 
 export interface CategoryListProps extends Omit<PopoverProps, "children"> {
   categories?: ICategory[];
-  triggerButton?: ReactElement; 
+  TriggerButton?: ReactElement; 
 }
 
-export default function CategoryList(props: CategoryListProps): ReactElement {
+export default function CategoryList({TriggerButton, ...props}: CategoryListProps): ReactElement {
   const { currentNoteData, updateCurrentNote, userCategories } = useNoteContext();
   if (!currentNoteData) return <></>;
+
+  const { isOpen, onToggle, onClose } = useDisclosure()
+
   const [addCategoryNote] = useAddCategoryNoteMutation();
 
   const handleAddCategoryNote = useCallback((cat: ICategory) => {
@@ -63,10 +68,23 @@ export default function CategoryList(props: CategoryListProps): ReactElement {
     (cat) => !includesCategory(cat, currentNoteData?.categories)
   ), [currentNoteData?.categories, userCategories]);
 
+  useAppShortcuts(SHORTCUTS.ADD_CATEGORY_NOTE, () => {
+    onToggle()
+  },
+  {
+    preventDefault: true,
+  })
+
   return (
-    <Popover {...props}>
+    <Popover
+      returnFocusOnClose={false}
+      isOpen={isOpen}
+      onClose={onClose}
+      closeOnBlur={false}
+      {...props}
+    >
       <PopoverTrigger>
-        {props.triggerButton || <Button>Add</Button>}
+        {TriggerButton ? React.cloneElement(TriggerButton, { onClick: onToggle }) : <Button onClick={onToggle}>Open</Button>}
       </PopoverTrigger>
       <PopoverContent w="auto">
         <PopoverBody

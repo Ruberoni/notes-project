@@ -25,7 +25,7 @@ export interface INoteContentUtils {
   header: {
     handleCategoryRemove: (categoryId: string) => void;
     handleTitleChange: (event: BaseSyntheticEvent) => void;
-    handleDeleteNote: (event: BaseSyntheticEvent) => void;
+    handleDeleteNote: () => void;
   }
 }
 

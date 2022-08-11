@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useRef } from "react";
 import {
   IconButton,
   HStack,
@@ -8,6 +8,7 @@ import {
   FlexProps,
   IconButtonProps,
   Icon,
+  Tooltip,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useNoteContext, useAppContext } from "../context";
@@ -21,11 +22,14 @@ import { MdKeyboardArrowDown } from 'react-icons/md'
 import { useLateralSectionContext } from "./LateralSection";
 import RichTextEditor from "react-rte";
 import SearchInput from "./common/Input";
+import { SHORTCUTS, useAppShortcuts } from "../hooks";
 
 export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
 
   const appContext = useAppContext()
   const { filter, setFilter, setDrawerOpen, searchQuery, setSearchQuery } = useLateralSectionContext()
+
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   const handleSearchInputChange = (v: string) => setSearchQuery(v)
 
@@ -50,6 +54,17 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
     setDrawerOpen(false)
   };
 
+  useAppShortcuts(SHORTCUTS.CREATE_NOTE, () => {
+    onCreateNote()
+  },
+  {
+    enabled: Boolean(appContext.state.userId) && !createNoteMutation.loading,
+    preventDefault: true,
+  },
+  [onCreateNote])
+
+  useAppShortcuts(SHORTCUTS.FOCUS_SEARCH, () => searchInputRef.current?.focus(), { preventDefault: true })
+
   return (
     <Flex h="56px" pl="6.5%" w="inherit" alignItems="center" borderBottom='1px solid' borderColor='border' {...props}>
       <CategoriesFilter
@@ -66,26 +81,31 @@ export default function NotesAccesibilityBar(props: StackProps): JSX.Element {
         enabled={false}
         triggerButton={userCategoriesListButton}
       />
-      <SearchInput
-        value={searchQuery}
-        onChangeText={handleSearchInputChange}
-        maxW="200px"
-        marginLeft="4%"
-        mr="10px"
-        disabled={!appContext.state.userId}
-      />
-      <Button
-        w="36px"
-        h="36px"
-        isActive
-        marginLeft="auto"
-        mr='10px'
-        onClick={onCreateNote}
-        disabled={!appContext.state.userId || createNoteMutation.loading}
-        isLoading={createNoteMutation.loading}
-      >
-        <AddIcon />
-      </Button>
+      <Tooltip label={SHORTCUTS.FOCUS_SEARCH}>
+        <SearchInput
+          ref={searchInputRef}
+          value={searchQuery}
+          onChangeText={handleSearchInputChange}
+          maxW="200px"
+          marginLeft="4%"
+          mr="10px"
+          disabled={!appContext.state.userId}
+        />
+      </Tooltip>
+      <Tooltip label={SHORTCUTS.CREATE_NOTE}>
+        <Button
+          w="36px"
+          h="36px"
+          isActive
+          marginLeft="auto"
+          mr='10px'
+          onClick={onCreateNote}
+          disabled={!appContext.state.userId || createNoteMutation.loading}
+          isLoading={createNoteMutation.loading}
+          >
+          <AddIcon />
+        </Button>
+      </Tooltip>
     </Flex>
   );
 }
