@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useRef } from "react";
 import {
   VStack,
   StackProps,
@@ -35,6 +35,8 @@ function NoteContent(props: StackProps): ReactElement {
     loading,
     { content: contentUtils, header: headerUtils }
   ] = useNoteContent()
+  const NoteContentEditorRef = useRef<RichTextEditor>(null)
+
   const editorCodeStyleBackground = useColorModeValue('rgb(243, 243, 243)', 'black')
   const [hasToolbarResized] = useMediaQuery('(max-width: 780px) and (min-width: 686px), (max-width: 545px)')
 
@@ -48,6 +50,11 @@ function NoteContent(props: StackProps): ReactElement {
     preventDefault: true,
   },
   [note?.id])
+
+  useAppShortcuts(SHORTCUTS.FOCUS_NOTE_EDITOR, () => {
+    //@ts-expect-error Undocumented
+    NoteContentEditorRef.current?._focus()
+  })
 
   if (!note)
     return (
@@ -80,6 +87,7 @@ function NoteContent(props: StackProps): ReactElement {
         utils={headerUtils}
       />
       <RichTextEditor
+        ref={NoteContentEditorRef}
         value={note.body || RichTextEditor.createEmptyValue()}
         onChange={contentUtils.handleBodyChange}
         toolbarClassName="editorToolBar"

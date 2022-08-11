@@ -11,11 +11,22 @@ import {
   Link,
   useDisclosure,
   Text,
-  TextProps
+  TextProps,
+  Heading,
+  Kbd
 } from "@chakra-ui/react"
 
 import {ReactComponent as GithubIcon} from '../../assets/github_icon.svg'
 import { EmailIcon } from '@chakra-ui/icons'
+import { SHORTCUTS } from '../../hooks'
+
+const SHORTCUTS_LABELS: Record<keyof typeof SHORTCUTS, string> = {
+  CREATE_NOTE: "Create a note",
+  FOCUS_SEARCH: "Focus the search notes input",
+  FOCUS_NOTE_EDITOR: "Focus the note editor",
+  DELETE_NOTE: "Delete the opened note",
+  ADD_CATEGORY_NOTE: "Open the menu to add a category in a note"
+} as const
 
 export interface AboutModalProps extends TextProps {
   modalContentProps?: ModalContentProps,
@@ -45,12 +56,25 @@ export default function AboutModal({ modalContentProps, modalBodyProps, triggerB
             <GithubIcon style={{display: 'inline-block', marginRight: "12px"}} width={20} height={20}/>
               GitHub: ruberoni
             </Link>
-            <Text mt="10px" mb="10px">
-            An image from &lt;source&gt; have been used
-            </Text>
+            <Heading as='h2' size="md" mt="1em">Shortcuts</Heading>
+            {
+              Object.entries(SHORTCUTS_LABELS).map(([key, label], i) => {
+                return <p key={i}>{renderChakraKbd(SHORTCUTS[key as keyof typeof SHORTCUTS])} - {label}</p>
+              })
+            }
           </ModalBody>
         </ModalContent>
       </Modal>
     </>
   )
+}
+
+const renderChakraKbd = (kbdCombination: string) => {
+  const separatedKeys = kbdCombination.split('+')
+  return separatedKeys.map((key, i) => {
+    if (i === 0) {
+      return <Kbd>{key}</Kbd>
+    }
+    return <>+ <Kbd>{key}</Kbd></>
+  })
 }
