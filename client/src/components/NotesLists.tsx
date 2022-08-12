@@ -20,7 +20,7 @@ export default function NotesList(props: BoxProps): JSX.Element {
   const [notesList, currentNote, loading, changeCurrentNote] = useNotesList();
 
   return (
-    <Box className="hideScrollBar" h="100%" w="inherit" {...props}>
+    <Box h="100%" w="inherit" overflow='auto' {...props}>
       {loading && <NotesListSkeleton />}
       {notesList.map((noteP) => {
         const onClick = (event: React.MouseEvent | React.KeyboardEvent) => {

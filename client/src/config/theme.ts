@@ -40,15 +40,23 @@ export default extendTheme({
         '--border': colorMode === 'dark' ? '#142f42' : '#e5e5e5',
         '--topbar-background': colorMode === 'dark' ? '#131720' : '#FFD66D',
       },
-      // Styles to hide scrollbar
-      ".hideScrollBar": {
-        overflow: "auto",
-        "scrollbar-width": "none" /* Firefox */,
-        "msOverflowStyle": "none" /* Internet Explorer 10+ */,
+      body: {
+        color: 'text',
+        bg: colorMode === 'dark' ? '#0b1924' : 'white',
       },
-      ".hideScrollBar::-webkit-scrollbar": {
-        width: 0,
-        height: 0,
+      '::-webkit-scrollbar': {
+        width: '8px'
+      },
+      
+      '::-webkit-scrollbar-track': {
+        bg: 'transparent'
+      },      
+      '::-webkit-scrollbar-thumb': {
+        bg: colorMode === 'dark' ? '#102333' : '#cdcdcd',
+        borderRadius: '10px'
+      },
+      '::-webkit-scrollbar-thumb:hover': {
+        bg: colorMode === 'dark' ? '#193851' : '#b9b9b9',
       },
       '.editorToolBar': {
         '& button[disabled]': {
@@ -70,11 +78,6 @@ export default extendTheme({
       h3: {
         fontSize: 18,
       },
-      body: {
-        color: 'text',
-        bg: colorMode === 'dark' ? '#0b1924' : 'white',
-      },
-      
     }),
   },
 });
