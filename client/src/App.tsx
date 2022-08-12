@@ -11,7 +11,6 @@ function App(): JSX.Element {
     <HStack flex={1} spacing={0} overflow="auto">
       <NoteContextProvider>
         <LateralSection
-          maxWidth="30%"
           borderRight="1px solid"
           borderColor="border"
         >

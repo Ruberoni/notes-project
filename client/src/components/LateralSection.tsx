@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useAppContext } from "../context";
+import { Resizable } from "re-resizable";
 
 export interface ILateralSection extends StackProps{
   children: ReactNode
@@ -46,8 +47,6 @@ export default function LateralSection({
   function openDrawer() {
     setDrawerOpen(true);
   }
-  const onDrawerProps =
-    isMobile ? { w: "100%", maxWidth: "100%" } : {};
 
   const getLateralSection = (children: ReactNode) => {
     if (isMobile) {
@@ -98,9 +97,19 @@ export default function LateralSection({
         </IconButton>
       )}
       {getLateralSection(
-        <VStack h="100%" w="100%" spacing={0} {...props} {...onDrawerProps}>
-          {children}
-        </VStack>
+        <Resizable
+          defaultSize={{
+            height: '100%',
+            width: isMobile ? '100%' : "30%"
+          }}
+          enable={{ top:false, right: !isMobile, bottom:false, left:false, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false }}
+          maxWidth={isMobile ? '100%' : "70%"}
+          minWidth="274px"
+        >
+          <VStack h="100%" w="100%" spacing={0} {...props}>
+            {children}
+          </VStack>
+        </Resizable>
       )}
     </Context.Provider>
   );
