@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Notes-taking app. A fast and open-source alternative!</b>
-  <img src="docs/webappscreenshot4.png"/> 
+  <img src="docs/webappscreenshot.png"/> 
 </p>
 
 # Contribution 🤝
@@ -21,34 +21,36 @@ Please check the [issues](https://github.com/Ruberoni/notes-project/issues) or c
 - [X] Learn Auth0
 
 # Features 🏏
-- [X] Write and save notes as fast as possible.
+- [X] Good performance
 - [X] Use markdown to edit your notes
-- [X] Group notes using categories.
-- [X] Login with google!
-- [X] Full responsive.
-- [X] Filter and search notes.
-- [X] Secure authentication with Auth0.
+- [X] Group notes using categories
+- [X] Login with google
+- [X] Fully responsive
+- [X] Filter and search notes
+- [X] Secure authentication with Auth0
+- [X] Dark mode
+- [X] Keyboard shortcuts
 
 # Dependencies 🧠
 ## Client side
 - Yarn 1.22.x
-- Charkra-UI/React ^1.6.6
-- React ^17.0.2
-- React Router Dom ^5.3.0
-- Typescript ^4.1.2
-- Graphql ^15.5.3
-- Apollo Client ^3.4.11
+- Charkra-UI/React 1.6.6
+- React 17.0.2
+- React Router Dom 5.3.0
+- Typescript 4.1.2
+- Graphql 15.5.3
+- Apollo Client 3.4.11
 - Auth0 React ^1.8.0
 
 ## Server side
 - Yarn 1.22.x
-- Mysql2 ^2.3.0
-- Graphql ^15.5.1
-- Typescript ^4.3.5
-- Hapi ^20.1.5
-- Apollo Server Hapi ^3.1.2
-- Type Graphql ^1.1.1
-- ts-node ^10.2.0
+- Mysql2 2.3.0
+- Graphql 15.5.1
+- Typescript 4.3.5
+- Hapi 20.1.5
+- Apollo Server Hapi .1.2
+- Type Graphql 1.1.1
+- ts-node 10.2.0
 # Run the app 🚗
 ## Before all
 ### Requirements
