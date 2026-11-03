@@ -38,7 +38,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.5",
     "mysql2": "^2.3.0",
-    "nodemon": "^2.0.12",
+    "nodemon": "^2.0.16",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.2.0",
     "type-graphql": "^1.1.1"
