@@ -23,7 +23,7 @@ export default class Queries {
   @UseMiddleware(ExposeUser)
   @Query((_returns) => User)
   async getUser(@Arg("id") id: string, @Ctx() ctx: any): Promise<User> {
-    return await ctx.dataSources.notesProject.getUser(ctx.user.id || id);
+    return await ctx.dataSources.notesProject.getUser(ctx.user.id);
   }
 
   @Authorized()
@@ -33,7 +33,7 @@ export default class Queries {
     @Arg("userId") userId: string,
     @Ctx() ctx: any
   ): Promise<Note[]> {
-    return await ctx.dataSources.notesProject.getUserNotes(ctx.user.id || userId);
+    return await ctx.dataSources.notesProject.getUserNotes(ctx.user.id);
   }
 
   @Authorized()
@@ -43,7 +43,7 @@ export default class Queries {
     @Arg("userId") userId: string,
     @Ctx() ctx: any
   ): Promise<Category[]> {
-    return await ctx.dataSources.notesProject.getUserCategories(ctx.user.id || userId);
+    return await ctx.dataSources.notesProject.getUserCategories(ctx.user.id);
   }
 
   @Authorized()
@@ -53,7 +53,7 @@ export default class Queries {
     @Arg("userId") userId: string,
     @Ctx() ctx: any
   ): Promise<NotePreview[]> {
-    return await ctx.dataSources.notesProject.getUserNotesPreview(ctx.user.id || userId);
+    return await ctx.dataSources.notesProject.getUserNotesPreview(ctx.user.id);
   }
 
   @Authorized()
