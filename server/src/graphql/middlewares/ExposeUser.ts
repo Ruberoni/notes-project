@@ -25,6 +25,7 @@ interface IUserClaim {
  * Finds the database user for the authenticated Auth0 identity and puts its id in the context.
  * 1. Looks the user up by 'oauthId' (the token's 'sub').
  * 2. Otherwise, links an existing user with the same VERIFIED email that has no 'oauthId' yet.
+ *    The email counts as verified if the claim says so or the identity comes from Google.
  * 3. Otherwise, creates the user, so a first login never breaks the resolvers.
  */
 const ExposeUser: MiddlewareFn<IContext> = async ({ context }, next) => {
@@ -35,7 +36,8 @@ const ExposeUser: MiddlewareFn<IContext> = async ({ context }, next) => {
 
   const claim: IUserClaim =
     payload[`http://www.${process.env.AUTH0_AUDIENCE}.com/user`] || {};
-  const verifiedEmail = claim.email_verified ? claim.email : undefined;
+  const emailVerified = claim.email_verified === true || sub.startsWith("google-oauth2|");
+  const verifiedEmail = emailVerified ? claim.email : undefined;
   const db = context.dataSources.notesProject;
 
   let user = await db.getUserByOauthId(sub);

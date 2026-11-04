@@ -69,10 +69,11 @@ export class NotesProjectDataSource extends DataSource {
   /**
    * Creates the user for an OAuth identity. Never updates an existing row:
    * if a row with the same oauthId (or email) exists, nothing is changed.
+   * Only duplicates are ignored (unlike INSERT IGNORE, which also hides truncation errors).
    */
   async createOauthUser(content: UserContent): Promise<void> {
     if (!this.DB) throw new Error("No database connected.");
-    const query = "INSERT IGNORE INTO user SET ?";
+    const query = "INSERT INTO user SET ? ON DUPLICATE KEY UPDATE id = id";
     const queryFormatted = this.DB.format(query, [removeNonExistentProps(content)]);
     await this.DB.execute(queryFormatted);
   }
@@ -146,8 +147,10 @@ export class NotesProjectDataSource extends DataSource {
   async register(content: UserContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     content = removeNonExistentProps(content)
-    const query = "INSERT INTO user SET ? ON DUPLICATE KEY UPDATE ?";
-    const queryFormatted = this.DB.format(query, [content, content]);
+    // Never overwrite an existing row: 'register' is public, so updating on a duplicate
+    // 'email'/'googleId' would let anyone rewrite (and take over) another user's row.
+    const query = "INSERT INTO user SET ? ON DUPLICATE KEY UPDATE id = id";
+    const queryFormatted = this.DB.format(query, [content]);
     await this.DB.execute(queryFormatted)
     return "OK";
   }

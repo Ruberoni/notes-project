@@ -60,6 +60,16 @@ describe("ExposeUser middleware", () => {
     expect(context.user.id).to.equal("3");
   });
 
+  it("treats Google identities as having a verified email", async () => {
+    const db = fakeDb();
+    db.getUserByEmail.resolves({ id: "3", oauthId: null });
+    db.getUserByOauthId.onSecondCall().resolves({ id: "3" });
+    const { context, promise } = run({ sub: "google-oauth2|1", [CLAIM]: { email: "a@b.c" } }, db);
+    await promise;
+    expect(db.linkOauthId.calledOnceWith("3", "google-oauth2|1")).to.be.true;
+    expect(context.user.id).to.equal("3");
+  });
+
   it("never links or stores an unverified email", async () => {
     const db = fakeDb();
     db.getUserByEmail.resolves({ id: "3", oauthId: null });

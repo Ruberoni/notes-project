@@ -4,9 +4,6 @@ import { authenticate } from "../../services/auth";
 import { ExposeUser } from "../middlewares";
 @Resolver()
 export default class Mutations {
-  // Requires a valid token: an open 'register' would let anyone overwrite
-  // another user's row through its 'ON DUPLICATE KEY UPDATE'.
-  @Authorized()
   @Mutation((_returns) => String)
   async register(
     @Arg("userContent", { nullable: false }) userContent: UserContent,
