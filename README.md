@@ -54,8 +54,8 @@ Please check the [issues](https://github.com/Ruberoni/notes-project/issues) or c
 # Run the app 🚗
 ## Before all
 ### Requirements
-- Node.js 16.x
-- pnpm 8 (run `corepack enable` on Node 16)
+- Node.js 16.x (16.14 or newer)
+- pnpm 8 (run `corepack enable`; Corepack ships with Node 16.9+)
 - You need an Auth0 account, with an API and a applications registered.
 - You need a MySQL Server
 
