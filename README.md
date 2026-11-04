@@ -33,7 +33,7 @@ Please check the [issues](https://github.com/Ruberoni/notes-project/issues) or c
 
 # Dependencies 🧠
 ## Client side
-- Yarn 1.22.x
+- pnpm 8.15.x
 - Charkra-UI/React 1.6.6
 - React 17.0.2
 - React Router Dom 5.3.0
@@ -43,7 +43,7 @@ Please check the [issues](https://github.com/Ruberoni/notes-project/issues) or c
 - Auth0 React ^1.8.0
 
 ## Server side
-- Yarn 1.22.x
+- pnpm 8.15.x
 - Mysql2 2.3.0
 - Graphql 15.5.1
 - Typescript 4.3.5
@@ -54,8 +54,8 @@ Please check the [issues](https://github.com/Ruberoni/notes-project/issues) or c
 # Run the app 🚗
 ## Before all
 ### Requirements
-- Node.js
-- Yarn
+- Node.js 16.x (16.14 or newer)
+- pnpm 8 (run `corepack enable`; Corepack ships with Node 16.9+)
 - You need an Auth0 account, with an API and a applications registered.
 - You need a MySQL Server
 
@@ -68,7 +68,7 @@ git clone https://github.com/Ruberoni/notes-project.git
 1. Change directory to `client/`
 2. Install the modules. Run:
 ```
-yarn
+pnpm install
 ```
 3. Setup these enviorment variables:
 ```
@@ -80,7 +80,7 @@ REACT_APP_SERVER_URI=       [optional] Server uri to request the data
 ```
 4. Start the app by running:
 ```
-yarn start
+pnpm start
 ```
 
 ## Server side
@@ -88,7 +88,7 @@ yarn start
 1. Change directory to `server/`
 2. Install the modules by running:
 ```
-yarn
+pnpm install
 ```
 3. Setup these enviorment variables:
 ```
@@ -112,9 +112,9 @@ BASIC_SECRET=     Secret for the authentication of basicSecret strategy
 ```
 4. Start the server. Run:
 ```
-yarn dev
+pnpm dev
 ```
-If you have problems starting the server, try copy-pasting the command ran by `yarn dev`
+If you have problems starting the server, try copy-pasting the command ran by `pnpm dev`
 # Attribution 🤼‍♂️
 An image from [slidesgo / Freepik](http://www.freepik.com) has been used.
 # Contact me! 📞

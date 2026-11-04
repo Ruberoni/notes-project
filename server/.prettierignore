@@ -1,2 +1,3 @@
 # Ignore artifacts:
 lib
+pnpm-lock.yaml

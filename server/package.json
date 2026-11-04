@@ -3,16 +3,17 @@
   "version": "1.0.0",
   "description": "Notes Project/server. Take notes easily, anywhere.",
   "main": "lib/index.js",
+  "packageManager": "pnpm@8.15.9",
   "engines": {
     "node": "16.x",
-    "yarn": "1.22.x"
+    "pnpm": "8.x"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "$env:NODE_ENV=\"development\"; yarn run nodemon --watch src src/index.ts",
+    "dev": "$env:NODE_ENV=\"development\"; pnpm exec nodemon --watch src src/index.ts",
     "lint": "eslint src/",
     "start": "node lib/index.js",
-    "test": "$env:NODE_ENV=\"test\"; $env:TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }'; yarn run mocha -r ts-node/register -r dotenv/config ./src/config/env.ts 'src/tests/**/*.ts'"
+    "test": "$env:NODE_ENV=\"test\"; $env:TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }'; pnpm exec mocha -r ts-node/register -r dotenv/config ./src/config/env.ts 'src/tests/**/*.ts'"
   },
   "author": "Ruben Paredes",
   "keywords": [
@@ -37,7 +38,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.5",
     "mysql2": "^2.3.0",
-    "nodemon": "^2.0.12",
+    "nodemon": "^2.0.16",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.2.0",
     "type-graphql": "^1.1.1"
