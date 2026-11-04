@@ -10,7 +10,6 @@ import { State } from "./reducer";
 import { customUseGoogleLogout } from "../hooks";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useApolloClient } from "@apollo/client";
-import { useRegisterMutation } from "../api/auth";
 import { useMediaQuery } from "@chakra-ui/react";
 export interface IAuthActions {
   login: () => Promise<void>;
@@ -42,7 +41,6 @@ export function AppContextProvider({
   // const [state, dispatch] = useReducer(appContextReducer, initialState);
 
   const apolloClient = useApolloClient();
-  const registerMutation = useRegisterMutation();
   const [isMobile] = useMediaQuery('(max-width: 890px)')
   const [error, { signOut: googleLogout }] = customUseGoogleLogout();
   if (error) return error;

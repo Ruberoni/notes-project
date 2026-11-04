@@ -45,6 +45,39 @@ export class NotesProjectDataSource extends DataSource {
     return users[0] as User;
   }
 
+  async getUserByOauthId(oauthId: string): Promise<User | undefined> {
+    if (!this.DB) throw new Error("No database connected.");
+    const [users]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
+      "SELECT * FROM user WHERE oauthId = ?",
+      [oauthId]
+    );
+    return users[0] as User | undefined;
+  }
+
+  /**
+   * Sets 'oauthId' on an existing user only if it doesn't have one yet,
+   * so an account can never be re-linked to a different identity.
+   */
+  async linkOauthId(id: string, oauthId: string): Promise<void> {
+    if (!this.DB) throw new Error("No database connected.");
+    await this.DB.execute(
+      "UPDATE user SET oauthId = ? WHERE id = ? AND oauthId IS NULL",
+      [oauthId, id]
+    );
+  }
+
+  /**
+   * Creates the user for an OAuth identity. Never updates an existing row:
+   * if a row with the same oauthId (or email) exists, nothing is changed.
+   * Only duplicates are ignored (unlike INSERT IGNORE, which also hides truncation errors).
+   */
+  async createOauthUser(content: UserContent): Promise<void> {
+    if (!this.DB) throw new Error("No database connected.");
+    const query = "INSERT INTO user SET ? ON DUPLICATE KEY UPDATE id = id";
+    const queryFormatted = this.DB.format(query, [removeNonExistentProps(content)]);
+    await this.DB.execute(queryFormatted);
+  }
+
   async getUserNotes(userId: string): Promise<Note[]> {
     if (!this.DB) throw new Error("No database connected.");
     const [notes]: [RowDataPacket[], FieldPacket[]] = await this.DB.execute(
@@ -114,8 +147,10 @@ export class NotesProjectDataSource extends DataSource {
   async register(content: UserContent): Promise<string> {
     if (!this.DB) throw new Error("No database connected.");
     content = removeNonExistentProps(content)
-    const query = "INSERT INTO user SET ? ON DUPLICATE KEY UPDATE ?";
-    const queryFormatted = this.DB.format(query, [content, content]);
+    // Never overwrite an existing row: 'register' is public, so updating on a duplicate
+    // 'email'/'googleId' would let anyone rewrite (and take over) another user's row.
+    const query = "INSERT INTO user SET ? ON DUPLICATE KEY UPDATE id = id";
+    const queryFormatted = this.DB.format(query, [content]);
     await this.DB.execute(queryFormatted)
     return "OK";
   }
@@ -146,8 +181,9 @@ export class NotesProjectDataSource extends DataSource {
   }
   async createNote(userId: string, content: NoteContent): Promise<Note> {
     if (!this.DB) throw new Error("No database connected.");
-    const query = "INSERT INTO note SET user = ?, ?";
-    const queryFormatted = this.DB.format(query, [userId, content]);
+    // 'user' goes last so the content can't override it; also works with an empty content.
+    const query = "INSERT INTO note SET ?";
+    const queryFormatted = this.DB.format(query, [{ ...content, user: userId }]);
     const [rowPacket]: [ResultSetHeader, FieldPacket[]] = await this.DB.execute(
       queryFormatted
     );

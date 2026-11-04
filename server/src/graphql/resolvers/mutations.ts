@@ -33,7 +33,7 @@ export default class Mutations {
     @Arg("id", { nullable: false }) id: string,
     @Ctx() ctx: any
   ): Promise<string> {
-    return await ctx.dataSources.notesProject.deleteUser(ctx.user.id || id);
+    return await ctx.dataSources.notesProject.deleteUser(ctx.user.id);
   }
 
   @Authorized()
@@ -44,7 +44,7 @@ export default class Mutations {
     @Arg("content", { nullable: false }) content: NoteContent,
     @Ctx() ctx: any
   ): Promise<Note> {
-    return await ctx.dataSources.notesProject.createNote(ctx.user.id || userId, content);
+    return await ctx.dataSources.notesProject.createNote(ctx.user.id, content);
   }
 
   @Authorized()
@@ -75,7 +75,7 @@ export default class Mutations {
     @Arg("content", { nullable: false }) content: CategoryContent,
     @Ctx() ctx: any
   ): Promise<string> {
-    return await ctx.dataSources.notesProject.createCategory(ctx.user.id || userId, content);
+    return await ctx.dataSources.notesProject.createCategory(ctx.user.id, content);
   }
 
   @Authorized()
